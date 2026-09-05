@@ -20,9 +20,9 @@ export const AuthLayout: React.FC = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center z-10 px-4">
         <Link to="/" className="inline-block mb-3">
           <img 
-            src="/hara-emblem-light.png" 
+            src="/hara-logo-transparent.png" 
             alt="HARA WORKSHOP Logo" 
-            className="h-12 w-12 mx-auto object-contain p-1 rounded-xl bg-metal-900 border border-metal-800 shadow-lg" 
+            className="h-16 w-16 mx-auto object-contain p-1 rounded-full bg-white border-2 border-brand-red shadow-xl" 
           />
         </Link>
         <h2 className="text-2xl font-black tracking-wider text-white uppercase">

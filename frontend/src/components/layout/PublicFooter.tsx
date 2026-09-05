@@ -10,7 +10,7 @@ export const PublicFooter: React.FC = () => {
           {/* Brand & About */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center space-x-3 mb-4 group">
-              <img src="/hara-emblem-light.png" alt="HARA WORKSHOP Logo" className="h-11 w-11 object-contain p-1 rounded-xl bg-metal-900 border border-metal-800 shadow-md group-hover:border-brand-red transition-all" />
+              <img src="/hara-logo-transparent.png" alt="HARA WORKSHOP Logo" className="h-12 w-12 object-contain p-1 rounded-full bg-white border border-brand-red/80 shadow-md group-hover:scale-105 transition-all" />
               <div>
                 <span className="text-xl font-bold tracking-wider text-white block uppercase">
                   HARA <span className="text-brand-red">WORKSHOP</span>

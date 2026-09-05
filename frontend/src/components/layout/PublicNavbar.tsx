@@ -63,9 +63,9 @@ export const PublicNavbar: React.FC = () => {
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <img 
-              src="/hara-emblem-light.png" 
+              src="/hara-logo-transparent.png" 
               alt="HARA WORKSHOP Logo" 
-              className="h-11 w-11 object-contain p-1 rounded-xl bg-metal-900 border border-metal-800 shadow-md group-hover:border-brand-red transition-all group-hover:scale-105" 
+              className="h-12 w-12 object-contain p-1 rounded-full bg-white border-2 border-brand-red shadow-lg group-hover:scale-105 transition-all" 
             />
             <div>
               <span className="text-lg sm:text-xl font-black tracking-wider text-white block uppercase leading-none">
