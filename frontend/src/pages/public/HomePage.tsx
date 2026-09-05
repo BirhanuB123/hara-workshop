@@ -111,16 +111,28 @@ export const HomePage: React.FC = () => {
 
             {/* Right Hero Visual Showcase */}
             <div className="lg:col-span-5 relative">
-              <div className="relative rounded-2xl overflow-hidden border border-metal-700 shadow-2xl bg-metal-900 group">
-                <img
-                  src="/hara-logo.png"
-                  alt="Hara Workshop"
-                  className="w-full h-80 sm:h-96 object-contain p-8 bg-gradient-to-tr from-black via-metal-950 to-metal-900 group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute bottom-0 inset-x-0 p-5 bg-gradient-to-t from-black via-black/80 to-transparent border-t border-metal-800">
-                  <span className="text-xs font-bold text-brand-red uppercase tracking-wider block">Workshop Facility</span>
-                  <p className="text-sm font-semibold text-white">Bole Arabsa, Addis Ababa • Industrial Capacity</p>
-                  <p className="text-xs text-gray-400 mt-1">Direct inquiries: +251 926 629 999</p>
+              <div className="relative rounded-2xl overflow-hidden border border-metal-700 shadow-2xl bg-metal-900 group flex flex-col items-center">
+                <div className="relative w-full bg-metal-900 p-5 flex flex-col items-center">
+                  <div className="w-full bg-white rounded-xl shadow-lg overflow-hidden p-3 border border-metal-700/50">
+                    <img
+                      src="/hara-logo.png"
+                      alt="Hara Workshop Official Facility"
+                      className="w-full h-72 sm:h-80 object-contain mx-auto"
+                    />
+                  </div>
+                </div>
+
+                <div className="w-full p-4 sm:p-5 bg-metal-950 border-t border-metal-800 flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold text-brand-red uppercase tracking-wider block">Official Workshop Facility</span>
+                    <p className="text-sm font-semibold text-white">Bole Arabsa, Addis Ababa</p>
+                    <p className="text-xs text-gray-400">Near Water Tanker • +251 926 629 999</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      Open Mon - Sat
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

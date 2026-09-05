@@ -9,8 +9,8 @@ export const PublicFooter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand & About */}
           <div className="lg:col-span-2">
-            <Link to="/" className="flex items-center space-x-3 mb-4">
-              <img src="/hara-logo.png" alt="HARA WORKSHOP Logo" className="h-12 w-auto object-contain bg-black/40 p-1 rounded-lg border border-metal-700" />
+            <Link to="/" className="flex items-center space-x-3 mb-4 group">
+              <img src="/hara-emblem-light.png" alt="HARA WORKSHOP Logo" className="h-11 w-11 object-contain p-1 rounded-xl bg-metal-900 border border-metal-800 shadow-md group-hover:border-brand-red transition-all" />
               <div>
                 <span className="text-xl font-bold tracking-wider text-white block uppercase">
                   HARA <span className="text-brand-red">WORKSHOP</span>

@@ -42,7 +42,7 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({ onCloseMobile 
     <aside className="w-64 bg-metal-900 border-r border-metal-800 flex flex-col h-full select-none">
       {/* Brand Header */}
       <div className="p-5 border-b border-metal-800 flex items-center space-x-3">
-        <img src="/hara-logo.png" alt="Hara Logo" className="h-9 w-auto object-contain bg-black/40 p-1 rounded-md border border-metal-700" />
+        <img src="/hara-emblem-light.png" alt="Hara Logo" className="h-9 w-9 object-contain p-1 rounded-lg bg-metal-900 border border-metal-800" />
         <div>
           <h2 className="text-white font-bold text-base tracking-wide uppercase leading-tight">
             HARA <span className="text-brand-red">PORTAL</span>
