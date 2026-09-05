@@ -1,6 +1,6 @@
 FROM python:3.12-slim
-ENZ PYTHONDONTWRITEBYTECODE=1
-ENZ PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential libpq-dev && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt /app/
