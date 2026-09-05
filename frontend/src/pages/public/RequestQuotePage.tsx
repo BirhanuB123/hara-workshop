@@ -21,11 +21,20 @@ export const RequestQuotePage: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
 
+  const serviceParam = searchParams.get('service') || '';
+  const initialServiceType = serviceParam.toLowerCase().includes('metal + wood') || serviceParam.toLowerCase().includes('hybrid')
+    ? 'HYBRID'
+    : serviceParam.toLowerCase().includes('wood')
+    ? 'WOOD'
+    : serviceParam.toLowerCase().includes('metal')
+    ? 'METAL'
+    : 'HYBRID';
+
   const [projectTitle, setProjectTitle] = useState(
-    searchParams.get('product') || searchParams.get('service') || searchParams.get('reference') || ''
+    serviceParam || searchParams.get('product') || searchParams.get('reference') || ''
   );
-  const [serviceType, setServiceType] = useState('CUSTOM');
-  const [materialPreference, setMaterialPreference] = useState('Mild Steel & Solid Timber');
+  const [serviceType, setServiceType] = useState(initialServiceType);
+  const [materialPreference, setMaterialPreference] = useState('Mild Steel & Solid Hardwood');
   const [description, setDescription] = useState('');
   
   // Dimensions in cm
@@ -195,10 +204,9 @@ export const RequestQuotePage: React.FC = () => {
                   onChange={(e) => setServiceType(e.target.value)}
                   className="w-full bg-metal-950 border border-metal-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-red"
                 >
-                  <option value="METAL">Metal Fabrication & Welding</option>
-                  <option value="WOOD">Custom Woodworking & Joinery</option>
-                  <option value="FURNITURE">Architectural Furniture</option>
-                  <option value="CUSTOM">Mixed Metal & Wood Solution</option>
+                  <option value="METAL">Metal Works (Fabrication & Welding)</option>
+                  <option value="WOOD">Wood Works (Carpentry & Custom Furniture)</option>
+                  <option value="HYBRID">Hybrid Metal + Wood Construction</option>
                 </select>
               </div>
             </div>

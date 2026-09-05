@@ -199,7 +199,7 @@ class Command(BaseCommand):
         svc_cats = [
             ('Metal Works', 'Precision welding, laser cutting, metal gates, doors, and architectural structures.'),
             ('Wood Works', 'Custom cabinetry, hardwood furniture, interior paneling, and architectural woodworking.'),
-            ('Custom Solutions', 'Complete bespoke construction combining structural metal frames with artisan woodwork.'),
+            ('Hybrid Metal + Wood Construction', 'Architectural fusion combining structural steel frames with artisan woodwork.'),
         ]
 
         svc_cat_objs = {}
@@ -211,16 +211,31 @@ class Command(BaseCommand):
             svc_cat_objs[name] = sc
 
         services_data = [
-            ('Architectural Metal Doors & Windows', 'Metal Works', 'Custom fabricated metal security doors, acoustic sliding windows, and French grills built with precision steel and glass.', Decimal('35000.00')),
-            ('Gates & Security Enclosures', 'Metal Works', 'Automated sliding gates, compound entry gates, and heavy security fences designed for longevity.', Decimal('85000.00')),
-            ('Custom Wood Furniture & Tables', 'Wood Works', 'Artisan dining sets, coffee tables, office executive desks, and display shelving crafted from premium timbers.', Decimal('45000.00')),
-            ('Modular Kitchen & Wardrobe Cabinets', 'Wood Works', 'Full kitchen fitouts, walk-in closets, and built-in storage solutions with smooth soft-close hardware.', Decimal('75000.00')),
-            ('Hybrid Metal + Wood Construction', 'Custom Solutions', 'Architectural staircases, pergola structures, cafe and restaurant fitouts marrying steel strength with wood warmth.', Decimal('120000.00')),
-            ('On-Site Measurement & Installation', 'Custom Solutions', 'Professional laser-measured site surveys, structural anchoring, and lifetime maintenance support.', Decimal('5000.00')),
+            (
+                'Metal Works', 
+                'Metal Works', 
+                'Heavy-duty structural steel fabrication, architectural frameworks, precision MIG/TIG welding, security gates, doors, and laser-cut metal solutions.', 
+                Decimal('35000.00'),
+                'services/metal-works.jpg'
+            ),
+            (
+                'Wood Works', 
+                'Wood Works', 
+                'Bespoke solid hardwood furniture, architectural cabinetry, executive office desks, and luxury interior timber craftsmanship.', 
+                Decimal('45000.00'),
+                'services/wood-works.jpg'
+            ),
+            (
+                'Hybrid Metal + Wood Construction', 
+                'Hybrid Metal + Wood Construction', 
+                'Architectural fusion combining structural matte-black steel frameworks with warm, rich solid hardwood for floating staircases, pergolas, and cafe/office fitouts.', 
+                Decimal('95000.00'),
+                'services/hybrid-construction.jpg'
+            ),
         ]
 
-        for title, cat_name, desc, start_p in services_data:
-            Service.objects.get_or_create(
+        for title, cat_name, desc, start_p, img_path in services_data:
+            Service.objects.update_or_create(
                 slug=slugify(title),
                 defaults={
                     'title': title,
@@ -228,7 +243,10 @@ class Command(BaseCommand):
                     'short_description': desc[:120],
                     'full_description': desc,
                     'starting_price': start_p,
+                    'price_unit': 'per project',
                     'turnaround_time': '1-3 weeks',
+                    'image': img_path,
+                    'is_active': True,
                 }
             )
 
