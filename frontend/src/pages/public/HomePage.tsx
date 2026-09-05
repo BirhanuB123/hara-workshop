@@ -112,24 +112,24 @@ export const HomePage: React.FC = () => {
             {/* Right Hero Visual Showcase */}
             <div className="lg:col-span-5 relative">
               <div className="relative rounded-2xl overflow-hidden border border-metal-700 shadow-2xl bg-metal-900 group flex flex-col items-center">
-                <div className="relative w-full bg-gradient-to-b from-metal-900 via-metal-950 to-metal-900 p-8 flex flex-col items-center justify-center">
-                  {/* Subtle red ambient glow behind emblem */}
-                  <div className="absolute w-56 h-56 rounded-full bg-brand-red/20 blur-3xl group-hover:bg-brand-red/30 transition-all pointer-events-none" />
+                {/* Ambient glow behind card */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-brand-red/20 via-metal-800 to-brand-red/20 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity" />
 
-                  <div className="relative w-64 h-64 sm:w-72 sm:h-72 rounded-full bg-white p-4 shadow-2xl border-4 border-brand-red flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                <div className="relative w-full bg-metal-900 p-6 flex flex-col items-center justify-center">
+                  <div className="w-full bg-white rounded-xl shadow-2xl overflow-hidden p-6 border border-metal-700/40 flex items-center justify-center group-hover:scale-[1.02] transition-transform duration-500">
                     <img
-                      src="/hara-logo-transparent.png"
-                      alt="HARA WORKSHOP Official Emblem"
-                      className="w-full h-full object-contain"
+                      src="/hara-hero-banner.png"
+                      alt="HARA WORKSHOP - Metal and Wood Solution"
+                      className="w-full h-auto max-h-80 sm:max-h-96 object-contain mx-auto"
                     />
                   </div>
                 </div>
 
                 <div className="w-full p-4 sm:p-5 bg-metal-950 border-t border-metal-800 flex items-center justify-between">
                   <div>
-                    <span className="text-[11px] font-bold text-brand-red uppercase tracking-wider block">Official Brand Identity</span>
-                    <p className="text-sm font-semibold text-white">Metal and Wood Solution</p>
-                    <p className="text-xs text-gray-400">Addis Ababa, Bole Arabsa • +251 926 629 999</p>
+                    <span className="text-[11px] font-bold text-brand-red uppercase tracking-wider block">Official Workshop Identity</span>
+                    <p className="text-sm font-semibold text-white">Bole Arabsa, Addis Ababa</p>
+                    <p className="text-xs text-gray-400">Near Water Tanker • +251 926 629 999</p>
                   </div>
                   <div className="text-right">
                     <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
