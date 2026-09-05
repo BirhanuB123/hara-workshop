@@ -1,0 +1,45 @@
+from rest_framework import viewsets, permissions, status, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Order, OrderStatus
+from .serializers import OrderSerializer
+from apps.accounts.permissions import IsStaffUser, IsOwnerOrStaff
+from apps.core.models import AuditLog
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.select_related('customer', 'quote').prefetch_related('items').all()
+    serializer_class = OrderSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['status']
+    search_fields = ['order_number', 'customer__email', 'customer__first_name', 'customer__last_name']
+    ordering_fields = ['created_at', 'total_amount', 'status']
+
+    def get_permissions(self):
+        return [permissions.IsAuthenticated(), IsOwnerOrStaff()]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            return Order.objects.none()
+        if user.role == 'CUSTOMER':
+            return Order.objects.filter(customer=user).prefetch_related('items')
+        return Order.objects.all().select_related('customer', 'quote').prefetch_related('items')
+
+    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    def update_status(self, request, pk=None):
+        order = self.get_object()
+        new_status = request.data.get('status')
+        if new_status in OrderStatus.values:
+            order.status = new_status
+            order.save()
+
+            AuditLog.objects.create(
+                user=request.user,
+                action='STATUS_CHANGE',
+                resource='Order',
+                resource_id=order.order_number,
+                metadata={'new_status': new_status}
+            )
+            return Response(OrderSerializer(order).data)
+        return Response({'error': 'Invalid order status'}, status=status.HTTP_400_BAD_REQUEST)

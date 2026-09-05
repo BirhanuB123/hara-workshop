@@ -1,0 +1,16 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*.class
+*.sqlite3
+db.sqlite3-journal
+media/uploads/
+!media/branding/logo.png
+venv/
+.env
+
+# Node / Vite
+node_modules/
+dist/
+.DS_Store
+*.log
