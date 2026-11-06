@@ -19,16 +19,22 @@ export const CustomerProfilePage: React.FC = () => {
     setSaving(true);
     setSuccess(false);
     try {
-      await accountsApi.updateProfile({
+      const res = await accountsApi.updateProfile({
         first_name: firstName,
         last_name: lastName,
         phone_number: phone,
+        address,
+        company_name: company,
+        tin_number: tin,
         customer_profile: {
           address,
           company_name: company,
           tin_number: tin,
         }
       });
+      if (res?.data) {
+        useAuthStore.getState().updateUser(res.data);
+      }
       setSuccess(true);
     } catch (err) {
       console.error(err);

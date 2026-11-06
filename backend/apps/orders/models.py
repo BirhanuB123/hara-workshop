@@ -4,10 +4,13 @@ from apps.core.models import TimeStampedModel
 from datetime import date
 
 class OrderStatus(models.TextChoices):
+    QUOTE_REQUESTED = 'QUOTE_REQUESTED', 'Quote Requested'
+    QUOTATION_SENT = 'QUOTATION_SENT', 'Quotation Sent'
+    QUOTATION_ACCEPTED = 'QUOTATION_ACCEPTED', 'Quotation Accepted'
+    QUOTATION_REJECTED = 'QUOTATION_REJECTED', 'Quotation Rejected'
+    ORDER_CONFIRMED = 'ORDER_CONFIRMED', 'Order Confirmed'
     PENDING = 'PENDING', 'Pending'
     CONFIRMED = 'CONFIRMED', 'Confirmed'
-    PAYMENT_PENDING = 'PAYMENT_PENDING', 'Payment Pending'
-    PAID = 'PAID', 'Paid'
     IN_PRODUCTION = 'IN_PRODUCTION', 'In Production'
     QUALITY_CHECK = 'QUALITY_CHECK', 'Quality Check'
     READY = 'READY', 'Ready for Delivery'
@@ -29,6 +32,11 @@ class Order(TimeStampedModel):
     delivery_city = models.CharField(max_length=100, default='Addis Ababa')
     expected_delivery_date = models.DateField(null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
+
+    # Customer Telegram Notification & Tracking
+    telegram_chat_id = models.CharField(max_length=50, blank=True, default='', db_index=True)
+    telegram_linked_at = models.DateTimeField(null=True, blank=True)
+    telegram_last_notified_status = models.CharField(max_length=50, blank=True, default='')
 
     class Meta:
         ordering = ['-created_at']

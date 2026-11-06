@@ -2,9 +2,14 @@ from rest_framework import serializers
 from .models import Project, ProjectImage
 
 class ProjectImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProjectImage
         fields = ['id', 'image', 'image_type', 'caption']
+
+    def get_image(self, obj):
+        return obj.image.url if obj.image else None
 
 class ProjectSerializer(serializers.ModelSerializer):
     images = ProjectImageSerializer(many=True, read_only=True)

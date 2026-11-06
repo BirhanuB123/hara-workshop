@@ -10,6 +10,7 @@ class NotificationType(models.TextChoices):
     INVOICE = 'INVOICE', 'Invoice'
     STOCK = 'STOCK', 'Inventory Stock'
     SYSTEM = 'SYSTEM', 'System'
+    MESSAGE = 'MESSAGE', 'Message'
 
 class Notification(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')

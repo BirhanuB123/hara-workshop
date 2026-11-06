@@ -22,6 +22,11 @@ export const CustomerLayout: React.FC = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // RBAC Guard: Only CUSTOMER role may access customer portal
+  if (user?.role !== 'CUSTOMER') {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
   const path = location.pathname;
   let pageTitle = 'Customer Portal';
   let pageSubtitle = 'Manage your quotes, orders, and workshop communications';
@@ -32,15 +37,6 @@ export const CustomerLayout: React.FC = () => {
   } else if (path.includes('/orders')) {
     pageTitle = 'My Orders';
     pageSubtitle = 'Track real-time workshop fabrication stages, milestones, and delivery';
-  } else if (path.includes('/invoices')) {
-    pageTitle = 'Invoices & Billing';
-    pageSubtitle = 'Download 15% VAT invoices, track balances, and view payment status';
-  } else if (path.includes('/payments')) {
-    pageTitle = 'Payment Records';
-    pageSubtitle = 'Historical Telebirr, CBE, and Bank transactions recorded for your account';
-  } else if (path.includes('/messages')) {
-    pageTitle = 'Direct Workshop Messages';
-    pageSubtitle = 'Communicate directly with our master craftsmen and sales architects';
   } else if (path.includes('/notifications')) {
     pageTitle = 'Account Notifications';
     pageSubtitle = 'Important updates regarding your order progress and quotes';

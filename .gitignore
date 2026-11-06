@@ -1,16 +1,98 @@
+# ==========================================
+# HARA WORKSHOP — .gitignore
+# ==========================================
+
+# Environment & Sensitive Credentials
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*.cert
+secrets.json
+
 # Python / Django
 __pycache__/
 *.py[cod]
-*.class
-*.sqlite3
-db.sqlite3-journal
-media/uploads/
-!media/branding/logo.png
-venv/
-.env
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Node / Vite
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# SQLite & Database Dumps
+*.sqlite3
+*.sqlite3-journal
+db.sqlite3
+db.sqlite3-journal
+
+# Media uploads (exclude user uploads; keep static assets/branding)
+media/uploads/
+media/quotes/
+media/services/gallery/
+!media/branding/logo.png
+
+# Django Static Collection
+staticfiles/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node / Frontend / Vite
 node_modules/
 dist/
+dist-ssr/
+*.local
+.pnp
+.pnp.js
+
+# TypeScript
+*.tsbuildinfo
+
+# OS & Editor Files
 .DS_Store
-*.log
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Local prompt / temporary scratch files
+full_user_prompt.txt
+prompt_full.txt
+sec_11_23.txt
+sec_24_41.txt
+*.tmp

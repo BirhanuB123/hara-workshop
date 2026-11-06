@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, Clock, MapPin, Receipt, Wrench } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Clock, MapPin, Wrench } from 'lucide-react';
 import { ordersApi } from '../../services/api';
 import { Order } from '../../types';
 import { StatusBadge } from '../../components/common/StatusBadge';
@@ -43,7 +43,7 @@ export const CustomerOrderDetailPage: React.FC = () => {
   return (
     <div className="space-y-6 text-left max-w-5xl mx-auto">
       <Link
-        to="/portal/orders"
+        to="/customer/orders"
         className="inline-flex items-center space-x-2 text-xs font-semibold text-gray-400 hover:text-white"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -66,9 +66,9 @@ export const CustomerOrderDetailPage: React.FC = () => {
         </div>
 
         <div className="text-right bg-metal-950 px-4 py-2.5 rounded-lg border border-metal-800">
-          <span className="text-[10px] text-gray-500 uppercase block">Order Balance</span>
+          <span className="text-[10px] text-gray-500 uppercase block">Quoted Order Value</span>
           <span className="text-base font-black text-white">
-            {(order.total_amount - order.paid_amount).toLocaleString()} ETB Remaining
+            {order.total_amount.toLocaleString()} ETB
           </span>
         </div>
       </div>

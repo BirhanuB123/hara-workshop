@@ -22,9 +22,9 @@ export const AdminLayout: React.FC = () => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // RBAC Guard: Customers cannot enter admin portal
-  if (user?.role === 'CUSTOMER') {
-    return <Navigate to="/portal" replace />;
+  // RBAC Guard: Only ADMIN role may access admin portal
+  if (user?.role !== 'ADMIN') {
+    return <Navigate to="/customer/dashboard" replace />;
   }
 
   const path = location.pathname;
@@ -32,8 +32,8 @@ export const AdminLayout: React.FC = () => {
   let pageSubtitle = 'HARA WORKSHOP Enterprise ERP & Production Control';
 
   if (path.includes('/reports')) {
-    pageTitle = 'Executive Analytics & Financial Reports';
-    pageSubtitle = 'Revenue trends, order conversions, production efficiency, and material burn';
+    pageTitle = 'Workshop Operational Analytics';
+    pageSubtitle = 'Order throughput, production efficiency, and material burn';
   } else if (path.includes('/quotes')) {
     pageTitle = 'Quotation Engine';
     pageSubtitle = 'Review customer requests, calculate materials & labor, issue price proposals';
@@ -41,56 +41,29 @@ export const AdminLayout: React.FC = () => {
     pageTitle = 'Order Management';
     pageSubtitle = 'Monitor active orders, dispatch to production, and oversee fulfillment';
   } else if (path.includes('/production')) {
-    pageTitle = '10-Stage Production Pipeline';
-    pageSubtitle = 'Cutting, fabrication, assembly, finishing, quality check, and installation';
-  } else if (path.includes('/inventory')) {
+    pageTitle = 'Production Jobs';
+    pageSubtitle = 'Active workshop production, stage tracking, quality control, and delivery';
+  } else if (path.includes('/raw-materials') || path.includes('/inventory')) {
     pageTitle = 'Raw Materials & Inventory';
-    pageSubtitle = 'Track steel tubes, hardwood lumber, fittings, and automated low-stock alerts';
+    pageSubtitle = 'Track steel sections, timber lumber, fittings, and automated stock alerts';
   } else if (path.includes('/suppliers')) {
     pageTitle = 'Suppliers Registry';
     pageSubtitle = 'Manage metal importers, timber sawmills, and hardware vendors';
   } else if (path.includes('/products')) {
     pageTitle = 'Products Catalog';
-    pageSubtitle = 'Maintain showroom items, custom furniture models, and base pricing';
+    pageSubtitle = 'Maintain workshop products, custom furniture models, and base specs';
+  } else if (path.includes('/services')) {
+    pageTitle = 'Services & Media Management';
+    pageSubtitle = 'Full Admin control over service photography, slots 1-10+, and craftsmanship descriptions';
   } else if (path.includes('/categories')) {
     pageTitle = 'Product Categories';
-    pageSubtitle = 'Organize metal works, wooden furniture, and architectural fittings';
-  } else if (path.includes('/services')) {
-    pageTitle = 'Workshop Services';
-    pageSubtitle = 'Define fabrication capabilities, turnaround rates, and price baselines';
-  } else if (path.includes('/projects')) {
-    pageTitle = 'Portfolio & Showcase';
-    pageSubtitle = 'High-resolution before & after photos of completed workshop installations';
-  } else if (path.includes('/invoices')) {
-    pageTitle = 'Invoices & 15% VAT Records';
-    pageSubtitle = 'Issue legal invoices, reconcile balances, and manage payment terms';
-  } else if (path.includes('/payments')) {
-    pageTitle = 'Payment Verification';
-    pageSubtitle = 'Verify Telebirr, CBE, cash, and bank transfer receipts in Ethiopian Birr (ETB)';
-  } else if (path.includes('/expenses')) {
-    pageTitle = 'Workshop Operating Expenses';
-    pageSubtitle = 'Consumables, machinery maintenance, diesel, transport, and utilities';
+    pageSubtitle = 'Organize metal works, wooden furniture, and hybrid architectural fittings';
   } else if (path.includes('/customers')) {
-    pageTitle = 'Customer Relationship Management';
-    pageSubtitle = 'Directory of residential and commercial clients across Ethiopia';
-  } else if (path.includes('/employees')) {
-    pageTitle = 'Workshop Staff & Craftsmen';
-    pageSubtitle = 'Supervisors, welders, carpenters, finishing masters, and engineers';
-  } else if (path.includes('/users')) {
-    pageTitle = 'System Users & Role-Based Access';
-    pageSubtitle = 'Super Admin, Manager, Sales, Production, and Accountant credentials';
-  } else if (path.includes('/messages')) {
-    pageTitle = 'Live Customer Conversations';
-    pageSubtitle = 'In-app chat and file exchange with prospective and active clients';
+    pageTitle = 'Customer Accounts';
+    pageSubtitle = 'Directory of customer accounts, project quotes, orders, and communication history';
   } else if (path.includes('/notifications')) {
-    pageTitle = 'System Event Notifications';
-    pageSubtitle = 'Real-time alerts on quotes, order payments, and critical stock levels';
-  } else if (path.includes('/audit-logs')) {
-    pageTitle = 'Security & Audit Logs';
-    pageSubtitle = 'Immutable log of administrative operations, stage changes, and transactions';
-  } else if (path.includes('/settings')) {
-    pageTitle = 'Workshop Enterprise Settings';
-    pageSubtitle = 'Company details, VAT percentage, Telegram handles, and address configuration';
+    pageTitle = 'System Notifications';
+    pageSubtitle = 'Operational alerts on quotation requests, orders, and inventory thresholds';
   }
 
   return (

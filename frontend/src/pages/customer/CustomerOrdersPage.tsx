@@ -6,10 +6,12 @@ import { Order } from '../../types';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { EmptyState } from '../../components/common/EmptyState';
+import { useLanguageStore } from '../../store/languageStore';
 
 export const CustomerOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguageStore();
 
   useEffect(() => {
     ordersApi.getAll()
@@ -18,23 +20,23 @@ export const CustomerOrdersPage: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner text="Loading orders..." />;
+  if (loading) return <LoadingSpinner text={t('common.loading')} />;
 
   return (
     <div className="space-y-6 text-left">
       <div className="border-b border-metal-800 pb-4">
         <h2 className="text-xl font-bold text-white uppercase tracking-wider">
-          Workshop Fabrication Orders
+          {t('customer.ordersTitle')}
         </h2>
         <p className="text-xs text-gray-400 mt-0.5">
-          Follow your projects through our 10-stage fabrication workflow in real-time.
+          {t('customer.ordersSubtitle')}
         </p>
       </div>
 
       {orders.length === 0 ? (
         <EmptyState
-          title="No active orders"
-          description="Once your quotation proposal is accepted, your workshop order will appear here with live progress tracking."
+          title={t('customer.noOrdersTitle')}
+          description={t('customer.noOrdersDesc')}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -56,7 +58,7 @@ export const CustomerOrdersPage: React.FC = () => {
                 {order.production_job ? (
                   <div className="bg-metal-950 p-3 rounded-lg border border-metal-800 space-y-2 mb-3">
                     <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">Current Stage:</span>
+                      <span className="text-gray-400">{t('customer.stage')}</span>
                       <span className="font-bold text-brand-red uppercase">
                         {order.production_job.stage.replace('_', ' ')}
                       </span>
@@ -68,7 +70,7 @@ export const CustomerOrdersPage: React.FC = () => {
                       />
                     </div>
                     <div className="flex justify-between text-[10px] text-gray-500">
-                      <span>Milestone Progress</span>
+                      <span>{t('customer.milestoneProgress')}</span>
                       <span className="font-mono font-bold text-white">{order.production_job.progress_percentage}%</span>
                     </div>
                   </div>
@@ -78,23 +80,23 @@ export const CustomerOrdersPage: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-2 text-xs border-t border-metal-800 pt-3 text-gray-300">
                   <div>
-                    <span className="text-gray-500 block">Total Amount:</span>
-                    <span className="font-bold text-white">{order.total_amount.toLocaleString()} ETB</span>
+                    <span className="text-gray-500 block">{t('customer.quotedOrderValue')}</span>
+                    <span className="font-bold text-white">{order.total_amount.toLocaleString()} {t('common.etb')}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 block">Paid Amount:</span>
-                    <span className="font-bold text-emerald-400">{order.paid_amount.toLocaleString()} ETB</span>
+                    <span className="text-gray-500 block">{t('customer.deliveryLocation')}</span>
+                    <span className="font-bold text-white truncate block">{order.delivery_city || order.delivery_address || 'Addis Ababa'}</span>
                   </div>
                 </div>
               </div>
 
               <div className="pt-2">
                 <Link
-                  to={`/portal/orders/${order.id}`}
+                  to={`/customer/orders/${order.id}`}
                   className="w-full inline-flex items-center justify-center space-x-2 bg-metal-800 hover:bg-brand-red text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-colors"
                 >
                   <Eye className="w-4 h-4" />
-                  <span>Inspect 10-Stage Timeline</span>
+                  <span>{t('customer.inspectTimeline')}</span>
                 </Link>
               </div>
             </div>
@@ -104,3 +106,4 @@ export const CustomerOrdersPage: React.FC = () => {
     </div>
   );
 };
+

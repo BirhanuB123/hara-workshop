@@ -30,7 +30,9 @@ class OrderViewSet(viewsets.ModelViewSet):
     def update_status(self, request, pk=None):
         order = self.get_object()
         new_status = request.data.get('status')
+        reason = request.data.get('reason', '')
         if new_status in OrderStatus.values:
+            old_status = order.status
             order.status = new_status
             order.save()
 
@@ -39,7 +41,27 @@ class OrderViewSet(viewsets.ModelViewSet):
                 action='STATUS_CHANGE',
                 resource='Order',
                 resource_id=order.order_number,
-                metadata={'new_status': new_status}
+                metadata={'old_status': old_status, 'new_status': new_status, 'reason': reason}
             )
+
+            # Notify customer via Telegram if status changed
+            if old_status != new_status:
+                try:
+                    from apps.quotations.telegram_bot import notify_customer_status_change
+                    notify_customer_status_change(order, new_status, reason=reason)
+                except Exception:
+                    pass
+
             return Response(OrderSerializer(order).data)
         return Response({'error': 'Invalid order status'}, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, serializer):
+        old_status = serializer.instance.status
+        instance = serializer.save()
+        if instance.status != old_status:
+            try:
+                from apps.quotations.telegram_bot import notify_customer_status_change
+                notify_customer_status_change(instance, instance.status)
+            except Exception:
+                pass
+

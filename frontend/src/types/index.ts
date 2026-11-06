@@ -1,4 +1,4 @@
-export type UserRole = 'SUPER_ADMIN' | 'MANAGER' | 'SALES' | 'PRODUCTION' | 'ACCOUNTANT' | 'CUSTOMER';
+export type UserRole = 'ADMIN' | 'CUSTOMER';
 
 export interface User {
   id: string;
@@ -7,6 +7,7 @@ export interface User {
   last_name: string;
   full_name: string;
   phone_number?: string;
+  company_name?: string;
   role: UserRole;
   avatar?: string;
   is_active: boolean;
@@ -30,8 +31,10 @@ export interface User {
 export interface Category {
   id: string;
   name: string;
+  name_am?: string;
   slug: string;
   description?: string;
+  description_am?: string;
   image?: string;
   is_active: boolean;
   product_count?: number;
@@ -40,24 +43,63 @@ export interface Category {
 export interface Product {
   id: string;
   name: string;
+  name_am?: string;
+  slug?: string;
   sku: string;
+  service_category?: 'METAL_WORKS' | 'WOOD_WORKS' | 'HYBRID_METAL_WOOD';
+  service_category_display?: string;
+  service?: string;
+  service_slug?: string;
   category: string;
   category_name: string;
+  product_type?: string;
+  subcategory?: string;
+  subcategory_am?: string;
+  short_description?: string;
+  short_description_am?: string;
   description: string;
+  description_am?: string;
+  detailed_description?: string;
   material: string;
+  material_am?: string;
+  metal_materials?: string;
+  wood_materials?: string;
+  finish_options?: string;
+  applications?: string;
+  customization_options?: string;
+  estimated_production_time?: string;
   dimensions_length?: number;
   dimensions_width?: number;
   dimensions_height?: number;
-  dimensions_unit: string;
+  dimensions_unit?: string;
   starting_price: number;
   unit: string;
   is_featured: boolean;
   is_active: boolean;
   stock_status: 'IN_STOCK' | 'MADE_TO_ORDER' | 'OUT_OF_STOCK';
   is_customizable: boolean;
-  images: Array<{ id: string; image: string; is_primary: boolean; caption?: string }>;
+  images?: Array<{ id: string; image: string; is_primary?: boolean; caption?: string }>;
   primary_image?: string;
   created_at: string;
+  updated_at: string;
+}
+
+export interface ServiceImageItem {
+  id: string;
+  image: string;
+  caption?: string;
+  description?: string;
+  order?: number;
+  is_primary?: boolean;
+}
+
+export interface SubcategoriesResponse {
+  service_category?: string;
+  subcategories: string[];
+  subcategories_am?: string[];
+  subcategory_map?: Record<string, string>;
+  counts: Record<string, number>;
+  total_products: number;
 }
 
 export interface Service {
@@ -65,19 +107,55 @@ export interface Service {
   category: string;
   category_name: string;
   title: string;
+  title_am?: string;
   slug: string;
+  tagline?: string;
+  tagline_am?: string;
   short_description: string;
+  short_description_am?: string;
   full_description: string;
+  full_description_am?: string;
   starting_price?: number;
   price_unit: string;
   turnaround_time: string;
   is_active: boolean;
   image?: string;
+  primary_image?: string;
+  offerings?: string[];
+  applications?: Array<{ title: string; desc: string }>;
+  materials?: Array<{ name: string; desc: string }>;
+  benefits?: string[];
+  process_steps?: Array<{ step: string; title: string; description: string }>;
+  customization_info?: string;
+  gallery_images?: ServiceImageItem[];
+  related_projects?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    category: string;
+    client_type: string;
+    materials_used: string;
+    primary_image?: string;
+    description?: string;
+  }>;
+  related_services?: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    category_name: string;
+    short_description: string;
+    image?: string;
+    starting_price?: number;
+    price_unit?: string;
+    turnaround_time?: string;
+  }>;
+  created_at?: string;
 }
 
 export interface ServiceCategory {
   id: string;
   name: string;
+  name_am?: string;
   slug: string;
   description?: string;
   services?: Service[];
@@ -138,7 +216,7 @@ export interface Quote {
   workshop_notes?: string;
   customer_notes?: string;
   items: Array<{ id: string; description: string; quantity: number; unit_cost: number; total_cost: number }>;
-  attachments: Array<{ id: string; file: string; file_name: string }>;
+  attachments: Array<{ id: string; file: string; file_name: string; created_at?: string }>;
   created_at: string;
   updated_at: string;
 }
@@ -146,8 +224,6 @@ export interface Quote {
 export type OrderStatus =
   | 'PENDING'
   | 'CONFIRMED'
-  | 'PAYMENT_PENDING'
-  | 'PAID'
   | 'IN_PRODUCTION'
   | 'QUALITY_CHECK'
   | 'READY'
@@ -163,7 +239,6 @@ export interface Order {
   customer: User;
   status: OrderStatus;
   total_amount: number;
-  paid_amount: number;
   delivery_address?: string;
   delivery_city?: string;
   expected_delivery_date?: string;
@@ -242,53 +317,18 @@ export interface Supplier {
   material_count: number;
 }
 
-export interface Invoice {
-  id: string;
-  invoice_number: string;
-  order: string;
-  order_number: string;
-  customer: User;
-  subtotal: number;
-  discount: number;
-  tax_amount: number;
-  total_amount: number;
-  amount_paid: number;
-  amount_remaining: number;
-  status: 'DRAFT' | 'ISSUED' | 'PARTIALLY_PAID' | 'PAID' | 'OVERDUE' | 'CANCELLED';
-  issue_date: string;
-  due_date: string;
-  notes?: string;
-  created_at: string;
-}
 
-export interface Payment {
+export interface Message {
   id: string;
-  payment_number: string;
-  order: string;
-  order_number: string;
-  customer: User;
-  amount: number;
-  currency: string;
-  payment_method: string;
-  transaction_reference?: string;
-  status: string;
-  payment_date: string;
-  receipt_attachment?: string;
-  recorded_by_name?: string;
-  notes?: string;
-  created_at: string;
-}
-
-export interface Expense {
-  id: string;
-  expense_number: string;
-  category: string;
-  amount: number;
-  date: string;
-  payment_method: string;
-  description: string;
-  receipt_attachment?: string;
-  recorded_by_name?: string;
+  conversation: string;
+  sender: User;
+  sender_name?: string;
+  sender_role?: 'ADMIN' | 'CUSTOMER';
+  content: string;
+  attachment?: string | null;
+  attachment_name?: string | null;
+  is_read: boolean;
+  is_me: boolean;
   created_at: string;
 }
 
@@ -296,11 +336,36 @@ export interface Conversation {
   id: string;
   customer: User;
   subject: string;
-  status: string;
+  status: 'OPEN' | 'CLOSED' | string;
+  quotation?: string | null;
+  quotation_details?: {
+    id: string;
+    quote_number: string;
+    project_title: string;
+    service_type: string;
+    status: string;
+  } | null;
+  order?: string | null;
+  order_details?: {
+    id: string;
+    order_number: string;
+    status: string;
+  } | null;
   last_message_at: string;
+  last_message?: {
+    id: string;
+    content: string;
+    created_at: string;
+    sender_name: string;
+    sender_role: string;
+    is_me: boolean;
+    is_read: boolean;
+    has_attachment: boolean;
+  } | null;
   unread_count: number;
-  messages: Array<{ id: string; sender: User; content: string; attachment?: string; is_read: boolean; is_me: boolean; created_at: string }>;
+  messages: Message[];
   created_at: string;
+  updated_at?: string;
 }
 
 export interface Notification {

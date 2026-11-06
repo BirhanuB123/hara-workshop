@@ -6,10 +6,12 @@ import { Quote } from '../../types';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { EmptyState } from '../../components/common/EmptyState';
+import { useLanguageStore } from '../../store/languageStore';
 
 export const CustomerQuotesPage: React.FC = () => {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguageStore();
 
   useEffect(() => {
     quotesApi.getAll()
@@ -18,17 +20,17 @@ export const CustomerQuotesPage: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner text="Loading quotations..." />;
+  if (loading) return <LoadingSpinner text={t('common.loading')} />;
 
   return (
     <div className="space-y-6 text-left">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-metal-800 pb-4">
         <div>
           <h2 className="text-xl font-bold text-white uppercase tracking-wider">
-            My Workshop Quotations
+            {t('customer.quotesTitle')}
           </h2>
           <p className="text-xs text-gray-400 mt-0.5">
-            Review detailed price proposals, material breakdowns, and approve projects to begin fabrication.
+            {t('customer.quotesSubtitle')}
           </p>
         </div>
         <Link
@@ -36,15 +38,15 @@ export const CustomerQuotesPage: React.FC = () => {
           className="inline-flex items-center space-x-1.5 bg-brand-red hover:bg-red-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg uppercase tracking-wider transition-colors shadow-sm"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>New Quote Request</span>
+          <span>{t('customer.newQuoteRequest')}</span>
         </Link>
       </div>
 
       {quotes.length === 0 ? (
         <EmptyState
-          title="No quotations requested yet"
-          description="Submit your dimensions and project specifications to receive an itemized proposal."
-          actionText="Request a Quotation"
+          title={t('customer.noQuotesTitle')}
+          description={t('customer.noQuotesDesc')}
+          actionText={t('common.requestQuote')}
           actionLink="/request-quote"
         />
       ) : (
@@ -53,12 +55,12 @@ export const CustomerQuotesPage: React.FC = () => {
             <table className="w-full text-left text-xs text-gray-300">
               <thead className="bg-metal-950 text-[10px] uppercase font-bold text-metal-400 tracking-wider border-b border-metal-800">
                 <tr>
-                  <th className="px-4 py-3">Quote #</th>
-                  <th className="px-4 py-3">Project Title</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Dimensions / Qty</th>
-                  <th className="px-4 py-3 text-right">Total (ETB)</th>
-                  <th className="px-4 py-3 text-center">Action</th>
+                  <th className="px-4 py-3">{t('customer.quoteNum')}</th>
+                  <th className="px-4 py-3">{t('quote.projectTitle')}</th>
+                  <th className="px-4 py-3">{t('common.status')}</th>
+                  <th className="px-4 py-3">{t('customer.dimensionsQty')}</th>
+                  <th className="px-4 py-3 text-right">{t('customer.total')} ({t('common.etb')})</th>
+                  <th className="px-4 py-3 text-center">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-metal-800 font-medium">
@@ -79,15 +81,15 @@ export const CustomerQuotesPage: React.FC = () => {
                       <span className="block text-[10px] text-metal-500">Qty: {q.quantity}</span>
                     </td>
                     <td className="px-4 py-3 text-right font-bold text-brand-red font-mono">
-                      {q.total_amount ? `${q.total_amount.toLocaleString()} ETB` : 'Pending Review'}
+                      {q.total_amount ? `${q.total_amount.toLocaleString()} ${t('common.etb')}` : t('customer.pendingReview')}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <Link
-                        to={`/portal/quotes/${q.id}`}
+                        to={`/customer/quotes/${q.id}`}
                         className="inline-flex items-center space-x-1 bg-metal-800 hover:bg-brand-red text-white px-3 py-1.5 rounded text-[11px] font-semibold transition-colors"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span>Inspect</span>
+                        <span>{t('common.viewDetails')}</span>
                       </Link>
                     </td>
                   </tr>
@@ -100,3 +102,4 @@ export const CustomerQuotesPage: React.FC = () => {
     </div>
   );
 };
+

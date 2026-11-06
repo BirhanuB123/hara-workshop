@@ -75,8 +75,8 @@ export const AdminOrdersPage: React.FC = () => {
                 <th className="px-4 py-3">Items Summary</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Production Job</th>
-                <th className="px-4 py-3 text-right">Total (ETB)</th>
-                <th className="px-4 py-3 text-right">Paid (ETB)</th>
+                <th className="px-4 py-3 text-right">Order Value (ETB)</th>
+                <th className="px-4 py-3">Delivery Location</th>
                 <th className="px-4 py-3 text-center">Action</th>
               </tr>
             </thead>
@@ -103,7 +103,7 @@ export const AdminOrdersPage: React.FC = () => {
                     )}
                   </td>
                   <td className="px-4 py-3 text-right font-mono font-bold text-white">{o.total_amount?.toLocaleString()} ETB</td>
-                  <td className="px-4 py-3 text-right font-mono font-bold text-emerald-400">{o.paid_amount?.toLocaleString()} ETB</td>
+                  <td className="px-4 py-3 text-gray-300 truncate max-w-[140px]">{o.delivery_city || o.delivery_address || 'Addis Ababa'}</td>
                   <td className="px-4 py-3 text-center">
                     <Link
                       to="/admin/production"

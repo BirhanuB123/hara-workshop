@@ -11,10 +11,19 @@ class ProductionTaskSerializer(serializers.ModelSerializer):
 
 class ProductionLogSerializer(serializers.ModelSerializer):
     updated_by_name = serializers.CharField(source='updated_by.get_full_name', read_only=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductionLog
         fields = ['id', 'previous_stage', 'new_stage', 'progress_percentage', 'updated_by_name', 'notes', 'image', 'created_at']
+
+    def get_image(self, obj):
+        if obj.image:
+            try:
+                return obj.image.url
+            except Exception:
+                return None
+        return None
 
 class ProductionJobSerializer(serializers.ModelSerializer):
     order_number = serializers.CharField(source='order.order_number', read_only=True)

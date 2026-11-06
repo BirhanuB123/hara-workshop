@@ -3,11 +3,7 @@ from django.db import models
 from apps.core.models import TimeStampedModel
 
 class UserRole(models.TextChoices):
-    SUPER_ADMIN = 'SUPER_ADMIN', 'Super Admin'
-    MANAGER = 'MANAGER', 'Manager'
-    SALES = 'SALES', 'Sales'
-    PRODUCTION = 'PRODUCTION', 'Production Staff'
-    ACCOUNTANT = 'ACCOUNTANT', 'Accountant'
+    ADMIN = 'ADMIN', 'Admin'
     CUSTOMER = 'CUSTOMER', 'Customer'
 
 class CustomUserManager(BaseUserManager):
@@ -16,6 +12,15 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email).lower()
         extra_fields.setdefault('role', UserRole.CUSTOMER)
+        if 'phone_number' in extra_fields:
+            if extra_fields['phone_number']:
+                from .utils import normalize_phone_number
+                try:
+                    extra_fields['phone_number'] = normalize_phone_number(extra_fields['phone_number'])
+                except Exception:
+                    pass
+            else:
+                extra_fields['phone_number'] = None
         user = self.model(email=email, **extra_fields)
         if password:
             user.set_password(password)
@@ -27,7 +32,7 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('role', UserRole.SUPER_ADMIN)
+        extra_fields.setdefault('role', UserRole.ADMIN)
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -40,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     email = models.EmailField(unique=True, db_index=True)
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
-    phone_number = models.CharField(max_length=30, blank=True, null=True)
+    phone_number = models.CharField(max_length=30, blank=True, null=True, unique=True, db_index=True)
     role = models.CharField(max_length=30, choices=UserRole.choices, default=UserRole.CUSTOMER, db_index=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -54,6 +59,16 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
     class Meta:
         ordering = ['-created_at']
 
+    def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.strip().lower()
+        if self.phone_number:
+            p = str(self.phone_number).strip()
+            self.phone_number = p if p else None
+        else:
+            self.phone_number = None
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.get_full_name()} ({self.email}) - {self.role}'
 
@@ -65,28 +80,32 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampedModel):
         return self.first_name if self.first_name else self.email
 
     @property
-    def is_super_admin(self):
-        return self.role == UserRole.SUPER_ADMIN
-
-    @property
-    def is_manager(self):
-        return self.role in [UserRole.SUPER_ADMIN, UserRole.MANAGER]
-
-    @property
-    def is_sales(self):
-        return self.role in [UserRole.SUPER_ADMIN, UserRole.MANAGER, UserRole.SALES]
-
-    @property
-    def is_production(self):
-        return self.role in [UserRole.SUPER_ADMIN, UserRole.MANAGER, UserRole.PRODUCTION]
-
-    @property
-    def is_accountant(self):
-        return self.role in [UserRole.SUPER_ADMIN, UserRole.MANAGER, UserRole.ACCOUNTANT]
+    def is_admin(self):
+        return self.role == UserRole.ADMIN or self.is_superuser or self.is_staff
 
     @property
     def is_customer(self):
         return self.role == UserRole.CUSTOMER
+
+    @property
+    def is_super_admin(self):
+        return self.is_admin
+
+    @property
+    def is_manager(self):
+        return self.is_admin
+
+    @property
+    def is_sales(self):
+        return self.is_admin
+
+    @property
+    def is_production(self):
+        return self.is_admin
+
+    @property
+    def is_accountant(self):
+        return self.is_admin
 
 class CustomerProfile(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer_profile')

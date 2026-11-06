@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Menu, Bell, ExternalLink, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { useLanguageStore } from '../../store/languageStore';
+import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { notificationsApi } from '../../services/api';
 import { Notification } from '../../types';
 
@@ -17,6 +19,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   onOpenMobileMenu,
 }) => {
   const { user } = useAuthStore();
+  const { t } = useLanguageStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -71,8 +74,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </div>
         </div>
 
-        {/* Right: Quick link to website, notifications, and profile */}
-        <div className="flex items-center space-x-3 sm:space-x-4">
+        {/* Right: Quick link to website, language switcher, notifications, and profile */}
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Language Switcher */}
+          <LanguageSwitcher variant="inline" />
+
           {/* Public Site Link */}
           <Link
             to="/"
@@ -80,7 +86,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             rel="noopener noreferrer"
             className="hidden sm:inline-flex items-center space-x-1.5 text-xs text-gray-300 hover:text-white bg-metal-800 hover:bg-metal-700 px-3 py-1.5 rounded-md border border-metal-700 transition-colors"
           >
-            <span>Live Site</span>
+            <span>{t('navigation.liveSite')}</span>
             <ExternalLink className="w-3 h-3 text-metal-400" />
           </Link>
 
@@ -139,7 +145,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                 </div>
                 <div className="p-2 border-t border-metal-800 text-center">
                   <Link
-                    to={user?.role === 'CUSTOMER' ? '/portal/notifications' : '/admin/notifications'}
+                    to={user?.role === 'CUSTOMER' ? '/customer/notifications' : '/admin/notifications'}
                     onClick={() => setShowNotifications(false)}
                     className="text-xs text-brand-red hover:underline font-medium"
                   >

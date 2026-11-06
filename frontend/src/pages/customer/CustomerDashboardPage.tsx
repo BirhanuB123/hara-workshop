@@ -3,37 +3,32 @@ import { Link } from 'react-router-dom';
 import { 
   ShoppingBag, 
   FileText, 
-  Receipt, 
-  Clock, 
   PlusCircle, 
-  ArrowRight, 
   CheckCircle2, 
-  Wrench,
-  AlertCircle
+  Wrench
 } from 'lucide-react';
-import { quotesApi, ordersApi, invoicesApi } from '../../services/api';
-import { Quote, Order, Invoice } from '../../types';
+import { quotesApi, ordersApi } from '../../services/api';
+import { Quote, Order } from '../../types';
 import { StatCard } from '../../components/common/StatCard';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { useLanguageStore } from '../../store/languageStore';
 
 export const CustomerDashboardPage: React.FC = () => {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguageStore();
 
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const [qRes, oRes, iRes] = await Promise.all([
+        const [qRes, oRes] = await Promise.all([
           quotesApi.getAll(),
-          ordersApi.getAll(),
-          invoicesApi.getAll()
+          ordersApi.getAll()
         ]);
         setQuotes(qRes.data.results || qRes.data || []);
         setOrders(oRes.data.results || oRes.data || []);
-        setInvoices(iRes.data.results || iRes.data || []);
       } catch (err) {
         console.error('Failed to load portal data:', err);
       } finally {
@@ -43,11 +38,11 @@ export const CustomerDashboardPage: React.FC = () => {
     loadDashboard();
   }, []);
 
-  if (loading) return <LoadingSpinner text="Loading customer hub..." />;
+  if (loading) return <LoadingSpinner text={t('common.loading')} />;
 
   const activeOrders = orders.filter(o => o.status !== 'COMPLETED' && o.status !== 'CANCELLED');
   const pendingQuotes = quotes.filter(q => q.status === 'PRICE_PROPOSED' || q.status === 'UNDER_REVIEW' || q.status === 'SUBMITTED');
-  const unpaidInvoices = invoices.filter(i => i.status !== 'PAID' && i.status !== 'CANCELLED');
+  const completedOrders = orders.filter(o => o.status === 'COMPLETED');
 
   return (
     <div className="space-y-8 text-left">
@@ -55,10 +50,10 @@ export const CustomerDashboardPage: React.FC = () => {
       <div className="bg-gradient-to-r from-metal-900 to-metal-850 border border-metal-800 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-black text-white uppercase tracking-wide">
-            Welcome to Your Workshop Portal
+            {t('customer.welcomeBanner')}
           </h2>
           <p className="text-xs text-gray-400 mt-1">
-            Track fabrication milestones, inspect itemized quotes, and communicate directly with Bole Arabsa craftsmen.
+            {t('customer.welcomeBannerDesc')}
           </p>
         </div>
         <Link
@@ -66,29 +61,29 @@ export const CustomerDashboardPage: React.FC = () => {
           className="inline-flex items-center space-x-2 bg-brand-red hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-lg text-xs uppercase tracking-wider transition-colors shadow-md flex-shrink-0"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>New Quote Request</span>
+          <span>{t('customer.newQuoteRequest')}</span>
         </Link>
       </div>
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
-          title="Active Workshop Orders"
+          title={t('customer.activeWorkshopOrders')}
           value={activeOrders.length}
-          subtitle="In fabrication or delivery"
+          subtitle={t('customer.inFabricationDelivery')}
           icon={ShoppingBag}
         />
         <StatCard
-          title="Quotations in Review"
+          title={t('customer.quotesInReview')}
           value={pendingQuotes.length}
-          subtitle="Price proposals awaiting approval"
+          subtitle={t('customer.proposalsAwaiting')}
           icon={FileText}
         />
         <StatCard
-          title="Open Invoices"
-          value={unpaidInvoices.length}
-          subtitle="Awaiting final balance payment"
-          icon={Receipt}
+          title={t('customer.completedProjectsTitle')}
+          value={completedOrders.length}
+          subtitle={t('customer.deliveredVerified')}
+          icon={CheckCircle2}
         />
       </div>
 
@@ -98,17 +93,17 @@ export const CustomerDashboardPage: React.FC = () => {
           <div className="flex items-center space-x-2">
             <Wrench className="w-4 h-4 text-brand-red" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Active Fabrication Orders
+              {t('customer.activeOrders')}
             </h3>
           </div>
-          <Link to="/portal/orders" className="text-xs text-brand-red font-semibold hover:underline">
-            View All Orders →
+          <Link to="/customer/orders" className="text-xs text-brand-red font-semibold hover:underline">
+            {t('customer.viewAllOrders')}
           </Link>
         </div>
 
         {activeOrders.length === 0 ? (
           <p className="text-xs text-gray-400 py-4 text-center">
-            No active fabrication orders at this moment.
+            {t('customer.noActiveOrders')}
           </p>
         ) : (
           <div className="divide-y divide-metal-800">
@@ -124,7 +119,7 @@ export const CustomerDashboardPage: React.FC = () => {
                   </p>
                   {order.production_job && (
                     <div className="flex items-center space-x-2 mt-2">
-                      <span className="text-[10px] text-metal-400 uppercase">Stage: {order.production_job.stage.replace('_', ' ')}</span>
+                      <span className="text-[10px] text-metal-400 uppercase">{t('customer.stage')} {order.production_job.stage.replace('_', ' ')}</span>
                       <div className="w-24 bg-metal-800 rounded-full h-1.5 overflow-hidden">
                         <div 
                           className="bg-brand-red h-1.5 rounded-full" 
@@ -138,14 +133,14 @@ export const CustomerDashboardPage: React.FC = () => {
 
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
-                    <span className="text-[10px] text-gray-500 uppercase block">Total</span>
-                    <span className="text-xs font-bold text-white">{order.total_amount.toLocaleString()} ETB</span>
+                    <span className="text-[10px] text-gray-500 uppercase block">{t('customer.total')}</span>
+                    <span className="text-xs font-bold text-white">{order.total_amount.toLocaleString()} {t('common.etb')}</span>
                   </div>
                   <Link
-                    to={`/portal/orders/${order.id}`}
+                    to={`/customer/orders/${order.id}`}
                     className="p-2 bg-metal-800 hover:bg-brand-red text-white rounded-lg transition-colors text-xs font-semibold"
                   >
-                    Track Stages
+                    {t('customer.trackStages')}
                   </Link>
                 </div>
               </div>
@@ -160,17 +155,17 @@ export const CustomerDashboardPage: React.FC = () => {
           <div className="flex items-center space-x-2">
             <FileText className="w-4 h-4 text-brand-red" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Recent Quotation Proposals
+              {t('customer.recentQuotes')}
             </h3>
           </div>
-          <Link to="/portal/quotes" className="text-xs text-brand-red font-semibold hover:underline">
-            View All Quotes →
+          <Link to="/customer/quotes" className="text-xs text-brand-red font-semibold hover:underline">
+            {t('customer.viewAllQuotes')}
           </Link>
         </div>
 
         {quotes.length === 0 ? (
           <p className="text-xs text-gray-400 py-4 text-center">
-            You haven't requested any quotations yet. Click "New Quote Request" to begin!
+            {t('customer.noQuotesYet')}
           </p>
         ) : (
           <div className="divide-y divide-metal-800">
@@ -187,16 +182,16 @@ export const CustomerDashboardPage: React.FC = () => {
 
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
-                    <span className="text-[10px] text-gray-500 uppercase block">Proposed Total</span>
+                    <span className="text-[10px] text-gray-500 uppercase block">{t('customer.proposedTotal')}</span>
                     <span className="text-xs font-bold text-brand-red">
-                      {quote.total_amount ? `${quote.total_amount.toLocaleString()} ETB` : 'Calculating...'}
+                      {quote.total_amount ? `${quote.total_amount.toLocaleString()} ${t('common.etb')}` : t('customer.calculating')}
                     </span>
                   </div>
                   <Link
-                    to={`/portal/quotes/${quote.id}`}
+                    to={`/customer/quotes/${quote.id}`}
                     className="p-2 bg-metal-800 hover:bg-brand-red text-white rounded-lg transition-colors text-xs font-semibold"
                   >
-                    View Breakdown
+                    {t('customer.viewBreakdown')}
                   </Link>
                 </div>
               </div>
@@ -207,3 +202,4 @@ export const CustomerDashboardPage: React.FC = () => {
     </div>
   );
 };
+

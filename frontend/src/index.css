@@ -1,31 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Ethiopic:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-warm-base: #0E0D0C;
+  --color-warm-surface: #171412;
+  --color-warm-card: #1D1815;
+  --color-warm-border: #2E2620;
+  --color-wood-accent: #C88A36;
+  --color-metal-accent: #64748B;
+  --color-brand-red: #C5161D;
+}
+
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #0A0D10;
-  color: #F3F4F6;
+  background-color: #0E0D0C;
+  color: #FAF8F5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom sleek scrollbar */
+/* Amharic typography enhancement */
+html[lang="am"] body,
+html[lang="am"] button,
+html[lang="am"] input,
+html[lang="am"] textarea,
+html[lang="am"] select {
+  font-family: 'Noto Sans Ethiopic', 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+}
+
+html[lang="am"] .font-mono {
+  font-family: monospace, 'Noto Sans Ethiopic';
+}
+
+/* Custom sleek warm scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0A0D10;
+  background: #0E0D0C;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2A322D;
+  background: #2E2620;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #C5161D;
+}
+
+/* Multi-Layer Background Utilities (Andegna-inspired warmth & depth) */
+
+/* Architectural drafting grid */
+.bg-architectural-grid {
+  background-image: 
+    linear-gradient(to right, rgba(200, 138, 54, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(200, 138, 54, 0.035) 1px, transparent 1px);
+  background-size: 3.5rem 3.5rem;
+}
+
+/* Ambient warm radial glow */
+.bg-warm-spotlight {
+  background-image: radial-gradient(ellipse 70% 50% at 50% -10%, rgba(200, 138, 54, 0.12), transparent 70%);
+}
+
+/* Subtle timber warmth */
+.bg-wood-warmth {
+  background-image: 
+    radial-gradient(ellipse 60% 40% at 10% 20%, rgba(200, 138, 54, 0.08), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 90% 80%, rgba(138, 75, 30, 0.06), transparent 60%);
+}
+
+/* Subtle metal workshop sheen */
+.bg-metal-sheen {
+  background-image: 
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(100, 116, 139, 0.08), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 10% 85%, rgba(71, 85, 105, 0.06), transparent 60%);
+}
+
+/* Hybrid balance: Wood warmth on one side, metal coolness on the other */
+.bg-hybrid-crafted {
+  background-image: 
+    radial-gradient(ellipse 50% 50% at 15% 30%, rgba(200, 138, 54, 0.08), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 70%, rgba(100, 116, 139, 0.08), transparent 60%);
+}
+
+/* Subtle luxury furniture card borders and background */
+.card-furniture-warm {
+  background: linear-gradient(180deg, rgba(25, 21, 18, 0.92) 0%, rgba(18, 15, 13, 0.96) 100%);
+  border: 1px solid rgba(80, 64, 52, 0.45);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(200, 138, 54, 0.08);
+}
+
+.card-furniture-warm:hover {
+  border-color: rgba(200, 138, 54, 0.4);
+  box-shadow: 0 14px 35px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(200, 138, 54, 0.15);
+}
+
+/* Warm subtle gradient divider */
+.divider-warm {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200, 138, 54, 0.25), rgba(197, 22, 29, 0.25), transparent);
 }

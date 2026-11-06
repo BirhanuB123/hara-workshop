@@ -1,8 +1,12 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck, Hammer } from 'lucide-react';
+import { useLanguageStore } from '../store/languageStore';
+import { LanguageSwitcher } from '../components/common/LanguageSwitcher';
 
 export const AuthLayout: React.FC = () => {
+  const { t } = useLanguageStore();
+
   return (
     <div className="min-h-screen bg-metal-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Top back button */}
@@ -12,8 +16,13 @@ export const AuthLayout: React.FC = () => {
           className="inline-flex items-center space-x-2 text-xs font-semibold text-gray-400 hover:text-white bg-metal-900 hover:bg-metal-800 px-3 py-2 rounded-md border border-metal-800 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to Home</span>
+          <span>{t('common.backToHome')}</span>
         </Link>
+      </div>
+
+      {/* Top right language switcher */}
+      <div className="absolute top-6 right-6 z-10">
+        <LanguageSwitcher variant="inline" />
       </div>
 
       {/* Logo & Headline */}
@@ -29,7 +38,7 @@ export const AuthLayout: React.FC = () => {
           HARA <span className="text-brand-red">WORKSHOP</span>
         </h2>
         <p className="mt-1 text-xs tracking-widest text-metal-400 uppercase font-medium">
-          Metal and Wood Solution • Addis Ababa
+          {t('home.heroTagline')}
         </p>
       </div>
 

@@ -12,9 +12,6 @@ from apps.inventory.models import Material, MaterialCategory, MaterialUnit, Inve
 from apps.quotations.models import Quote, QuoteStatus, QuoteItem
 from apps.orders.models import Order, OrderStatus, OrderItem
 from apps.production.models import ProductionJob, ProductionStage, ProductionTask
-from apps.invoices.models import Invoice, InvoiceStatus
-from apps.payments.models import Payment, PaymentMethod, PaymentStatus
-from apps.expenses.models import Expense, ExpenseCategory
 from apps.messaging.models import Conversation, Message
 from apps.notifications.models import Notification, NotificationType
 
@@ -42,19 +39,23 @@ class Command(BaseCommand):
             }
         )
 
-        # 2. Users & Roles
+        # 2. Users & Roles (Strictly ADMIN and CUSTOMER)
+        # Remove legacy demo users
+        User.objects.filter(email__in=[
+            'manager@haraworkshop.com',
+            'sales@haraworkshop.com',
+            'production@haraworkshop.com',
+            'accountant@haraworkshop.com'
+        ]).delete()
+
         users_data = [
-            ('admin@haraworkshop.com', 'Admin@123456', 'Dawit', 'Haile', '+251911000001', UserRole.SUPER_ADMIN, True),
-            ('manager@haraworkshop.com', 'Manager@123456', 'Kidus', 'Tadesse', '+251911000002', UserRole.MANAGER, True),
-            ('sales@haraworkshop.com', 'Sales@123456', 'Bethlehem', 'Alemu', '+251911000003', UserRole.SALES, True),
-            ('production@haraworkshop.com', 'Production@123456', 'Yohannes', 'Bekele', '+251911000004', UserRole.PRODUCTION, True),
-            ('accountant@haraworkshop.com', 'Accountant@123456', 'Selamawit', 'Girma', '+251911000005', UserRole.ACCOUNTANT, True),
-            ('customer@haraworkshop.com', 'Customer@123456', 'Abebe', 'Kebede', '+251922334455', UserRole.CUSTOMER, False),
-            ('sara@gmail.com', 'Customer@123456', 'Sara', 'Hailu', '+251933445566', UserRole.CUSTOMER, False),
+            ('admin@haraworkshop.com', 'Admin123!', 'Dawit', 'Haile', '+251911000001', UserRole.ADMIN, True, True),
+            ('customer@haraworkshop.com', 'Customer123!', 'Abebe', 'Kebede', '+251922334455', UserRole.CUSTOMER, False, False),
+            ('sara@gmail.com', 'Customer123!', 'Sara', 'Hailu', '+251933445566', UserRole.CUSTOMER, False, False),
         ]
 
         created_users = {}
-        for email, pwd, first, last, phone, role, is_staff in users_data:
+        for email, pwd, first, last, phone, role, is_staff, is_super in users_data:
             user, created = User.objects.get_or_create(
                 email=email,
                 defaults={
@@ -63,12 +64,14 @@ class Command(BaseCommand):
                     'phone_number': phone,
                     'role': role,
                     'is_staff': is_staff,
-                    'is_superuser': (role == UserRole.SUPER_ADMIN),
+                    'is_superuser': is_super,
                 }
             )
-            if created or not user.check_password(pwd):
-                user.set_password(pwd)
-                user.save()
+            user.role = role
+            user.is_staff = is_staff
+            user.is_superuser = is_super
+            user.set_password(pwd)
+            user.save()
 
             if role == UserRole.CUSTOMER:
                 CustomerProfile.objects.get_or_create(
@@ -78,16 +81,6 @@ class Command(BaseCommand):
                         'city': 'Addis Ababa',
                         'company_name': 'Kebede Real Estate' if email == 'customer@haraworkshop.com' else 'Sara Home Design',
                         'tin_number': '0049283719' if email == 'customer@haraworkshop.com' else '0058291034',
-                    }
-                )
-            else:
-                EmployeeProfile.objects.get_or_create(
-                    user=user,
-                    defaults={
-                        'department': 'Management' if role in [UserRole.SUPER_ADMIN, UserRole.MANAGER] else ('Sales' if role == UserRole.SALES else ('Workshop' if role == UserRole.PRODUCTION else 'Finance')),
-                        'job_title': role.replace('_', ' ').title(),
-                        'skills': 'Welding, Joinery, Cost Estimation, CNC' if role == UserRole.PRODUCTION else 'Customer relations, Project Management',
-                        'hire_date': date(2023, 1, 15)
                     }
                 )
             created_users[email] = user
@@ -195,6 +188,24 @@ class Command(BaseCommand):
             )
             prod_objs[sku] = prod
 
+        prod_image_map = {
+            'HW-DR-001': ('products/modern_security_door.jpg', 'Modern Laser-Cut Security Door with Hardwood Inlay'),
+            'HW-TB-001': ('products/mahogany_dining_table.jpg', 'Solid Mahogany Executive Dining Table with Steel Base'),
+            'HW-GT-001': ('products/sliding_estate_gate.jpg', 'Laser-Cut Estate Sliding Driveway Gate'),
+            'HW-CB-001': ('products/modular_kitchen_cabinets.jpg', 'Custom Modular Kitchen Cabinet Set with Quartz Counter'),
+            'HW-WN-001': ('products/double_glazed_window.jpg', 'Acoustic Double-Glazed Sliding Window'),
+            'HW-RL-001': ('products/balcony_railing.jpg', 'Wrought Iron & Teak Wood Balcony Railing'),
+        }
+        for sku, prod in prod_objs.items():
+            if sku in prod_image_map and not prod.images.exists():
+                img_path, caption = prod_image_map[sku]
+                ProductImage.objects.create(
+                    product=prod,
+                    image=img_path,
+                    is_primary=True,
+                    caption=caption
+                )
+
         # 5. Service Categories & Services
         svc_cats = [
             ('Metal Works', 'Precision welding, laser cutting, metal gates, doors, and architectural structures.'),
@@ -235,8 +246,9 @@ class Command(BaseCommand):
         ]
 
         for title, cat_name, desc, start_p, img_path in services_data:
+            svc_slug = 'hybrid-metal-wood' if 'hybrid' in title.lower() else slugify(title)
             Service.objects.update_or_create(
-                slug=slugify(title),
+                slug=svc_slug,
                 defaults={
                     'title': title,
                     'category': svc_cat_objs[cat_name],
@@ -440,11 +452,10 @@ class Command(BaseCommand):
                 'customer': cust_user,
                 'status': OrderStatus.IN_PRODUCTION,
                 'total_amount': Decimal('100000.00'),
-                'paid_amount': Decimal('60000.00'),
                 'delivery_address': 'Bole Arabsa, Block 14, Villa 8',
                 'delivery_city': 'Addis Ababa',
                 'expected_delivery_date': date.today() + timedelta(days=12),
-                'notes': 'Advance payment received. In assembly stage.',
+                'notes': 'Order confirmed and in active assembly stage.',
             }
         )
 
@@ -459,6 +470,8 @@ class Command(BaseCommand):
             }
         )
 
+        admin_user = created_users['admin@haraworkshop.com']
+
         # Production Job
         prod_job, _ = ProductionJob.objects.get_or_create(
             order=order1,
@@ -467,7 +480,7 @@ class Command(BaseCommand):
                 'stage': ProductionStage.FABRICATION,
                 'priority': 'HIGH',
                 'progress_percentage': 45,
-                'supervisor': created_users['production@haraworkshop.com'],
+                'supervisor': admin_user,
                 'start_date': date.today() - timedelta(days=4),
                 'expected_completion': date.today() + timedelta(days=10),
                 'notes': 'Steel frame welded and squared. Laser cut sheets currently being welded into sub-panels.',
@@ -491,63 +504,7 @@ class Command(BaseCommand):
             defaults={'stage': ProductionStage.ASSEMBLY, 'is_completed': False}
         )
 
-        # 11. Invoices & Payments
-        inv1, _ = Invoice.objects.get_or_create(
-            invoice_number='INV-2026-0001',
-            defaults={
-                'order': order1,
-                'customer': cust_user,
-                'subtotal': Decimal('100000.00'),
-                'discount': Decimal('0.00'),
-                'tax_amount': Decimal('15000.00'),
-                'total_amount': Decimal('115000.00'),
-                'amount_paid': Decimal('60000.00'),
-                'amount_remaining': Decimal('55000.00'),
-                'status': InvoiceStatus.PARTIALLY_PAID,
-                'issue_date': date.today() - timedelta(days=5),
-                'due_date': date.today() + timedelta(days=25),
-                'notes': '50% deposit plus VAT advance settled via Telebirr.',
-            }
-        )
-
-        Payment.objects.get_or_create(
-            payment_number='PAY-2026-0001',
-            defaults={
-                'order': order1,
-                'customer': cust_user,
-                'amount': Decimal('60000.00'),
-                'currency': 'ETB',
-                'payment_method': PaymentMethod.TELEBIRR,
-                'transaction_reference': 'TB-89481920392',
-                'status': PaymentStatus.SUCCESS,
-                'payment_date': date.today() - timedelta(days=5),
-                'recorded_by': created_users['accountant@haraworkshop.com'],
-                'notes': 'Verified deposit via Telebirr merchant portal.',
-            }
-        )
-
-        # 12. Expenses
-        expenses_list = [
-            ('EXP-2026-0001', ExpenseCategory.MATERIALS, Decimal('42500.00'), date.today() - timedelta(days=6), 'BANK_TRANSFER', 'Purchase of 30 pcs 50x50 steel tubes and sheet metal from Addis Steel.'),
-            ('EXP-2026-0002', ExpenseCategory.SALARIES, Decimal('68000.00'), date.today() - timedelta(days=7), 'CBE_BIRR', 'Bi-weekly workshop artisan wages for 4 fabricators & 2 carpenters.'),
-            ('EXP-2026-0003', ExpenseCategory.UTILITIES, Decimal('4800.00'), date.today() - timedelta(days=10), 'TELEBIRR', 'Ethiopian Electric Utility 3-phase industrial power bill for workshop.'),
-            ('EXP-2026-0004', ExpenseCategory.MAINTENANCE, Decimal('3200.00'), date.today() - timedelta(days=12), 'CASH', 'Hydraulic fluid replacement and blade sharpening for circular wood saw.'),
-        ]
-
-        for exp_no, cat, amt, dt, meth, desc in expenses_list:
-            Expense.objects.get_or_create(
-                expense_number=exp_no,
-                defaults={
-                    'category': cat,
-                    'amount': amt,
-                    'date': dt,
-                    'payment_method': meth,
-                    'description': desc,
-                    'recorded_by': created_users['accountant@haraworkshop.com'],
-                }
-            )
-
-        # 13. Messaging
+        # 11. Messaging
         conv, _ = Conversation.objects.get_or_create(
             customer=cust_user,
             subject='Inquiry regarding gate paint finish color code',
@@ -561,7 +518,7 @@ class Command(BaseCommand):
         )
         Message.objects.get_or_create(
             conversation=conv,
-            sender=created_users['sales@haraworkshop.com'],
+            sender=admin_user,
             content='Dear Ato Abebe, we are using RAL 9005 Jet Black with a fine-texture matte finish. We have set aside a metal test swatch for you to inspect anytime!',
             defaults={'is_read': False}
         )
@@ -570,7 +527,7 @@ class Command(BaseCommand):
         notifications_list = [
             (cust_user, 'Quotation Price Proposed', 'Your quote QT-2026-0002 for the Executive Conference Table has been priced.', NotificationType.QUOTE, '/quotes/QT-2026-0002'),
             (cust_user, 'Production Stage Advanced', 'Order HW-2026-0001 has entered the Fabrication stage.', NotificationType.PRODUCTION, '/orders/HW-2026-0001'),
-            (created_users['production@haraworkshop.com'], 'Low Stock Alert', 'E6013 Mild Steel Welding Electrodes is below minimum stock threshold (4 boxes remaining).', NotificationType.STOCK, '/admin/inventory'),
+            (admin_user, 'Low Stock Alert', 'E6013 Mild Steel Welding Electrodes is below minimum stock threshold (4 boxes remaining).', NotificationType.STOCK, '/admin/inventory'),
         ]
 
         for u, title, msg, ntype, link in notifications_list:

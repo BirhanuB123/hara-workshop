@@ -23,7 +23,7 @@ export const AdminAuditLogsPage: React.FC = () => {
           Security & Audit Logs
         </h2>
         <p className="text-xs text-gray-400 mt-0.5">
-          Immutable records of stage advancements, quote proposals, inventory stock updates, and payments.
+          Immutable records of stage advancements, quote proposals, orders, and inventory stock updates.
         </p>
       </div>
 

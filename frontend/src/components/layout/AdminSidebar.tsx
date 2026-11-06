@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
+  BarChart3, 
   FileText, 
   ShoppingBag, 
   Wrench, 
@@ -9,90 +10,98 @@ import {
   Truck, 
   Package, 
   Tag, 
-  FolderGit2, 
-  Receipt, 
-  CreditCard, 
-  TrendingDown, 
   Users, 
-  Briefcase, 
-  Shield, 
-  MessageSquare, 
+  MessageSquare,
   Bell, 
-  BarChart3, 
-  Settings, 
-  ScrollText, 
+  Layers,
   LogOut 
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useLanguageStore } from '../../store/languageStore';
+import { messagingApi } from '../../services/api';
 
 interface AdminSidebarProps {
   onCloseMobile?: () => void;
 }
 
+interface NavItem {
+  name: string;
+  path: string;
+  icon: any;
+  exact?: boolean;
+  badge?: number;
+}
+
+interface NavGroup {
+  group: string;
+  items: NavItem[];
+}
+
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => {
   const { user, logout } = useAuthStore();
+  const { t, language } = useLanguageStore();
   const navigate = useNavigate();
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    loadUnread();
+    const interval = setInterval(loadUnread, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadUnread = async () => {
+    try {
+      const res = await messagingApi.getUnreadCount();
+      setUnreadMessages(res.data?.unread_count || 0);
+    } catch {
+      // silent
+    }
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  const navGroups = [
+  const isAm = language === 'am';
+
+  const navGroups: NavGroup[] = [
     {
-      group: 'Overview',
+      group: isAm ? 'አጠቃላይ እይታ' : 'Overview',
       items: [
-        { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
-        { name: 'Reports & Analytics', path: '/admin/reports', icon: BarChart3 },
+        { name: isAm ? 'ዳሽቦርድ' : 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard, exact: true },
+        { name: isAm ? 'ሪፖርቶች እና ትንተና' : 'Reports & Analytics', path: '/admin/reports', icon: BarChart3 },
       ],
     },
     {
-      group: 'Operations & Workflow',
+      group: isAm ? 'ስራዎች እና ፍሰት' : 'Operations & Workflow',
       items: [
-        { name: 'Quotations', path: '/admin/quotes', icon: FileText },
-        { name: 'Customer Orders', path: '/admin/orders', icon: ShoppingBag },
-        { name: 'Production Jobs', path: '/admin/production', icon: Wrench },
+        { name: isAm ? 'የዋጋ ጥያቄዎች' : 'Quotations', path: '/admin/quotes', icon: FileText },
+        { name: isAm ? 'የትዕዛዝ መዝገብ' : 'Customer Orders', path: '/admin/orders', icon: ShoppingBag },
+        { name: isAm ? 'ማምረት እና ተግባራት' : 'Production & Tasks', path: '/admin/production', icon: Wrench },
       ],
     },
     {
-      group: 'Workshop & Inventory',
+      group: isAm ? 'ወርክሾፕ እና ጥሬ እቃ' : 'Workshop & Inventory',
       items: [
-        { name: 'Raw Materials', path: '/admin/inventory', icon: Boxes },
-        { name: 'Suppliers Registry', path: '/admin/suppliers', icon: Truck },
+        { name: isAm ? 'ጥሬ እቃዎች' : 'Raw Materials', path: '/admin/raw-materials', icon: Boxes },
+        { name: isAm ? 'አቅራቢዎች' : 'Suppliers Registry', path: '/admin/suppliers', icon: Truck },
       ],
     },
     {
-      group: 'Showcase & Catalog',
+      group: isAm ? 'ካታሎግ' : 'Catalog',
       items: [
-        { name: 'Products Catalog', path: '/admin/products', icon: Package },
-        { name: 'Categories', path: '/admin/categories', icon: Tag },
-        { name: 'Workshop Services', path: '/admin/services', icon: Wrench },
-        { name: 'Portfolio Projects', path: '/admin/projects', icon: FolderGit2 },
+        { name: isAm ? 'የምርት ካታሎግ' : 'Products Catalog', path: '/admin/products', icon: Package },
+        { name: isAm ? 'ምድቦች' : 'Categories', path: '/admin/categories', icon: Tag },
+        { name: isAm ? 'አገልግሎቶች እና ምስሎች' : 'Services & Media', path: '/admin/services', icon: Layers },
       ],
     },
     {
-      group: 'Financial Management',
+      group: isAm ? 'ደንበኞች እና ግንኙነት' : 'Customers & Communication',
       items: [
-        { name: 'Invoices & VAT', path: '/admin/invoices', icon: Receipt },
-        { name: 'Recorded Payments', path: '/admin/payments', icon: CreditCard },
-        { name: 'Workshop Expenses', path: '/admin/expenses', icon: TrendingDown },
-      ],
-    },
-    {
-      group: 'Users & CRM',
-      items: [
-        { name: 'Customers CRM', path: '/admin/customers', icon: Users },
-        { name: 'Employees & Craftsmen', path: '/admin/employees', icon: Briefcase },
-        { name: 'System Users', path: '/admin/users', icon: Shield },
-      ],
-    },
-    {
-      group: 'Communication & System',
-      items: [
-        { name: 'Messages', path: '/admin/messages', icon: MessageSquare },
-        { name: 'Notifications', path: '/admin/notifications', icon: Bell },
-        { name: 'Audit Logs', path: '/admin/audit-logs', icon: ScrollText },
-        { name: 'Workshop Settings', path: '/admin/settings', icon: Settings },
+        { name: isAm ? 'ደንበኞች' : 'Customers', path: '/admin/customers', icon: Users },
+        { name: isAm ? 'መልዕክቶች' : 'Messages', path: '/admin/messages', icon: MessageSquare, badge: unreadMessages },
+        { name: isAm ? 'ማሳወቂያዎች' : 'Notifications', path: '/admin/notifications', icon: Bell },
       ],
     },
   ];
@@ -107,7 +116,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
             HARA <span className="text-brand-red">WORKSHOP</span>
           </h2>
           <span className="text-[10px] text-brand-red font-semibold tracking-wider uppercase block">
-            Admin & Management
+            {isAm ? 'አድሚን እና አስተዳደር' : 'Admin & Management'}
           </span>
         </div>
       </div>
@@ -128,15 +137,22 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
                   end={item.exact}
                   onClick={onCloseMobile}
                   className={({ isActive }) =>
-                    `flex items-center space-x-2.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
+                    `flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-all ${
                       isActive
                         ? 'bg-brand-red text-white shadow-sm font-semibold'
                         : 'text-gray-300 hover:bg-metal-800 hover:text-white'
                     }`
                   }
                 >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{item.name}</span>
+                  <div className="flex items-center space-x-2.5 truncate">
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">{item.name}</span>
+                  </div>
+                  {Boolean(item.badge !== undefined && item.badge > 0) && (
+                    <span className="bg-white text-brand-red text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm ml-2 flex-shrink-0">
+                      {item.badge}
+                    </span>
+                  )}
                 </NavLink>
               );
             })}
@@ -155,7 +171,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ onCloseMobile }) => 
               {user?.full_name || 'Admin'}
             </p>
             <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold bg-brand-red/20 text-brand-red border border-brand-red/30 uppercase">
-              {user?.role?.replace('_', ' ') || 'STAFF'}
+              {user?.role || 'ADMIN'}
             </span>
           </div>
         </div>

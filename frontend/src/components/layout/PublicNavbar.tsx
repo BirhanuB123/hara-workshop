@@ -6,53 +6,61 @@ import {
   Menu, 
   X, 
   PlusCircle, 
-  User, 
-  ShieldCheck, 
-  Send 
+  Send
 } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
+import { useLanguageStore } from '../../store/languageStore';
+import { LanguageSwitcher } from '../common/LanguageSwitcher';
 
 export const PublicNavbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { isAuthenticated, user } = useAuthStore();
+  const { t, language } = useLanguageStore();
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'About', path: '/about' },
-    { name: 'Services', path: '/services' },
-    { name: 'Products', path: '/products' },
-    { name: 'Projects', path: '/projects' },
-    { name: 'Contact', path: '/contact' },
+    { name: t('navigation.home'), path: '/' },
+    { name: t('navigation.products'), path: '/products' },
+    { name: t('navigation.services'), path: '/services' },
+    { name: t('navigation.about'), path: '/about' },
+    { name: t('navigation.contact'), path: '/contact' },
+    { 
+      name: language === 'am' ? 'ትዕዛዝ ይጠይቁ' : 'Request a Project', 
+      path: '/request-quote' 
+    },
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-metal-950/95 backdrop-blur-md border-b border-metal-800 select-none">
-      {/* Top micro bar with contact info */}
-      <div className="bg-black/60 border-b border-metal-900 py-1.5 px-4 sm:px-6 lg:px-8 text-[11px] text-gray-400">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 select-none shadow-sm transition-colors">
+      {/* Top micro bar with contact info & language selector */}
+      <div className="bg-[#F8F5EE] border-b border-stone-200/80 py-1.5 px-4 sm:px-6 lg:px-8 text-[11px] text-stone-600">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1.5">
-              <MapPin className="w-3.5 h-3.5 text-brand-red" />
-              <span>Bole Arabsa, Near Water Tanker, Addis Ababa</span>
+              <MapPin className="w-3.5 h-3.5 text-brand-red flex-shrink-0" />
+              <span>{t('navigation.boleLocation')}</span>
             </div>
-            <span className="hidden sm:inline text-metal-700">•</span>
+            <span className="hidden sm:inline text-stone-300">•</span>
             <div className="hidden sm:flex items-center space-x-1.5">
-              <Phone className="w-3.5 h-3.5 text-brand-red" />
-              <a href="tel:+251926629999" className="hover:text-white font-medium">+251 926 629 999</a>
+              <Phone className="w-3.5 h-3.5 text-brand-red flex-shrink-0" />
+              <a href="tel:+251926629999" className="hover:text-brand-red font-semibold text-stone-800 transition-colors">
+                +251 926 629 999
+              </a>
             </div>
           </div>
           <div className="flex items-center space-x-4">
             <a 
-              href="https://t.me/haraworkshop" 
+              href="https://t.me/Manager_Samuel_A" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center space-x-1 text-[#229ED9] hover:underline"
+              className="flex items-center space-x-1.5 text-[#229ED9] hover:underline font-semibold"
             >
-              <Send className="w-3 h-3" />
-              <span>Telegram: @haraworkshop</span>
+              <Send className="w-3.5 h-3.5" />
+              <span>{language === 'am' ? 'ቴሌግራም፦ @Manager_Samuel_A' : 'Telegram: @Manager_Samuel_A'}</span>
             </a>
-            <span className="text-metal-700">•</span>
-            <span className="text-emerald-400 font-semibold">15% VAT Invoicing Available</span>
+            <span className="text-stone-300">•</span>
+            <span className="text-emerald-700 font-semibold">{t('navigation.vatNotice')}</span>
+            <span className="hidden sm:inline text-stone-300">•</span>
+            <div className="hidden sm:block">
+              <LanguageSwitcher variant="inline" />
+            </div>
           </div>
         </div>
       </div>
@@ -60,34 +68,34 @@ export const PublicNavbar: React.FC = () => {
       {/* Main navigation row */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Brand Logo */}
+          {/* Official Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <img 
-              src="/hara-logo-transparent.png" 
+              src="/hara-official-logo.png" 
               alt="HARA WORKSHOP Logo" 
-              className="h-12 w-12 object-contain p-1 rounded-full bg-white border-2 border-brand-red shadow-lg group-hover:scale-105 transition-all" 
+              className="h-12 w-auto object-contain transition-transform duration-200 group-hover:scale-105" 
             />
-            <div>
-              <span className="text-lg sm:text-xl font-black tracking-wider text-white block uppercase leading-none">
+            <div className="text-left">
+              <span className="text-lg sm:text-xl font-black tracking-wider text-stone-900 block uppercase leading-none">
                 HARA <span className="text-brand-red">WORKSHOP</span>
               </span>
-              <span className="text-[10px] tracking-widest text-metal-400 uppercase font-semibold block mt-1">
+              <span className="text-[10px] tracking-wider text-stone-500 uppercase font-semibold block mt-1">
                 Metal and Wood Solution
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center space-x-1">
+          {/* Desktop Nav Links (Centered) */}
+          <nav className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (
               <NavLink
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors ${
+                  `relative py-2 text-sm font-bold tracking-wide transition-colors ${
                     isActive
-                      ? 'text-brand-red bg-metal-900'
-                      : 'text-gray-300 hover:text-white hover:bg-metal-900/60'
+                      ? 'text-brand-red after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-brand-red after:rounded-full'
+                      : 'text-stone-700 hover:text-stone-950'
                   }`
                 }
               >
@@ -96,47 +104,36 @@ export const PublicNavbar: React.FC = () => {
             ))}
           </nav>
 
-          {/* Right Action Buttons */}
-          <div className="hidden lg:flex items-center space-x-3">
+          {/* Right Action Icons & Buttons */}
+          <div className="hidden sm:flex items-center space-x-4">
+            {/* Language Switcher on mobile/medium screens */}
+            <div className="lg:hidden">
+              <LanguageSwitcher variant="inline" />
+            </div>
+
+            {/* Direct Request CTA Button */}
             <Link
               to="/request-quote"
-              className="inline-flex items-center space-x-1.5 bg-brand-red hover:bg-red-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg uppercase tracking-wider transition-colors shadow-md"
+              className="inline-flex items-center space-x-1.5 bg-brand-red hover:bg-red-700 text-white text-xs font-bold py-2.5 px-5 rounded-full uppercase tracking-wider transition-all shadow-sm hover:shadow hover:scale-105 active:scale-95"
             >
-              <PlusCircle className="w-4 h-4" />
-              <span>Request Quote</span>
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>{language === 'am' ? 'ትዕዛዝ ይጠይቁ' : 'Request a Project'}</span>
             </Link>
-
-            {isAuthenticated ? (
-              <Link
-                to={user?.role === 'CUSTOMER' ? '/portal' : '/admin'}
-                className="inline-flex items-center space-x-1.5 bg-metal-850 hover:bg-metal-800 text-white text-xs font-semibold py-2.5 px-3.5 rounded-lg border border-metal-700 transition-colors"
-              >
-                <User className="w-4 h-4 text-brand-red" />
-                <span>{user?.role === 'CUSTOMER' ? 'My Portal' : 'Admin Hub'}</span>
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                className="inline-flex items-center space-x-1.5 bg-metal-850 hover:bg-metal-800 text-white text-xs font-semibold py-2.5 px-3.5 rounded-lg border border-metal-700 transition-colors"
-              >
-                <User className="w-4 h-4 text-metal-400" />
-                <span>Sign In</span>
-              </Link>
-            )}
           </div>
 
-          {/* Mobile hamburger menu toggle */}
-          <div className="flex md:hidden items-center space-x-2">
+          {/* Mobile menu toggle */}
+          <div className="flex lg:hidden items-center space-x-2">
             <Link
               to="/request-quote"
-              className="bg-brand-red hover:bg-red-700 text-white text-[11px] font-bold py-1.5 px-2.5 rounded uppercase"
+              className="inline-flex items-center bg-brand-red text-white text-xs font-bold py-1.5 px-3 rounded-full uppercase tracking-wider shadow-sm"
             >
-              Quote
+              <span>{language === 'am' ? 'ትዕዛዝ' : 'Order'}</span>
             </Link>
             <button
+              type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-300 hover:text-white p-2 focus:outline-none"
-              aria-label="Toggle menu"
+              className="p-2 rounded-lg bg-stone-100 text-stone-700 hover:text-stone-900 hover:bg-stone-200 focus:outline-none"
+              aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -144,38 +141,58 @@ export const PublicNavbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile dropdown menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-metal-950 border-b border-metal-800 px-4 pt-2 pb-6 space-y-2">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              onClick={() => setMobileMenuOpen(false)}
-              className={({ isActive }) =>
-                `block px-3 py-2.5 rounded-lg text-sm font-bold uppercase tracking-wider ${
-                  isActive ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-metal-900'
-                }`
-              }
+        <div className="lg:hidden bg-white border-b border-stone-200 px-4 pt-2 pb-6 space-y-4 shadow-lg text-left">
+          <div className="py-2 border-b border-stone-100 flex items-center justify-between">
+            <LanguageSwitcher variant="inline" />
+            <a 
+              href="tel:+251926629999" 
+              className="text-xs font-bold text-brand-red flex items-center space-x-1"
             >
-              {link.name}
-            </NavLink>
-          ))}
-          <div className="pt-3 border-t border-metal-800 flex flex-col gap-2">
+              <Phone className="w-3 h-3" />
+              <span>+251 926 629 999</span>
+            </a>
+          </div>
+
+          <div className="space-y-1">
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={({ isActive }) =>
+                  `block px-3 py-2.5 rounded-lg text-sm font-bold tracking-wide transition-colors ${
+                    isActive
+                      ? 'text-brand-red bg-red-50'
+                      : 'text-stone-700 hover:text-stone-950 hover:bg-stone-50'
+                  }`
+                }
+              >
+                {link.name}
+              </NavLink>
+            ))}
+          </div>
+
+          <div className="pt-2 border-t border-stone-100 space-y-2">
             <Link
               to="/request-quote"
               onClick={() => setMobileMenuOpen(false)}
-              className="w-full bg-brand-red text-white text-center py-2.5 rounded-lg font-bold text-xs uppercase"
+              className="flex items-center justify-center space-x-2 w-full bg-brand-red hover:bg-red-700 text-white font-bold py-3 px-4 rounded-full text-xs uppercase tracking-wider shadow-sm"
             >
-              Request Custom Quote
+              <PlusCircle className="w-4 h-4" />
+              <span>{language === 'am' ? 'ትዕዛዝ ይጠይቁ' : 'Request a Project'}</span>
             </Link>
-            <Link
-              to={isAuthenticated ? (user?.role === 'CUSTOMER' ? '/portal' : '/admin') : '/login'}
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full bg-metal-800 text-white text-center py-2.5 rounded-lg font-bold text-xs uppercase border border-metal-700"
+
+            <a
+              href="https://t.me/Manager_Samuel_A"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center space-x-2 w-full bg-[#1F2730] hover:bg-[#283543] text-[#4db3f0] hover:text-white font-semibold py-2.5 px-4 rounded-lg text-xs border border-[#2E3C4B]"
             >
-              {isAuthenticated ? 'Enter Portal' : 'Sign In / Register'}
-            </Link>
+              <Send className="w-4 h-4 text-[#229ED9]" />
+              <span>{language === 'am' ? 'ቴሌግራም፦ @Manager_Samuel_A' : 'Telegram: @Manager_Samuel_A'}</span>
+            </a>
           </div>
         </div>
       )}

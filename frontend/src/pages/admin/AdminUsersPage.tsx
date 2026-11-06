@@ -21,10 +21,10 @@ export const AdminUsersPage: React.FC = () => {
     <div className="space-y-6 text-left">
       <div className="border-b border-metal-800 pb-4">
         <h2 className="text-xl font-bold text-white uppercase tracking-wider">
-          System Users & RBAC Roles
+          System Users & User Roles
         </h2>
         <p className="text-xs text-gray-400 mt-0.5">
-          Role-Based Access Control credentials for Super Admin, Manager, Sales, Production, Accountant, and Customers.
+          Enterprise User Management with strict 2-role system: ADMIN (Full Workshop ERP Access) and CUSTOMER (Client Portal).
         </p>
       </div>
 
@@ -47,8 +47,12 @@ export const AdminUsersPage: React.FC = () => {
                   <td className="px-4 py-3 font-mono text-metal-300">{u.email}</td>
                   <td className="px-4 py-3">{u.phone_number || 'N/A'}</td>
                   <td className="px-4 py-3">
-                    <span className="px-2 py-0.5 rounded bg-brand-red/20 text-brand-red text-[10px] font-bold uppercase">
-                      {u.role.replace('_', ' ')}
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                      u.role === 'ADMIN'
+                        ? 'bg-brand-red/20 text-brand-red border border-brand-red/30'
+                        : 'bg-teal-500/20 text-teal-400 border border-teal-500/30'
+                    }`}>
+                      {u.role}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-emerald-400 font-semibold">Active</td>

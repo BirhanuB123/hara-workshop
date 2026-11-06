@@ -7,37 +7,15 @@ export const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Clean up any legacy tokens from previous authentication
+try {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+} catch {}
 
 api.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login/')) {
-      originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refresh_token');
-      if (refreshToken) {
-        try {
-          const res = await axios.post('/api/auth/refresh/', { refresh: refreshToken });
-          const newAccess = res.data.access;
-          localStorage.setItem('access_token', newAccess);
-          originalRequest.headers.Authorization = `Bearer ${newAccess}`;
-          return api(originalRequest);
-        } catch {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          window.location.href = '/login';
-        }
-      }
-    }
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Specific Domain API Modules
@@ -45,6 +23,11 @@ export const coreApi = {
   getSettings: () => api.get('/settings/'),
   updateSettings: (data: any) => api.patch('/settings/update_settings/', data),
   getAuditLogs: (params?: any) => api.get('/audit-logs/', { params }),
+};
+
+export const contactApi = {
+  sendMessage: (data: { name: string; phone: string; email?: string; message: string }) =>
+    api.post('/contact/', data),
 };
 
 export const accountsApi = {
@@ -56,36 +39,89 @@ export const accountsApi = {
   getUserById: (id: string) => api.get(`/users/${id}/`),
 };
 
+export const customersApi = {
+  getAll: (params?: any) => api.get('/customers/', { params }),
+  getById: (id: string) => api.get(`/customers/${id}/`),
+  update: (id: string, data: any) => api.patch(`/customers/${id}/`, data),
+  toggleActive: (id: string) => api.post(`/customers/${id}/toggle_active/`),
+};
+
 export const productsApi = {
   getAll: (params?: any) => api.get('/products/', { params }),
   getById: (id: string) => api.get(`/products/${id}/`),
-  create: (data: any) => api.post('/products/', data),
-  update: (id: string, data: any) => api.patch(`/products/${id}/`, data),
+  getSubcategories: (params?: { service_category?: string; service_slug?: string }) =>
+    api.get('/products/subcategories/', { params }),
+  create: (data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.post('/products/', data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
+  update: (id: string, data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.patch(`/products/${id}/`, data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
   delete: (id: string) => api.delete(`/products/${id}/`),
 };
 
 export const categoriesApi = {
-  getAll: () => api.get('/categories/'),
-  getById: (id: string) => api.get(`/categories/${id}/`),
-  create: (data: any) => api.post('/categories/', data),
+  getAll: (params?: any) => api.get('/products/categories/', { params }),
+  getById: (id: string) => api.get(`/products/categories/${id}/`),
+  create: (data: any) => api.post('/products/categories/', data),
 };
 
 export const servicesApi = {
   getAll: (params?: any) => api.get('/services/', { params }),
   getById: (id: string) => api.get(`/services/${id}/`),
-  create: (data: any) => api.post('/services/', data),
+  create: (data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.post('/services/', data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
+  update: (id: string, data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.patch(`/services/${id}/`, data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
+  delete: (id: string) => api.delete(`/services/${id}/`),
+  uploadImage: (id: string, formData: FormData) =>
+    api.post(`/services/${id}/upload_image/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  replaceImage: (id: string, formData: FormData) =>
+    api.post(`/services/${id}/replace_image/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+  deleteImage: (id: string, imageId: string) =>
+    api.post(`/services/${id}/delete_image/`, { image_id: imageId }),
+  updateImage: (id: string, data: { image_id: string; caption?: string; description?: string; is_primary?: boolean; order?: number }) =>
+    api.post(`/services/${id}/update_image/`, data),
+  reorderImages: (id: string, imageIds: string[]) =>
+    api.post(`/services/${id}/reorder_images/`, { image_ids: imageIds }),
+  uploadImages: (id: string, formData: FormData) =>
+    api.post(`/services/${id}/upload_images/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 };
 
 export const projectsApi = {
   getAll: (params?: any) => api.get('/projects/', { params }),
   getById: (id: string) => api.get(`/projects/${id}/`),
-  create: (data: any) => api.post('/projects/', data),
+  create: (data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.post('/projects/', data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
+  update: (id: string, data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.patch(`/projects/${id}/`, data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
+  delete: (id: string) => api.delete(`/projects/${id}/`),
+  togglePublish: (id: string) => api.post(`/projects/${id}/toggle_publish/`),
 };
 
 export const quotesApi = {
   getAll: (params?: any) => api.get('/quotations/', { params }),
   getById: (id: string) => api.get(`/quotations/${id}/`),
-  create: (data: any) => api.post('/quotations/', data),
+  create: (data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.post('/quotations/', data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
   proposePrice: (id: string, data: any) => api.post(`/quotations/${id}/propose_price/`, data),
   accept: (id: string) => api.post(`/quotations/${id}/accept/`),
   reject: (id: string) => api.post(`/quotations/${id}/reject/`),
@@ -119,30 +155,22 @@ export const suppliersApi = {
   create: (data: any) => api.post('/suppliers/', data),
 };
 
-export const invoicesApi = {
-  getAll: (params?: any) => api.get('/invoices/', { params }),
-  getById: (id: string) => api.get(`/invoices/${id}/`),
-  create: (data: any) => api.post('/invoices/', data),
-};
-
-export const paymentsApi = {
-  getAll: (params?: any) => api.get('/payments/', { params }),
-  getById: (id: string) => api.get(`/payments/${id}/`),
-  create: (data: any) => api.post('/payments/', data),
-  verify: (id: string) => api.post(`/payments/${id}/verify/`),
-};
-
-export const expensesApi = {
-  getAll: (params?: any) => api.get('/expenses/', { params }),
-  getById: (id: string) => api.get(`/expenses/${id}/`),
-  create: (data: any) => api.post('/expenses/', data),
-};
-
 export const messagingApi = {
-  getConversations: () => api.get('/messaging/conversations/'),
+  getConversations: (params?: any) => api.get('/messaging/conversations/', { params }),
   getConversation: (id: string) => api.get(`/messaging/conversations/${id}/`),
-  sendMessage: (convId: string, content: string, attachment?: any) =>
-    api.post(`/messaging/conversations/${convId}/messages/`, { content, attachment }),
+  createConversation: (data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.post('/messaging/conversations/', data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
+  getGeneralConversation: (params?: any) => api.get('/messaging/conversations/general/', { params }),
+  getMessages: (conversationId: string) => api.get(`/messaging/conversations/${conversationId}/messages/`),
+  sendMessage: (conversationId: string, data: any) => {
+    const isFormData = data instanceof FormData;
+    return api.post(`/messaging/conversations/${conversationId}/messages/`, data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
+  },
+  markRead: (conversationId: string) => api.post(`/messaging/conversations/${conversationId}/mark_read/`),
+  getUnreadCount: () => api.get('/messaging/conversations/unread_count/'),
+  getCustomers: () => api.get('/messaging/conversations/customers/'),
 };
 
 export const notificationsApi = {

@@ -10,17 +10,26 @@ import {
   AlertCircle,
   Truck,
   Wrench,
-  ShieldCheck
+  ShieldCheck,
+  MessageSquare,
+  Paperclip,
+  FileText,
+  FileCode,
+  ExternalLink,
+  Image as ImageIcon
 } from 'lucide-react';
 import { quotesApi } from '../../services/api';
 import { Quote } from '../../types';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { ImageLightboxModal } from '../../components/common/ImageLightboxModal';
+import { getMediaUrl, isImageFile, isCadFile, downloadFile } from '../../utils/media';
 
 export const CustomerQuoteDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{ url: string; title?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [feedbackMsg, setFeedbackMsg] = useState('');
@@ -49,7 +58,7 @@ export const CustomerQuoteDetailPage: React.FC = () => {
       const res = await quotesApi.accept(quote.id);
       setFeedbackMsg('Quote proposal accepted! Workshop order has been generated.');
       loadQuote(quote.id);
-      setTimeout(() => navigate('/portal/orders'), 1500);
+      setTimeout(() => navigate('/customer/orders'), 1500);
     } catch (err: any) {
       alert(err.response?.data?.error || 'Failed to accept quote.');
     } finally {
@@ -77,7 +86,7 @@ export const CustomerQuoteDetailPage: React.FC = () => {
   return (
     <div className="space-y-6 text-left max-w-5xl mx-auto">
       <Link
-        to="/portal/quotes"
+        to="/customer/quotes"
         className="inline-flex items-center space-x-2 text-xs font-semibold text-gray-400 hover:text-white"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -142,7 +151,7 @@ export const CustomerQuoteDetailPage: React.FC = () => {
               <div>
                 <span className="text-gray-500 block">Dimensions:</span>
                 <span className="font-semibold text-white">
-                  {quote.length_cm ? `${quote.length_cm} × ${quote.width_cm} × ${quote.height_cm} cm` : 'Custom Drawing'}
+                  {quote.length_cm ? `${quote.length_cm} × ${quote.width_cm} × ${quote.height_cm} cm` : 'As per specifications'}
                 </span>
               </div>
               <div>
@@ -170,6 +179,118 @@ export const CustomerQuoteDetailPage: React.FC = () => {
                 </p>
               </div>
             )}
+
+            {/* Attachments Section */}
+            <div className="pt-3 border-t border-metal-800 space-y-2">
+              <span className="text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1.5 text-xs">
+                <Paperclip className="w-3.5 h-3.5 text-brand-red" />
+                <span>Submitted Blueprints & Files ({quote.attachments?.length || 0})</span>
+              </span>
+              {quote.attachments && quote.attachments.length > 0 ? (
+                <div className="space-y-2">
+                  {quote.attachments.map((att) => {
+                    const isImg = isImageFile(att.file_name || att.file);
+                    const isCad = isCadFile(att.file_name || att.file);
+                    const mediaUrl = getMediaUrl(att.file);
+
+                    return (
+                      <div
+                        key={att.id}
+                        className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-metal-950 border border-metal-800 rounded-lg hover:border-metal-700 transition gap-3"
+                      >
+                        <div className="flex items-center space-x-3 min-w-0 pr-2">
+                          {isImg ? (
+                            <div
+                              onClick={() => setLightboxImage({ url: att.file, title: att.file_name })}
+                              className="w-12 h-12 rounded-lg bg-black/40 border border-metal-700 overflow-hidden flex-shrink-0 cursor-pointer group relative"
+                              title="Click to preview image"
+                            >
+                              <img
+                                src={mediaUrl}
+                                alt={att.file_name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition duration-200"
+                                loading="lazy"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white">
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </div>
+                            </div>
+                          ) : isCad ? (
+                            <div className="w-12 h-12 rounded-lg bg-metal-900 border border-metal-800 flex items-center justify-center flex-shrink-0">
+                              <FileCode className="w-6 h-6 text-brand-red" />
+                            </div>
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-metal-900 border border-metal-800 flex items-center justify-center flex-shrink-0">
+                              <FileText className="w-6 h-6 text-brand-red" />
+                            </div>
+                          )}
+
+                          <div className="min-w-0">
+                            <p
+                              onClick={() => {
+                                if (isImg) {
+                                  setLightboxImage({ url: att.file, title: att.file_name });
+                                } else {
+                                  downloadFile(att.file, att.file_name);
+                                }
+                              }}
+                              className="text-white font-mono text-xs truncate cursor-pointer hover:text-brand-red transition-colors"
+                              title={att.file_name}
+                            >
+                              {att.file_name || 'Attached Document'}
+                            </p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {att.created_at && (
+                                <span className="text-[10px] text-gray-500">
+                                  Uploaded {new Date(att.created_at).toLocaleDateString()}
+                                </span>
+                              )}
+                              {isImg && (
+                                <span className="text-[10px] text-brand-red font-semibold uppercase tracking-wider">
+                                  Image
+                                </span>
+                              )}
+                              {isCad && (
+                                <span className="text-[10px] text-amber-400 font-semibold uppercase tracking-wider">
+                                  CAD Drawing
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 flex-shrink-0 self-end sm:self-center">
+                          {isImg && (
+                            <button
+                              type="button"
+                              onClick={() => setLightboxImage({ url: att.file, title: att.file_name })}
+                              className="inline-flex items-center space-x-1 bg-metal-800 hover:bg-metal-700 text-gray-200 px-2.5 py-1.5 rounded text-xs font-semibold transition-colors"
+                              title="Preview full size"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                              <span>View</span>
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => downloadFile(att.file, att.file_name)}
+                            className="inline-flex items-center space-x-1 bg-brand-red hover:bg-red-700 text-white px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-sm"
+                            title="Download file"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Download</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-[11px] text-gray-500 italic bg-metal-950/50 p-2.5 rounded-lg border border-metal-850">
+                  No architectural drawings or reference photos were attached to this quotation request.
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -215,9 +336,27 @@ export const CustomerQuoteDetailPage: React.FC = () => {
             <div className="pt-2 text-[11px] text-gray-500 border-t border-metal-800">
               <p>Quote valid for 30 days from date of issue. Inclusive of workshop testing and Bole Arabsa quality inspection.</p>
             </div>
+
+            <div className="pt-3 border-t border-metal-800">
+              <Link
+                to={`/customer/messages`}
+                className="w-full py-2.5 px-3 bg-metal-800 hover:bg-metal-700 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 transition border border-metal-700 shadow-sm"
+              >
+                <MessageSquare className="w-4 h-4 text-brand-red" />
+                <span>Message Workshop About This Quote</span>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Full-Screen Image Lightbox Preview Modal */}
+      <ImageLightboxModal
+        isOpen={!!lightboxImage}
+        onClose={() => setLightboxImage(null)}
+        imageUrl={lightboxImage?.url || ''}
+        title={lightboxImage?.title}
+      />
     </div>
   );
 };

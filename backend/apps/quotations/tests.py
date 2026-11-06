@@ -4,7 +4,6 @@ from apps.accounts.models import User, UserRole
 from apps.quotations.models import Quote, QuoteStatus
 from apps.orders.models import Order, OrderStatus
 from apps.production.models import ProductionJob
-from apps.invoices.models import Invoice
 
 class QuotationWorkflowTests(TestCase):
     def setUp(self):

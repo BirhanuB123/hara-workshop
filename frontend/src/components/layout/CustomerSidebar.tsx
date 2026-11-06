@@ -1,41 +1,64 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   FileText, 
   ShoppingBag, 
-  Receipt, 
-  CreditCard, 
-  MessageSquare, 
+  MessageSquare,
   Bell, 
   User, 
   LogOut, 
   PlusCircle 
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { useLanguageStore } from '../../store/languageStore';
+import { messagingApi } from '../../services/api';
 
 interface CustomerSidebarProps {
   onCloseMobile?: () => void;
 }
 
+interface NavItem {
+  name: string;
+  path: string;
+  icon: any;
+  exact?: boolean;
+  badge?: number;
+}
+
 export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({ onCloseMobile }) => {
   const { user, logout } = useAuthStore();
+  const { t } = useLanguageStore();
   const navigate = useNavigate();
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    loadUnread();
+    const interval = setInterval(loadUnread, 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadUnread = async () => {
+    try {
+      const res = await messagingApi.getUnreadCount();
+      setUnreadMessages(res.data?.unread_count || 0);
+    } catch {
+      // silent
+    }
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  const navItems = [
-    { name: 'Dashboard', path: '/portal', icon: LayoutDashboard, exact: true },
-    { name: 'My Quotes', path: '/portal/quotes', icon: FileText },
-    { name: 'My Orders', path: '/portal/orders', icon: ShoppingBag },
-    { name: 'Invoices', path: '/portal/invoices', icon: Receipt },
-    { name: 'Payments', path: '/portal/payments', icon: CreditCard },
-    { name: 'Messages', path: '/portal/messages', icon: MessageSquare },
-    { name: 'Notifications', path: '/portal/notifications', icon: Bell },
-    { name: 'Profile Settings', path: '/portal/profile', icon: User },
+  const navItems: NavItem[] = [
+    { name: t('customer.dashboard'), path: '/customer/dashboard', icon: LayoutDashboard, exact: true },
+    { name: t('customer.myQuotes'), path: '/customer/quotes', icon: FileText },
+    { name: t('customer.myOrders'), path: '/customer/orders', icon: ShoppingBag },
+    { name: t('customer.messages'), path: '/customer/messages', icon: MessageSquare, badge: unreadMessages },
+    { name: t('customer.notifications'), path: '/customer/notifications', icon: Bell },
+    { name: t('customer.profile'), path: '/customer/profile', icon: User },
   ];
 
   return (
@@ -47,7 +70,7 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({ onCloseMobile 
           <h2 className="text-white font-bold text-base tracking-wide uppercase leading-tight">
             HARA <span className="text-brand-red">PORTAL</span>
           </h2>
-          <span className="text-[10px] text-gray-400 tracking-wider uppercase block">Customer Service Hub</span>
+          <span className="text-[10px] text-gray-400 tracking-wider uppercase block">{t('customer.hub')}</span>
         </div>
       </div>
 
@@ -59,7 +82,7 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({ onCloseMobile 
           className="flex items-center justify-center space-x-2 w-full bg-brand-red hover:bg-red-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow-sm transition-all text-sm"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>New Quote Request</span>
+          <span>{t('customer.newQuoteRequest')}</span>
         </NavLink>
       </div>
 
@@ -74,15 +97,22 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({ onCloseMobile 
               end={item.exact}
               onClick={onCloseMobile}
               className={({ isActive }) =>
-                `flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                `flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   isActive
                     ? 'bg-brand-red text-white shadow-sm'
                     : 'text-gray-300 hover:bg-metal-800 hover:text-white'
                 }`
               }
             >
-              <Icon className="w-4 h-4 flex-shrink-0" />
-              <span>{item.name}</span>
+              <div className="flex items-center space-x-3">
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span>{item.name}</span>
+              </div>
+              {Boolean(item.badge && item.badge > 0) && (
+                <span className="bg-brand-red text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-sm animate-pulse">
+                  {item.badge}
+                </span>
+              )}
             </NavLink>
           );
         })}
@@ -106,7 +136,7 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({ onCloseMobile 
           className="flex items-center space-x-2 text-xs font-medium text-gray-400 hover:text-red-400 w-full py-1.5 px-2 rounded-md hover:bg-metal-800/80 transition-colors"
         >
           <LogOut className="w-3.5 h-3.5" />
-          <span>Sign Out</span>
+          <span>{t('navigation.signOut')}</span>
         </button>
       </div>
     </aside>

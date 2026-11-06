@@ -5,12 +5,14 @@ import { PublicFooter } from '../components/layout/PublicFooter';
 
 export const PublicLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-metal-950 text-gray-100 selection:bg-brand-red selection:text-white">
-      <PublicNavbar />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-      <PublicFooter />
+    <div className="min-h-screen flex flex-col bg-[#FDFBF7] text-stone-900 selection:bg-brand-red selection:text-white relative overflow-x-hidden">
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <PublicNavbar />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <PublicFooter />
+      </div>
     </div>
   );
 };

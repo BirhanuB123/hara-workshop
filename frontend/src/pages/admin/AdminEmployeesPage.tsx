@@ -12,22 +12,22 @@ export const AdminEmployeesPage: React.FC = () => {
     accountsApi.getUsers()
       .then(res => {
         const list = res.data.results || res.data || [];
-        setEmployees(list.filter((u: User) => u.role !== 'CUSTOMER'));
+        setEmployees(list.filter((u: User) => u.role === 'ADMIN'));
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <LoadingSpinner text="Loading workshop staff..." />;
+  if (loading) return <LoadingSpinner text="Loading workshop administrators..." />;
 
   return (
     <div className="space-y-6 text-left">
       <div className="border-b border-metal-800 pb-4">
         <h2 className="text-xl font-bold text-white uppercase tracking-wider">
-          Workshop Craftsmen & Staff
+          Workshop Administration & Managers
         </h2>
         <p className="text-xs text-gray-400 mt-0.5">
-          Supervisors, master welders, carpenters, and finishing technicians at Bole Arabsa workshop.
+          System administrators with full workshop ERP management privileges.
         </p>
       </div>
 
@@ -36,9 +36,9 @@ export const AdminEmployeesPage: React.FC = () => {
           <div key={emp.id} className="bg-metal-900 border border-metal-800 rounded-xl p-6 space-y-3 shadow-lg">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-brand-red/20 text-brand-red uppercase">
-                {emp.role.replace('_', ' ')}
+                {emp.role}
               </span>
-              <span className="text-xs text-emerald-400 font-medium">Active Staff</span>
+              <span className="text-xs text-emerald-400 font-medium">Active Admin</span>
             </div>
             <div>
               <h3 className="text-base font-bold text-white">{emp.full_name}</h3>
