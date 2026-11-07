@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
@@ -11,7 +12,12 @@ if (BASE_DIR.parent / '.env').exists():
 SECRET_KEY = os.environ.get('SECRET_KEY', 'hara-workshop-dev-secret-key-2026-secure')
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',') if h.strip()]
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,0.0.0.0,hara-workshop.onrender.com,.onrender.com'
+    ).split(',') if h.strip()
+]
 if 'testserver' not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append('testserver')
 render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -80,21 +86,41 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# Database Configuration with Neon PostgreSQL & Safe Fallback Prevention
+database_url = os.environ.get('DATABASE_URL', '').strip()
 
-database_url = os.environ.get('DATABASE_URL', '')
-if database_url and database_url.startswith('postgresql'):
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.config(
-        default=database_url,
-        conn_max_age=600,
-        ssl_require=False
-    )
+if database_url:
+    # Accept both postgresql:// and postgres:// formats commonly returned by Neon and cloud PaaS
+    if database_url.startswith('postgres://') or database_url.startswith('postgresql://'):
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=database_url,
+                conn_max_age=600,
+                ssl_require=True
+            )
+        }
+    elif database_url.startswith('sqlite://'):
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.config(default=database_url)
+        }
+    else:
+        raise ImproperlyConfigured(
+            f"Unsupported DATABASE_URL scheme in environment: {database_url.split('://')[0]}://"
+        )
+else:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "CRITICAL: DATABASE_URL environment variable is required in production (DEBUG=False). "
+            "Silent fallback to SQLite is disabled to prevent data loss."
+        )
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -161,22 +187,35 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-CORS_ALLOWED_ORIGINS = [
-    origin.strip() for origin in os.environ.get(
-        'CORS_ALLOWED_ORIGINS',
-        'http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173'
-    ).split(',') if origin.strip()
-]
+cors_origins_env = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
+if cors_origins_env:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in cors_origins_env.split(',') if o.strip()]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:3000',
+        'https://hara-workshop.vercel.app',
+    ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/hara-workshop.*\.vercel\.app$",
+]
 
 # CSRF Trusted Origins (needed for Django 4.0+ in production with HTTPS)
-csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
 if csrf_origins_env:
     CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_origins_env.split(',') if o.strip()]
-elif render_host:
-    CSRF_TRUSTED_ORIGINS = [f'https://{render_host}']
 else:
-    CSRF_TRUSTED_ORIGINS = []
+    CSRF_TRUSTED_ORIGINS = [
+        'https://hara-workshop.onrender.com',
+        'https://hara-workshop.vercel.app',
+    ]
+    if render_host:
+        render_origin = f'https://{render_host}'
+        if render_origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(render_origin)
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
@@ -192,7 +231,7 @@ TELEGRAM_GROUP_CHAT_ID = os.environ.get('TELEGRAM_GROUP_CHAT_ID', '-5374750855')
 TELEGRAM_ADMIN_CHAT_ID = os.environ.get('TELEGRAM_ADMIN_CHAT_ID', '1774429006').strip()
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '1774429006').strip()
 TELEGRAM_BOT_USERNAME = os.environ.get('TELEGRAM_BOT_USERNAME', 'HaraWorkshopOrdersBot').strip().lstrip('@')
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://hara-workshop.vercel.app')
 
 WORKSHOP_NAME = os.environ.get('WORKSHOP_NAME', 'Hara Workshop')
 WORKSHOP_PHONE = os.environ.get('WORKSHOP_PHONE', '+251926629999')

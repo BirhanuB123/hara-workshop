@@ -12,15 +12,26 @@ export function getMediaUrl(url?: string | null): string {
     return url;
   }
 
-  // Strip Docker internal hostname http://backend:8000 so browser requests route through the frontend proxy
+  const backendHost = (import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || '')
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/\/api$/, '');
+
+  // Strip Docker internal hostname http://backend:8000
   if (url.includes('backend:8000')) {
-    return url.replace(/^https?:\/\/backend:8000/, '');
+    const relative = url.replace(/^https?:\/\/backend:8000/, '');
+    return backendHost ? `${backendHost}${relative}` : relative;
   }
 
-  // If pointing to localhost:8000 or 127.0.0.1:8000, normalize to relative /media path
-  // so browser requests use the same origin without CORS or network interface issues
+  // If pointing to localhost:8000 or 127.0.0.1:8000, normalize to target host
   if (url.includes('localhost:8000') || url.includes('127.0.0.1:8000')) {
-    return url.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8000/, '');
+    const relative = url.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8000/, '');
+    return backendHost ? `${backendHost}${relative}` : relative;
+  }
+
+  // If it's a relative path starting with /media/ and we have an external backend host
+  if (url.startsWith('/media/') && backendHost) {
+    return `${backendHost}${url}`;
   }
 
   return url;
