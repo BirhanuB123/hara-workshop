@@ -14,6 +14,9 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',') if h.strip()]
 if 'testserver' not in ALLOWED_HOSTS:
     ALLOWED_HOSTS.append('testserver')
+render_host = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if render_host and render_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_host)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -110,11 +114,23 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [d for d in [BASE_DIR / 'static'] if d.exists()]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -152,6 +168,15 @@ CORS_ALLOWED_ORIGINS = [
     ).split(',') if origin.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
+
+# CSRF Trusted Origins (needed for Django 4.0+ in production with HTTPS)
+csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if csrf_origins_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_origins_env.split(',') if o.strip()]
+elif render_host:
+    CSRF_TRUSTED_ORIGINS = [f'https://{render_host}']
+else:
+    CSRF_TRUSTED_ORIGINS = []
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
