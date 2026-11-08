@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from urllib.parse import urlsplit
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 
@@ -204,6 +205,21 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
+def _normalize_origin(raw_origin: str) -> str:
+    """
+    Normalizes an origin string by stripping whitespace and any path/trailing slash,
+    per RFC 6454 and django-cors-headers requirements (corsheaders.E014).
+    E.g. 'https://hara-workshop.vercel.app/' -> 'https://hara-workshop.vercel.app'
+    """
+    cleaned = raw_origin.strip()
+    if not cleaned:
+        return ''
+    parsed = urlsplit(cleaned)
+    if parsed.scheme and parsed.netloc:
+        return f"{parsed.scheme}://{parsed.netloc}"
+    return cleaned.rstrip('/')
+
+
 CORS_ALLOWED_ORIGINS = [
     'https://hara-workshop.vercel.app',
 ]
@@ -218,9 +234,17 @@ if DEBUG:
 cors_origins_env = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
 if cors_origins_env:
     for o in cors_origins_env.split(','):
-        clean_origin = o.strip()
+        clean_origin = _normalize_origin(o)
         if clean_origin and clean_origin not in CORS_ALLOWED_ORIGINS:
             CORS_ALLOWED_ORIGINS.append(clean_origin)
+
+# Ensure every origin is strictly normalized without trailing slashes and deduplicated
+CORS_ALLOWED_ORIGINS = [
+    _normalize_origin(origin)
+    for origin in CORS_ALLOWED_ORIGINS
+    if _normalize_origin(origin)
+]
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(CORS_ALLOWED_ORIGINS))
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [
@@ -233,16 +257,23 @@ CSRF_TRUSTED_ORIGINS = [
     'https://hara-workshop.vercel.app',
 ]
 if render_host:
-    render_origin = f'https://{render_host}'
-    if render_origin not in CSRF_TRUSTED_ORIGINS:
+    render_origin = _normalize_origin(f'https://{render_host}')
+    if render_origin and render_origin not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(render_origin)
 
 csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
 if csrf_origins_env:
     for o in csrf_origins_env.split(','):
-        clean_origin = o.strip()
+        clean_origin = _normalize_origin(o)
         if clean_origin and clean_origin not in CSRF_TRUSTED_ORIGINS:
             CSRF_TRUSTED_ORIGINS.append(clean_origin)
+
+CSRF_TRUSTED_ORIGINS = [
+    _normalize_origin(origin)
+    for origin in CSRF_TRUSTED_ORIGINS
+    if _normalize_origin(origin)
+]
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CSRF_TRUSTED_ORIGINS))
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
@@ -258,7 +289,7 @@ TELEGRAM_GROUP_CHAT_ID = os.environ.get('TELEGRAM_GROUP_CHAT_ID', '-5374750855')
 TELEGRAM_ADMIN_CHAT_ID = os.environ.get('TELEGRAM_ADMIN_CHAT_ID', '1774429006').strip()
 TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '1774429006').strip()
 TELEGRAM_BOT_USERNAME = os.environ.get('TELEGRAM_BOT_USERNAME', 'HaraWorkshopOrdersBot').strip().lstrip('@')
-FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://hara-workshop.vercel.app')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://hara-workshop.vercel.app').rstrip('/')
 
 WORKSHOP_NAME = os.environ.get('WORKSHOP_NAME', 'Hara Workshop')
 WORKSHOP_PHONE = os.environ.get('WORKSHOP_PHONE', '+251926629999')

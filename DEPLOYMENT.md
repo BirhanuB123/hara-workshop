@@ -16,5 +16,5 @@ This provisions:
 - SECRET_KEY: High-entropy 64-char string.
 - DATABASE_URL: Production PostgreSQL credentials.
 - ALLOWED_HOSTS: Domain names.
-- CORS_ALLOWED_ORIGINS: Production frontend URLs.
+- CORS_ALLOWED_ORIGINS: Production frontend origin without path or trailing slash (e.g. https://hara-workshop.vercel.app).
 - Secure SSL certificates.
