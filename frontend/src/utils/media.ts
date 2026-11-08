@@ -12,18 +12,28 @@ export function getMediaUrl(url?: string | null): string {
     return url;
   }
 
-  // Strip Docker internal hostname http://backend:8000 so browser requests route through the frontend proxy
-  if (url.includes('backend:8000')) {
-    return url.replace(/^https?:\/\/backend:8000/, '');
+  const backendHost = (import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || '')
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/\/api$/, '');
+
+  let path = url;
+
+  // Strip Docker internal hostname http://backend:8000
+  if (path.includes('backend:8000')) {
+    path = path.replace(/^https?:\/\/backend:8000/, '');
+  } else if (path.includes('localhost:8000') || path.includes('127.0.0.1:8000')) {
+    // If pointing to localhost:8000 or 127.0.0.1:8000, normalize host prefix
+    path = path.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8000/, '');
   }
 
-  // If pointing to localhost:8000 or 127.0.0.1:8000, normalize to relative /media path
-  // so browser requests use the same origin without CORS or network interface issues
-  if (url.includes('localhost:8000') || url.includes('127.0.0.1:8000')) {
-    return url.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8000/, '');
+  // Prepend backend host to /media/ paths in production or when backendHost is configured
+  if (path.startsWith('/media/') || path.startsWith('media/')) {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return backendHost ? `${backendHost}${normalizedPath}` : normalizedPath;
   }
 
-  return url;
+  return path;
 }
 
 export function isImageFile(fileNameOrUrl?: string | null): boolean {
