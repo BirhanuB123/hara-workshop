@@ -402,6 +402,7 @@ export const RequestQuotePage: React.FC = () => {
           ? 'ጥያቄዎን በአሁኑ ሰዓት ማስተላለፍ አልተቻለም። እባክዎ እንደገና ይሞክሩ ወይም በቀጥታ በቴሌግራም ያግኙን።'
           : "We couldn't complete your request right now. Please try again or contact HARA WORKSHOP directly through Telegram.")
       );
+      window.scrollTo({ top: 300, behavior: 'smooth' });
     } finally {
       setSubmitting(false);
     }
