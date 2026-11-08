@@ -9,8 +9,19 @@ load_dotenv(BASE_DIR / '.env')
 if (BASE_DIR.parent / '.env').exists():
     load_dotenv(BASE_DIR.parent / '.env')
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'hara-workshop-dev-secret-key-2026-secure')
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
+
+SECRET_KEY = os.environ.get('SECRET_KEY', '').strip()
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "CRITICAL: A secure SECRET_KEY environment variable is required in production (DEBUG=False)."
+        )
+    SECRET_KEY = 'hara-workshop-dev-secret-key-2026-secure'
+elif not DEBUG and SECRET_KEY == 'hara-workshop-dev-secret-key-2026-secure':
+    raise ImproperlyConfigured(
+        "CRITICAL: Production (DEBUG=False) cannot use the development default SECRET_KEY."
+    )
 
 ALLOWED_HOSTS = [
     h.strip() for h in os.environ.get(
@@ -101,6 +112,10 @@ if database_url:
             )
         }
     elif database_url.startswith('sqlite://'):
+        if not DEBUG:
+            raise ImproperlyConfigured(
+                "CRITICAL: SQLite is not supported in production (DEBUG=False)."
+            )
         import dj_database_url
         DATABASES = {
             'default': dj_database_url.config(default=database_url)
@@ -187,35 +202,45 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-cors_origins_env = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
-if cors_origins_env:
-    CORS_ALLOWED_ORIGINS = [o.strip() for o in cors_origins_env.split(',') if o.strip()]
-else:
-    CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = [
+    'https://hara-workshop.vercel.app',
+]
+if DEBUG:
+    CORS_ALLOWED_ORIGINS.extend([
         'http://localhost:5173',
         'http://localhost:3000',
         'http://127.0.0.1:5173',
         'http://127.0.0.1:3000',
-        'https://hara-workshop.vercel.app',
-    ]
+    ])
+
+cors_origins_env = os.environ.get('CORS_ALLOWED_ORIGINS', '').strip()
+if cors_origins_env:
+    for o in cors_origins_env.split(','):
+        clean_origin = o.strip()
+        if clean_origin and clean_origin not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(clean_origin)
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/hara-workshop.*\.vercel\.app$",
 ]
 
 # CSRF Trusted Origins (needed for Django 4.0+ in production with HTTPS)
+CSRF_TRUSTED_ORIGINS = [
+    'https://hara-workshop.onrender.com',
+    'https://hara-workshop.vercel.app',
+]
+if render_host:
+    render_origin = f'https://{render_host}'
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
+
 csrf_origins_env = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
 if csrf_origins_env:
-    CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_origins_env.split(',') if o.strip()]
-else:
-    CSRF_TRUSTED_ORIGINS = [
-        'https://hara-workshop.onrender.com',
-        'https://hara-workshop.vercel.app',
-    ]
-    if render_host:
-        render_origin = f'https://{render_host}'
-        if render_origin not in CSRF_TRUSTED_ORIGINS:
-            CSRF_TRUSTED_ORIGINS.append(render_origin)
+    for o in csrf_origins_env.split(','):
+        clean_origin = o.strip()
+        if clean_origin and clean_origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(clean_origin)
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')

@@ -17,24 +17,23 @@ export function getMediaUrl(url?: string | null): string {
     .replace(/\/+$/, '')
     .replace(/\/api$/, '');
 
+  let path = url;
+
   // Strip Docker internal hostname http://backend:8000
-  if (url.includes('backend:8000')) {
-    const relative = url.replace(/^https?:\/\/backend:8000/, '');
-    return backendHost ? `${backendHost}${relative}` : relative;
+  if (path.includes('backend:8000')) {
+    path = path.replace(/^https?:\/\/backend:8000/, '');
+  } else if (path.includes('localhost:8000') || path.includes('127.0.0.1:8000')) {
+    // If pointing to localhost:8000 or 127.0.0.1:8000, normalize host prefix
+    path = path.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8000/, '');
   }
 
-  // If pointing to localhost:8000 or 127.0.0.1:8000, normalize to target host
-  if (url.includes('localhost:8000') || url.includes('127.0.0.1:8000')) {
-    const relative = url.replace(/^https?:\/\/(localhost|127\.0\.0\.1):8000/, '');
-    return backendHost ? `${backendHost}${relative}` : relative;
+  // Prepend backend host to /media/ paths in production or when backendHost is configured
+  if (path.startsWith('/media/') || path.startsWith('media/')) {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    return backendHost ? `${backendHost}${normalizedPath}` : normalizedPath;
   }
 
-  // If it's a relative path starting with /media/ and we have an external backend host
-  if (url.startsWith('/media/') && backendHost) {
-    return `${backendHost}${url}`;
-  }
-
-  return url;
+  return path;
 }
 
 export function isImageFile(fileNameOrUrl?: string | null): boolean {
