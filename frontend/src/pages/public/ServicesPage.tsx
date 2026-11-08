@@ -10,8 +10,8 @@ import {
   ArrowRight,
   Phone
 } from 'lucide-react';
-import { servicesApi, productsApi } from '../../services/api';
-import { Service } from '../../types';
+import { servicesApi, productsApi, extractResults } from '../../services/api';
+import { Service, Product } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
 
@@ -104,7 +104,7 @@ export const ServicesPage: React.FC = () => {
     // Load products count per category
     productsApi.getAll({ page_size: 100 })
       .then(res => {
-        const prods = res.data.results || res.data || [];
+        const prods = extractResults<Product>(res.data);
         const counts: Record<string, number> = {
           METAL_WORKS: 0,
           WOOD_WORKS: 0,
@@ -125,7 +125,7 @@ export const ServicesPage: React.FC = () => {
 
     servicesApi.getAll()
       .then(res => {
-        const rawServices: Service[] = res.data.results || res.data || [];
+        const rawServices: Service[] = extractResults<Service>(res.data);
         const filtered = rawServices.filter(s => ALLOWED_SERVICES.includes(s.title));
         
         const ordered = ALLOWED_SERVICES.map(title => {

@@ -5,7 +5,7 @@ import {
   Clock, Phone, CheckCircle2, ChevronRight, ChevronLeft, X, ZoomIn, 
   Sparkles, Hammer, Box, ArrowUpRight, Ruler, Palette, FileText
 } from 'lucide-react';
-import { productsApi } from '../../services/api';
+import { productsApi, extractResults } from '../../services/api';
 import { Product } from '../../types';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
@@ -81,7 +81,7 @@ export const ProductDetailPage: React.FC = () => {
         } else {
           productsApi.getAll({ service_category: serviceCategoryParam, page_size: 8 })
             .then((relRes) => {
-              const relList: Product[] = relRes.data?.results || relRes.data || [];
+              const relList: Product[] = extractResults<Product>(relRes.data);
               setRelatedProducts(relList.filter(p => p.id !== prod.id).slice(0, 4));
             })
             .catch(console.error);

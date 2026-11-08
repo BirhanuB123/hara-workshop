@@ -2,12 +2,24 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import JsonResponse
 
 from apps.accounts.urls import customer_router
 from apps.core.views import ContactInquiryView
 from apps.quotations.views import TelegramWebhookView
 
+def health_check(request):
+    return JsonResponse({
+        'status': 'healthy',
+        'service': 'hara-workshop-backend',
+        'version': '1.0.0'
+    })
+
 urlpatterns = [
+    path('', health_check, name='health-check-root'),
+    path('health/', health_check, name='health-check'),
+    path('api/health/', health_check, name='health-check-api'),
+
     path('admin/', admin.site.urls),
 
     path('api/auth/', include('apps.accounts.urls')),

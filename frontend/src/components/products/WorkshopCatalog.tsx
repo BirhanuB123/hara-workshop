@@ -18,7 +18,7 @@ import { Product } from '../../types';
 import { useLanguageStore } from '../../store/languageStore';
 import { useProductOrderStore } from '../../store/productOrderStore';
 import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
-import { productsApi } from '../../services/api';
+import { productsApi, extractResults } from '../../services/api';
 import { getProductImageUrl } from '../../utils/productUtils';
 
 interface CategoryConfig {
@@ -234,16 +234,16 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
 
   // Ensure products are always populated with all 90 items even before API loads or on network issues
   const [products, setProducts] = useState<Product[]>(() => {
-    return (propProducts && propProducts.length > 0) ? propProducts : CATALOG_PRODUCTS;
+    return (Array.isArray(propProducts) && propProducts.length > 0) ? propProducts : CATALOG_PRODUCTS;
   });
 
   React.useEffect(() => {
-    if (propProducts && propProducts.length > 0) {
+    if (Array.isArray(propProducts) && propProducts.length > 0) {
       setProducts(propProducts);
     } else {
       productsApi.getAll({ page_size: 100 })
         .then(res => {
-          const list = res.data.results || res.data || [];
+          const list = extractResults<Product>(res.data);
           if (list.length > 0) {
             setProducts(list);
           }
@@ -253,6 +253,9 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
         });
     }
   }, [propProducts]);
+
+  // Safe products accessor guaranteeing an array is always used
+  const safeProducts = Array.isArray(products) && products.length > 0 ? products : CATALOG_PRODUCTS;
 
   // Active expanded category for each section
   const [activeWoodCat, setActiveWoodCat] = useState<string | null>(null);
@@ -283,32 +286,32 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
 
   // Filter products by SKU prefix
   const getProductsByPrefix = (prefix: string): Product[] => {
-    return products
-      .filter((p) => p.sku && p.sku.startsWith(`${prefix}-`))
-      .sort((a, b) => a.sku.localeCompare(b.sku));
+    return safeProducts
+      .filter((p) => p && p.sku && p.sku.startsWith(`${prefix}-`))
+      .sort((a, b) => (a.sku || '').localeCompare(b.sku || ''));
   };
 
   // Curated Featured Products for each section
   const featuredWoodProducts = React.useMemo(() => {
     const targetSkus = ['CHR-001', 'TBL-001', 'BED-001', 'WRD-001', 'WDR-001'];
     return targetSkus
-      .map(sku => products.find(p => p.sku === sku))
+      .map(sku => safeProducts.find(p => p && p.sku === sku) || CATALOG_PRODUCTS.find(p => p.sku === sku))
       .filter((p): p is Product => !!p);
-  }, [products]);
+  }, [safeProducts]);
 
   const featuredMetalProducts = React.useMemo(() => {
     const targetSkus = ['MGT-001', 'MGT-002', 'MHR-001', 'MWN-001', 'MWN-002'];
     return targetSkus
-      .map(sku => products.find(p => p.sku === sku))
+      .map(sku => safeProducts.find(p => p && p.sku === sku) || CATALOG_PRODUCTS.find(p => p.sku === sku))
       .filter((p): p is Product => !!p);
-  }, [products]);
+  }, [safeProducts]);
 
   const featuredHybridProducts = React.useMemo(() => {
     const targetSkus = ['HCH-001', 'HTB-001', 'HBD-001', 'HSH-001', 'HWC-001'];
     return targetSkus
-      .map(sku => products.find(p => p.sku === sku))
+      .map(sku => safeProducts.find(p => p && p.sku === sku) || CATALOG_PRODUCTS.find(p => p.sku === sku))
       .filter((p): p is Product => !!p);
-  }, [products]);
+  }, [safeProducts]);
 
   // Product Card Renderer matching reference design
   const renderProductCard = (product: Product) => {

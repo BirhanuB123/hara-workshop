@@ -6,7 +6,7 @@ import {
   Building, ZoomIn, Phone, Tag, ExternalLink, Search, Filter, 
   PlusCircle, Eye, Box, ArrowUpRight, ChevronDown, ChevronUp, FolderOpen
 } from 'lucide-react';
-import { servicesApi, productsApi } from '../../services/api';
+import { servicesApi, productsApi, extractResults } from '../../services/api';
 import { Service, Product } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
@@ -294,8 +294,13 @@ export const ServiceDetailPage: React.FC = () => {
     const catCode = baseMeta.category;
     productsApi.getAll({ service_category: catCode, page_size: 100 })
       .then((res) => {
-        const list: Product[] = res.data?.results || res.data || [];
-        setProducts(list);
+        const list: Product[] = extractResults<Product>(res.data);
+        if (list.length > 0) {
+          setProducts(list);
+        } else {
+          const fallback = CATALOG_PRODUCTS.filter(p => p.service_category === catCode);
+          setProducts(fallback);
+        }
       })
       .catch((err) => {
         console.error('Failed to load service products:', err);
@@ -330,10 +335,14 @@ export const ServiceDetailPage: React.FC = () => {
   // 5 Dedicated Hybrid Metal & Wood products (HWC-001 through HWC-005)
   const HYBRID_TARGET_SKUS = ['HWC-001', 'HWC-002', 'HWC-003', 'HWC-004', 'HWC-005'];
 
+  const safeProducts = Array.isArray(products) && products.length > 0
+    ? products
+    : CATALOG_PRODUCTS.filter(p => p.service_category === baseMeta.category);
+
   const hybridProducts = useMemo(() => {
     if (!isHybrid) return [];
     return HYBRID_TARGET_SKUS.map((targetSku) => {
-      const liveMatch = products.find(p => p.sku?.toUpperCase() === targetSku);
+      const liveMatch = safeProducts.find(p => p?.sku?.toUpperCase() === targetSku);
       const staticMatch = CATALOG_PRODUCTS.find(p => p.sku?.toUpperCase() === targetSku);
       const base = liveMatch || staticMatch;
       if (!base) return null;
@@ -378,7 +387,7 @@ export const ServiceDetailPage: React.FC = () => {
     const catDef = approvedCategories.find(c => c.name.toLowerCase() === expandedCategory.toLowerCase());
     const lowerName = expandedCategory.toLowerCase();
 
-    return products.filter((p) => {
+    return safeProducts.filter((p) => {
       // 1. Check SKU prefix match (e.g. CHR, TBL, BED, MGT, MWN)
       if (catDef && p.sku && p.sku.toUpperCase().startsWith(catDef.skuPrefix)) {
         return true;
@@ -396,7 +405,7 @@ export const ServiceDetailPage: React.FC = () => {
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const q = searchQuery.toLowerCase().trim();
-    return products.filter((p) => {
+    return safeProducts.filter((p) => {
       return (
         (p.name && p.name.toLowerCase().includes(q)) ||
         (p.name_am && p.name_am.toLowerCase().includes(q)) ||

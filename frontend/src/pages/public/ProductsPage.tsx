@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { productsApi } from '../../services/api';
+import { productsApi, extractResults } from '../../services/api';
 import { Product } from '../../types';
 import { WorkshopCatalog } from '../../components/products/WorkshopCatalog';
 import { useLanguageStore } from '../../store/languageStore';
@@ -16,7 +16,7 @@ export const ProductsPage: React.FC = () => {
   const fetchProducts = async () => {
     try {
       const res = await productsApi.getAll({ page_size: 100 });
-      const items = res.data.results || res.data || [];
+      const items = extractResults<Product>(res.data);
       if (items.length > 0) {
         setProducts(items);
       }

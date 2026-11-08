@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useLanguageStore } from '../../store/languageStore';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
-import { notificationsApi } from '../../services/api';
+import { notificationsApi, extractResults } from '../../services/api';
 import { Notification } from '../../types';
 
 interface DashboardHeaderProps {
@@ -31,7 +31,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const loadNotifications = async () => {
     try {
       const res = await notificationsApi.getAll();
-      const list = res.data.results || res.data || [];
+      const list = extractResults<Notification>(res.data);
       setNotifications(list.slice(0, 5));
       const unread = list.filter((n: Notification) => !n.is_read).length;
       setUnreadCount(unread);
