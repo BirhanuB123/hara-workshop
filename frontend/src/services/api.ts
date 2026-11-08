@@ -42,6 +42,18 @@ try {
   localStorage.removeItem('refresh_token');
 } catch {}
 
+api.interceptors.request.use((config) => {
+  // If sending FormData, delete Content-Type so browser/Axios automatically sets
+  // multipart/form-data with the correct boundary parameter.
+  if (config.data instanceof FormData) {
+    if (config.headers) {
+      delete config.headers['Content-Type'];
+      delete config.headers['content-type'];
+    }
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => {
     // Detect HTML responses (e.g. from SPA routing rewrites or misconfigured backend URLs)
@@ -161,10 +173,7 @@ export const projectsApi = {
 export const quotesApi = {
   getAll: (params?: any) => api.get('/quotations/', { params }),
   getById: (id: string) => api.get(`/quotations/${id}/`),
-  create: (data: any) => {
-    const isFormData = data instanceof FormData;
-    return api.post('/quotations/', data, isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : undefined);
-  },
+  create: (data: any) => api.post('/quotations/', data),
   proposePrice: (id: string, data: any) => api.post(`/quotations/${id}/propose_price/`, data),
   accept: (id: string) => api.post(`/quotations/${id}/accept/`),
   reject: (id: string) => api.post(`/quotations/${id}/reject/`),

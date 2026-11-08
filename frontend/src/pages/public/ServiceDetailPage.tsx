@@ -193,12 +193,6 @@ export const ServiceDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { t, language, localize } = useLanguageStore();
 
-  const [service, setService] = useState<Service | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [productsLoading, setProductsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   // Active expanded category: defaults to the first category so products reveal immediately (non-hybrid only)
   const normalizedSlug = (slug || 'wood-works').toLowerCase();
   const isHybrid = normalizedSlug === 'hybrid-metal-wood' || 
@@ -213,7 +207,52 @@ export const ServiceDetailPage: React.FC = () => {
     : 'wood-works';
 
   const approvedCategories = isHybrid ? [] : (APPROVED_SERVICE_CATEGORIES[resolvedSlug] || APPROVED_SERVICE_CATEGORIES['wood-works']);
-  
+
+  const baseMeta = (resolvedSlug && SERVICE_META[resolvedSlug]) || (slug && SERVICE_META[slug.toLowerCase()]) || {
+    title: isHybrid ? 'Hybrid Metal + Wood Construction' : 'Workshop Capability',
+    subtitle: isHybrid ? 'Modern architectural and interior solutions combining the strength of structural steel with the warmth and character of solid wood.' : 'Custom engineering, manufacturing, and architectural solutions.',
+    category: isHybrid ? 'HYBRID_METAL_WOOD' : 'WOOD_WORKS',
+    materialStandard: isHybrid ? 'Genuine Metal + Wood Fusion' : 'Precision Workshop Fabrication',
+    materialPurityRule: isHybrid ? 'ARCHITECTURAL FUSION: Every product visibly and genuinely combines both heavy-gauge structural steel and seasoned natural hardwood.' : 'Strict material quality assurance and bespoke craftsmanship.',
+  };
+
+  const fallbackService: Service | null = useMemo(() => {
+    if (!resolvedSlug || !baseMeta) return null;
+    return {
+      id: resolvedSlug,
+      title: baseMeta.title,
+      title_am: language === 'am' ? (
+        resolvedSlug === 'metal-works' ? 'የብረት ስራዎች' :
+        resolvedSlug === 'wood-works' ? 'የእንጨት ስራዎች' : 'ቅይጥ የብረት + እንጨት ስራዎች'
+      ) : undefined,
+      category: baseMeta.category,
+      category_name: baseMeta.title,
+      slug: resolvedSlug,
+      tagline: baseMeta.subtitle,
+      short_description: baseMeta.subtitle,
+      full_description: baseMeta.subtitle,
+      starting_price: resolvedSlug === 'wood-works' ? 45000 : resolvedSlug === 'metal-works' ? 35000 : 95000,
+      price_unit: 'per project',
+      turnaround_time: '1-3 weeks',
+      is_active: true,
+      image: `/images/services/${resolvedSlug}.jpg`,
+      primary_image: `/images/services/${resolvedSlug}.jpg`,
+      offerings: [],
+      applications: [],
+      materials: [],
+      benefits: [],
+      process_steps: [],
+      gallery_images: [],
+      created_at: new Date().toISOString(),
+    } as Service;
+  }, [baseMeta, resolvedSlug, language]);
+
+  const [service, setService] = useState<Service | null>(fallbackService);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(!fallbackService);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
     !isHybrid && approvedCategories.length > 0 ? approvedCategories[0].name : null
   );
@@ -224,14 +263,6 @@ export const ServiceDetailPage: React.FC = () => {
 
   // Ref to smooth scroll down to product grid upon expansion
   const productsSectionRef = useRef<HTMLDivElement>(null);
-
-  const baseMeta = (resolvedSlug && SERVICE_META[resolvedSlug]) || (slug && SERVICE_META[slug.toLowerCase()]) || {
-    title: service?.title || (isHybrid ? 'Hybrid Metal + Wood Construction' : 'Workshop Capability'),
-    subtitle: service?.tagline || (isHybrid ? 'Modern architectural and interior solutions combining the strength of structural steel with the warmth and character of solid wood.' : 'Custom engineering, manufacturing, and architectural solutions.'),
-    category: isHybrid ? 'HYBRID_METAL_WOOD' : 'WOOD_WORKS',
-    materialStandard: isHybrid ? 'Genuine Metal + Wood Fusion' : 'Precision Workshop Fabrication',
-    materialPurityRule: isHybrid ? 'ARCHITECTURAL FUSION: Every product visibly and genuinely combines both heavy-gauge structural steel and seasoned natural hardwood.' : 'Strict material quality assurance and bespoke craftsmanship.',
-  };
 
   const meta = useMemo(() => {
     if (language !== 'am') return baseMeta;
@@ -285,8 +316,12 @@ export const ServiceDetailPage: React.FC = () => {
         setService(res.data);
       })
       .catch((err) => {
-        console.error('Failed to load service details:', err);
-        setError('Service details could not be found.');
+        console.warn('Failed to load live service details from API, using catalog definitions:', err);
+        if (fallbackService) {
+          setService(fallbackService);
+        } else {
+          setError('Service details could not be found.');
+        }
       })
       .finally(() => setLoading(false));
 
