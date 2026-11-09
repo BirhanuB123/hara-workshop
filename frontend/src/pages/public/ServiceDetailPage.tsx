@@ -11,6 +11,7 @@ import { Service, Product } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
 import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
+import { getProductImageUrl } from '../../utils/productUtils';
 import { useProductOrderStore } from '../../store/productOrderStore';
 
 export interface CategoryCardDef {
@@ -148,7 +149,24 @@ export const APPROVED_SERVICE_CATEGORIES: Record<string, CategoryCardDef[]> = {
       productCount: 5,
       skuPrefix: 'MWN',
     },
+    {
+      name: 'Metal Handrails',
+      nameAm: 'የብረት የእጅ መደገፊያዎች',
+      slug: 'metal-handrails',
+      coverImage: '/images/categories/cover-metal-handrails.jpg',
+      description: 'Architectural steel handrails, balustrades, staircase safety railings, and commercial guardrails.',
+      descriptionAm: 'የደረጃ እና የረንዳ የብረት የእጅ መደገፊያዎች፣ የጥበቃ አጥሮች እና ዘመናዊ የደህንነት ባሉስትሬዶች።',
+      productCount: 5,
+      skuPrefix: 'MHR',
+    },
   ],
+};
+
+const SERVICE_HERO_ASSETS: Record<string, string> = {
+  'wood-works': '/images/services/service-wood-works.jpg',
+  'metal-works': '/images/services/service-metal-works.jpg',
+  'hybrid-metal-wood': '/images/services/service-hybrid-works.jpg',
+  'hybrid-metal-wood-construction': '/images/services/service-hybrid-works.jpg',
 };
 
 const SERVICE_META: Record<string, {
@@ -367,37 +385,25 @@ export const ServiceDetailPage: React.FC = () => {
     }
   };
 
-  // 5 Dedicated Hybrid Metal & Wood products (HWC-001 through HWC-005)
-  const HYBRID_TARGET_SKUS = ['HWC-001', 'HWC-002', 'HWC-003', 'HWC-004', 'HWC-005'];
-
   const safeProducts = Array.isArray(products) && products.length > 0
     ? products
     : CATALOG_PRODUCTS.filter(p => p.service_category === baseMeta.category);
 
   const hybridProducts = useMemo(() => {
     if (!isHybrid) return [];
-    return HYBRID_TARGET_SKUS.map((targetSku) => {
-      const liveMatch = safeProducts.find(p => p?.sku?.toUpperCase() === targetSku);
-      const staticMatch = CATALOG_PRODUCTS.find(p => p.sku?.toUpperCase() === targetSku);
-      const base = liveMatch || staticMatch;
-      if (!base) return null;
-
-      const exactImage = `/images/services/${targetSku}.jpg`;
+    const pool = safeProducts.filter(p => p.service_category === 'HYBRID_METAL_WOOD');
+    const source = pool.length > 0 ? pool : CATALOG_PRODUCTS.filter(p => p.service_category === 'HYBRID_METAL_WOOD');
+    return source.map((base) => {
+      const exactImage = getProductImageUrl(base);
       return {
         ...base,
-        sku: targetSku,
         primary_image: exactImage,
-        images: [
-          {
-            id: `img-${targetSku}`,
-            image: exactImage,
-            is_primary: true,
-            caption: `${base.name} (${targetSku})`
-          }
-        ]
+        images: base.images && base.images.length > 0
+          ? base.images.map(img => ({ ...img, image: exactImage }))
+          : [{ id: `img-${base.sku || base.id}`, image: exactImage, is_primary: true, caption: `${base.name} (${base.sku})` }]
       } as Product;
-    }).filter((p): p is Product => p !== null);
-  }, [isHybrid, products]);
+    });
+  }, [isHybrid, safeProducts]);
 
   // Filtered hybrid products when searching
   const displayedHybridProducts = useMemo(() => {
@@ -465,7 +471,7 @@ export const ServiceDetailPage: React.FC = () => {
       if (p.sku) params.set('sku', p.sku);
       if (p.name) params.set('name', p.name);
       params.set('service', serviceTitle);
-      const exactImage = p.sku?.startsWith('HWC') ? `/images/services/${p.sku}.jpg` : p.primary_image;
+      const exactImage = getProductImageUrl(p);
       if (exactImage) params.set('image', exactImage);
       navigate(`/request-quote?${params.toString()}`);
     } else if (typeof prodOrName === 'string') {
@@ -533,7 +539,7 @@ export const ServiceDetailPage: React.FC = () => {
       <section className="relative overflow-hidden bg-[#FAF7F2] border-b border-stone-200">
         <div className="absolute inset-0 z-0">
           <img
-            src={service.primary_image || service.image || '/images/services/service-hero-workshop.jpg'}
+            src={(service?.primary_image && !service.primary_image.includes('service-hero-workshop')) ? service.primary_image : (SERVICE_HERO_ASSETS[resolvedSlug] || '/images/services/service-wood-works.jpg')}
             alt={meta.title}
             className="w-full h-full object-cover object-center opacity-15 filter blur-[1px] scale-105"
           />
@@ -572,7 +578,7 @@ export const ServiceDetailPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 text-xs font-semibold pt-2">
               <div className="flex items-center gap-1.5 bg-white border border-stone-200 px-3.5 py-2 rounded-lg text-stone-800 shadow-xs">
                 <Box className="w-4 h-4 text-brand-red" />
-                <span>{t('services.productCatalog')}: <strong className="text-brand-red">{isHybrid ? '5' : (products.length || (approvedCategories.length * 5))} {t('common.available')}</strong></span>
+                <span>{t('services.productCatalog')}: <strong className="text-brand-red">{isHybrid ? displayedHybridProducts.length : (products.length || (approvedCategories.length * 5))} {t('common.available')}</strong></span>
               </div>
               <div className="flex items-center gap-1.5 bg-white border border-stone-200 px-3.5 py-2 rounded-lg text-stone-800 shadow-xs">
                 <Clock className="w-4 h-4 text-brand-red" />
@@ -616,7 +622,7 @@ export const ServiceDetailPage: React.FC = () => {
               <span className="text-stone-300">•</span>
               <span className="text-xs font-mono font-bold text-stone-700 bg-white px-2 py-0.5 rounded border border-stone-200 shadow-xs">
                 {isHybrid ? (
-                  language === 'am' ? '5 ምርቶች ዝግጁ' : '5 Products Available'
+                  language === 'am' ? `${displayedHybridProducts.length} ምርቶች ዝግጁ` : `${displayedHybridProducts.length} Products Available`
                 ) : (
                   `${approvedCategories.length} ${language === 'am' ? 'ምድቦች' : 'Categories'} • ${products.length || (approvedCategories.length * 5)} ${t('common.available')}`
                 )}
@@ -714,7 +720,7 @@ export const ServiceDetailPage: React.FC = () => {
                       alt={catTitle}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/images/services/service-hero-workshop.jpg';
+                        (e.target as HTMLImageElement).src = SERVICE_HERO_ASSETS[resolvedSlug] || '/hara-official-logo.png';
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent opacity-75" />
@@ -964,7 +970,7 @@ export const ServiceDetailPage: React.FC = () => {
                   alt={item.caption || `${meta.title} Gallery ${index + 1}`}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/images/services/service-hero-workshop.jpg';
+                    (e.target as HTMLImageElement).src = SERVICE_HERO_ASSETS[resolvedSlug] || '/hara-official-logo.png';
                   }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-75 group-hover:opacity-90 transition-opacity" />
@@ -1260,9 +1266,7 @@ export const ServiceDetailPage: React.FC = () => {
   // Helper render function for each product card
   function renderProductCard(prod: Product) {
     const productDetailUrl = `/services/${slug}/products/${prod.slug || prod.id}`;
-    const prodImage = prod.sku?.startsWith('HWC')
-      ? `/images/services/${prod.sku}.jpg`
-      : (prod.primary_image || (prod.images && prod.images[0]?.image) || '/images/services/service-hero-workshop.jpg');
+    const prodImage = getProductImageUrl(prod);
     const prodName = localize(prod, 'name');
     const prodDesc = localize(prod, 'short_description') || localize(prod, 'description');
     const prodMaterial = localize(prod, 'material');
@@ -1281,10 +1285,7 @@ export const ServiceDetailPage: React.FC = () => {
             alt={prodName}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
-              const fallback = prod.sku?.startsWith('HWC')
-                ? `/images/services/${prod.sku}.jpg`
-                : '/images/services/service-hero-workshop.jpg';
-              (e.target as HTMLImageElement).src = fallback;
+              (e.target as HTMLImageElement).src = '/hara-official-logo.png';
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-75 transition-opacity" />

@@ -208,11 +208,13 @@ class QuoteViewSet(viewsets.ModelViewSet):
 
         # Dispatch Telegram notification
         telegram_status = "pending"
+        telegram_details = {}
         try:
             from .tasks import send_telegram_quote_notification, _sanitize_for_logging
             token = getattr(settings, "TELEGRAM_BOT_TOKEN", "")
             tel_result = send_telegram_quote_notification(str(quote.id))
             telegram_status = tel_result.get('status', 'sent')
+            telegram_details = tel_result.get('destinations', {})
             safe_result = _sanitize_for_logging(str(tel_result), token)
             logger.info(f"Telegram notification for quote {quote.quote_number}: {safe_result}")
         except Exception as tel_err:
@@ -220,6 +222,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
             token = getattr(settings, "TELEGRAM_BOT_TOKEN", "")
             safe_err = _sanitize_for_logging(str(tel_err), token)
             telegram_status = "failed"
+            telegram_details = {"error": safe_err}
             logger.error(f"Failed to dispatch Telegram notification for {quote.quote_number}: {safe_err}")
 
         # Generate secure single-use linking token for customer Telegram order tracking
@@ -240,6 +243,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
             'estimated_baseline': float(quote.estimated_baseline_amount) if (has_predefined_price and quote.estimated_baseline_amount) else None,
             'price_message': None if has_predefined_price else 'Price will be provided after reviewing your request.',
             'telegram_status': telegram_status,
+            'telegram_details': telegram_details,
             'telegram_link_token': link_token,
             'telegram_bot_username': bot_username,
             'telegram_deep_link': telegram_deep_link,
@@ -257,16 +261,17 @@ class QuoteViewSet(viewsets.ModelViewSet):
         quote = self.get_object()
         from .tasks import send_telegram_quote_notification
         chat_id = request.data.get('chat_id', None)
-        async_task = request.query_params.get('async', 'true').lower() in ('true', '1')
+        force = request.data.get('force', False)
+        async_task = request.query_params.get('async', 'false').lower() in ('true', '1')
         if async_task:
-            task = send_telegram_quote_notification.delay(str(quote.id), target_chat_id=chat_id)
+            task = send_telegram_quote_notification.delay(str(quote.id), target_chat_id=chat_id, force_resend=force)
             return Response({
                 'message': 'Telegram alert dispatched to Celery worker',
                 'task_id': task.id,
                 'quote_number': quote.quote_number
             })
         else:
-            result = send_telegram_quote_notification(str(quote.id), target_chat_id=chat_id)
+            result = send_telegram_quote_notification(str(quote.id), target_chat_id=chat_id, force_resend=force)
             return Response(result)
 
     @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])

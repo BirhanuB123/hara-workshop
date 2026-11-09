@@ -19,7 +19,8 @@ import {
   Calendar,
   MapPin,
   Sparkles,
-  ChevronDown
+  ChevronDown,
+  Clock
 } from 'lucide-react';
 import { productsApi, quotesApi } from '../../services/api';
 import { Product } from '../../types';
@@ -421,15 +422,15 @@ export const RequestQuotePage: React.FC = () => {
 
           <div className="text-center space-y-2">
             <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-200">
-              {language === 'am' ? 'ጥያቄው ደርሷል' : 'Request Received'}
+              {language === 'am' ? 'ጥያቄው ደርሷል' : 'Quotation Received'}
             </span>
             <h1 className="text-3xl sm:text-4xl font-black text-stone-900 uppercase tracking-tight">
-              {language === 'am' ? 'ትዕዛዝዎ በተሳካ ሁኔታ ተልኳል' : 'Request Submitted Successfully'}
+              {language === 'am' ? 'ጥያቄዎ በስርዓቱ ተመዝግቧል' : 'Quotation Received & Recorded'}
             </h1>
             <p className="text-xs sm:text-sm text-stone-600 max-w-xl mx-auto leading-relaxed">
               {language === 'am'
-                ? 'HARA WORKSHOPን ስለመረጡ እናመሰግናለን። የፕሮጀክት ዝርዝር መግለጫዎ እና አባሪ ፋይሎችዎ ለዎርክሾፕ ማናጀራችን ሳሙኤል ተልከዋል።'
-                : 'Thank you for choosing HARA WORKSHOP. Your project request has been received by our workshop engineering team and forwarded to Workshop Manager Samuel.'}
+                ? 'HARA WORKSHOPን ስለመረጡ እናመሰግናለን። የፕሮጀክት ጥያቄዎ በተሳካ ሁኔታ በሲስተማችን ተመዝግቧል።'
+                : 'Thank you for choosing HARA WORKSHOP. Your project quotation request has been successfully recorded in our workshop ledger.'}
             </p>
           </div>
 
@@ -444,10 +445,42 @@ export const RequestQuotePage: React.FC = () => {
                   {submittedResult.quote_number}
                 </span>
               </div>
-              <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
-                <Check className="w-4 h-4" />
-                <span>{language === 'am' ? 'ለማናጀር ሳሙኤል ተልኳል' : 'Dispatched to Manager Samuel'}</span>
-              </div>
+              {(() => {
+                const telStatus = submittedResult.telegram_status;
+                const details = submittedResult.telegram_details || {};
+                const managerDelivered = details['860309749']?.status === 'sent' || details['860309749']?.status === 'already_sent';
+                const groupDelivered = details['-5374750855']?.status === 'sent' || details['-5374750855']?.status === 'already_sent';
+
+                if (telStatus === 'sent' || (managerDelivered && groupDelivered)) {
+                  return (
+                    <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
+                      <Check className="w-4 h-4 text-emerald-600" />
+                      <span>{language === 'am' ? 'ለማኔጅመንት እና ለማናጀር ሳሙኤል ተልኳል' : 'Dispatched to Management & Manager Samuel'}</span>
+                    </div>
+                  );
+                } else if (telStatus === 'partial' || groupDelivered) {
+                  return (
+                    <div className="text-xs font-semibold text-blue-800 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
+                      <Check className="w-4 h-4 text-blue-600" />
+                      <span>{language === 'am' ? 'ለማኔጅመንት ግሩፕ ተልኳል (የቀጥታ ማሳወቂያ በመጠባበቅ ላይ)' : 'Dispatched to Management Group (Direct chat pending)'}</span>
+                    </div>
+                  );
+                } else if (telStatus === 'simulated') {
+                  return (
+                    <div className="text-xs font-semibold text-stone-700 bg-stone-100 border border-stone-300 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
+                      <Clock className="w-4 h-4 text-stone-500" />
+                      <span>{language === 'am' ? 'በሲስተም ተመዝግቧል (የሙከራ ሁነታ)' : 'Logged in Ledger (Simulation Mode)'}</span>
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <span>{language === 'am' ? 'በሲስተም ተመዝግቧል (የቴሌግራም መላክ በመጠባበቅ ላይ)' : 'Logged in Ledger (Telegram Delivery Pending)'}</span>
+                    </div>
+                  );
+                }
+              })()}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">

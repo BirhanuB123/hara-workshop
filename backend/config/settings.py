@@ -286,8 +286,9 @@ CELERY_TASK_ALWAYS_EAGER = os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'False').l
 # Telegram Bot Alerts Configuration
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '').strip()
 TELEGRAM_GROUP_CHAT_ID = os.environ.get('TELEGRAM_GROUP_CHAT_ID', '-5374750855').strip()
+TELEGRAM_MANAGER_CHAT_ID = os.environ.get('TELEGRAM_MANAGER_CHAT_ID', '860309749').strip()
 TELEGRAM_ADMIN_CHAT_ID = os.environ.get('TELEGRAM_ADMIN_CHAT_ID', '1774429006').strip()
-TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '1774429006').strip()
+TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '860309749').strip()
 TELEGRAM_BOT_USERNAME = os.environ.get('TELEGRAM_BOT_USERNAME', 'HaraWorkshopOrdersBot').strip().lstrip('@')
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://hara-workshop.vercel.app').rstrip('/')
 
