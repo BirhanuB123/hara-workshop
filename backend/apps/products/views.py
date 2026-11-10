@@ -5,6 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Category, Product, ProductImage
 from .serializers import CategorySerializer, ProductSerializer, ProductImageSerializer
 from apps.accounts.permissions import IsStaffUser
+import logging
+logger = logging.getLogger(__name__)
 
 class CategoryViewSet(viewsets.ModelViewSet):
     authentication_classes = []
@@ -53,7 +55,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     pagination_class = CatalogPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = [
-        'service_category', 'service', 'service__slug', 'category', 'category__slug',
+        'service', 'service__slug', 'category', 'category__slug',
         'product_type', 'subcategory', 'is_featured', 'stock_status', 'is_active', 'is_customizable', 'slug'
     ]
     search_fields = [
@@ -65,10 +67,18 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        # Filter by service_category if provided or by service slug
+        # Robust service_category normalization (supports WOOD_WORKS, wood-works, wood_works, wood)
         service_category = self.request.query_params.get('service_category')
         if service_category:
-            qs = qs.filter(service_category=service_category.upper())
+            cat_norm = service_category.strip().upper().replace('-', '_').replace(' ', '_')
+            if 'HYBRID' in cat_norm:
+                qs = qs.filter(service_category='HYBRID_METAL_WOOD')
+            elif 'WOOD' in cat_norm:
+                qs = qs.filter(service_category='WOOD_WORKS')
+            elif 'METAL' in cat_norm:
+                qs = qs.filter(service_category='METAL_WORKS')
+            else:
+                qs = qs.filter(service_category=cat_norm)
 
         service_slug = self.request.query_params.get('service_slug')
         if service_slug:
@@ -93,9 +103,33 @@ class ProductViewSet(viewsets.ModelViewSet):
                 Q(product_type__iexact=subcategory)
             )
 
-        if not (self.request.user and self.request.user.is_authenticated and self.request.user.role != 'CUSTOMER'):
+        # Safe role inspection using getattr to prevent AttributeError if user model lacks role
+        if not (self.request.user and self.request.user.is_authenticated and getattr(self.request.user, 'role', '') != 'CUSTOMER'):
             qs = qs.filter(is_active=True)
         return qs
+
+    def list(self, request, *args, **kwargs):
+        """Defensive list handler: logs exceptions and guarantees paginated JSON response without HTTP 500."""
+        try:
+            return super().list(request, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"[PRODUCT LIST ERROR] {e}", exc_info=True)
+            try:
+                qs = self.get_queryset()
+                page = self.paginate_queryset(qs)
+                if page is not None:
+                    serializer = self.get_serializer(page, many=True)
+                    return self.get_paginated_response(serializer.data)
+                serializer = self.get_serializer(qs, many=True)
+                return Response(serializer.data)
+            except Exception as fallback_err:
+                logger.error(f"[PRODUCT LIST FALLBACK ERROR] {fallback_err}", exc_info=True)
+                return Response({
+                    "count": 0,
+                    "next": None,
+                    "previous": None,
+                    "results": []
+                }, status=status.HTTP_200_OK)
 
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())

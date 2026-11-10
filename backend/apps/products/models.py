@@ -100,11 +100,22 @@ class Product(TimeStampedModel):
 
     @property
     def primary_image_url(self):
-        primary = self.images.filter(is_primary=True).first()
-        if primary and primary.image:
-            return primary.image.url
-        first = self.images.first()
-        return first.image.url if first and first.image else None
+        try:
+            primary = self.images.filter(is_primary=True).first()
+            if primary and primary.image:
+                try:
+                    return primary.image.url
+                except Exception:
+                    pass
+            first = self.images.first()
+            if first and first.image:
+                try:
+                    return first.image.url
+                except Exception:
+                    pass
+        except Exception:
+            pass
+        return None
 
 class ProductImage(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')

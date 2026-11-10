@@ -31,7 +31,7 @@ def _sanitize_for_logging(text: str, token: str = "") -> str:
     return text_str
 
 
-def _send_telegram_http(token: str, chat_id: str, text: str) -> dict:
+def _send_telegram_http(token: str, chat_id: str, text: str, reply_markup: dict = None) -> dict:
     """
     Sends a text message via the Telegram Bot API using Python's standard library.
     Safely traps and sanitizes any HTTP error to prevent token exposure in logs.
@@ -43,6 +43,8 @@ def _send_telegram_http(token: str, chat_id: str, text: str) -> dict:
         "parse_mode": "HTML",
         "disable_web_page_preview": True,
     }
+    if reply_markup:
+        payload["reply_markup"] = reply_markup
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
         url,

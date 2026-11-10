@@ -96,3 +96,7 @@ prompt_full.txt
 sec_11_23.txt
 sec_24_41.txt
 *.tmp
+
+# Agent and skill artifacts
+.agents/
+skills-lock.json
