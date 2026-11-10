@@ -101,11 +101,14 @@ class ContactInquiryView(views.APIView):
         # Route to management group chat ID by default, fallback to admin chat ID
         chat_id = (
             getattr(settings, 'TELEGRAM_GROUP_CHAT_ID', None) or
+            getattr(settings, 'TELEGRAM_MANAGER_CHAT_ID', None) or
             getattr(settings, 'TELEGRAM_ADMIN_CHAT_ID', None) or
-            getattr(settings, 'TELEGRAM_CHAT_ID', '1774429006')
+            '860309749'
         ).strip()
-        if chat_id in ('@Manager_Samuel_A', 'Manager_Samuel_A', '@haraworkshop', 'haraworkshop', ''):
-            chat_id = '1774429006'
+        if chat_id in ('@Manager_Samuel_A', 'Manager_Samuel_A'):
+            chat_id = getattr(settings, 'TELEGRAM_MANAGER_CHAT_ID', '860309749')
+        elif chat_id in ('@haraworkshop', 'haraworkshop', ''):
+            chat_id = getattr(settings, 'TELEGRAM_GROUP_CHAT_ID', '-5374750855')
 
         # 1. ALWAYS persist inquiry in AuditLog first so submission is never lost
         audit_entry = None

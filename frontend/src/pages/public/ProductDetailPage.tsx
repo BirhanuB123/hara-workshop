@@ -12,6 +12,7 @@ import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
 import { useProductOrderStore } from '../../store/productOrderStore';
 import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
+import { getProductImageUrl } from '../../utils/productUtils';
 
 export const ProductDetailPage: React.FC = () => {
   const { serviceSlug, productSlug, id } = useParams<{ 
@@ -51,20 +52,25 @@ export const ProductDetailPage: React.FC = () => {
     productsApi.getById(lookupKey)
       .then((res) => {
         const prod: Product = res.data;
-        if (prod.sku?.startsWith('HWC')) {
-          const exactImg = `/images/services/${prod.sku}.jpg`;
-          prod.primary_image = exactImg;
+        const resolvedMainImg = getProductImageUrl(prod);
+        prod.primary_image = resolvedMainImg;
+        if (!prod.images || prod.images.length === 0) {
           prod.images = [
             {
-              id: `img-${prod.sku}`,
-              image: exactImg,
+              id: `img-${prod.sku || prod.id}`,
+              image: resolvedMainImg,
               is_primary: true,
-              caption: `${prod.name} (${prod.sku})`
+              caption: `${prod.name} (${prod.sku || ''})`
             }
           ];
+        } else {
+          prod.images = prod.images.map(img => ({
+            ...img,
+            image: getProductImageUrl({ sku: prod.sku, primary_image: img.image })
+          }));
         }
         setProduct(prod);
-        setSelectedImage(prod.primary_image || (prod.images && prod.images[0]?.image) || null);
+        setSelectedImage(resolvedMainImg);
 
         // Fetch related products from same service category
         const serviceCategoryParam = prod.service_category || (
@@ -72,11 +78,8 @@ export const ProductDetailPage: React.FC = () => {
           serviceSlug?.includes('wood') ? 'WOOD_WORKS' : 'HYBRID_METAL_WOOD'
         );
 
-        if (serviceCategoryParam === 'HYBRID_METAL_WOOD' || serviceSlug?.includes('hybrid') || prod.sku?.startsWith('HWC')) {
-          const hybridOther = ['HWC-001', 'HWC-002', 'HWC-003', 'HWC-004', 'HWC-005']
-            .filter(sku => sku !== prod.sku)
-            .map(sku => CATALOG_PRODUCTS.find(p => p.sku === sku))
-            .filter((p): p is Product => !!p);
+        if (serviceCategoryParam === 'HYBRID_METAL_WOOD' || serviceSlug?.includes('hybrid')) {
+          const hybridOther = CATALOG_PRODUCTS.filter(p => p.service_category === 'HYBRID_METAL_WOOD' && p.sku !== prod.sku);
           setRelatedProducts(hybridOther.slice(0, 4));
         } else {
           productsApi.getAll({ service_category: serviceCategoryParam, page_size: 8 })
@@ -694,7 +697,7 @@ export const ProductDetailPage: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts.map((rel) => {
               const relUrl = `/services/${currentServiceSlug}/products/${rel.slug || rel.id}`;
-              const relImage = rel.primary_image || (rel.images && rel.images[0]?.image) || '/images/products/placeholder.jpg';
+              const relImage = getProductImageUrl(rel);
               const relName = localize(rel, 'name');
               const relDesc = localize(rel, 'short_description') || localize(rel, 'description');
               const relMaterial = localize(rel, 'material');
@@ -711,7 +714,7 @@ export const ProductDetailPage: React.FC = () => {
                       alt={relName}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/images/services/service-hero-workshop.jpg';
+                        (e.target as HTMLImageElement).src = '/hara-official-logo.png';
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-stone-900/50 via-transparent to-transparent opacity-60" />

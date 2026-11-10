@@ -92,12 +92,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "e861a4ac-5d6e-40f9-a448-4e0f126bf95e",
-        "image": "/media/products/HSH-001.jpg",
+        "image": "/images/services/HSH-001.jpg",
         "is_primary": true,
         "caption": "Industrial Ladder Bookcase (HSH-001)"
       }
     ],
-    "primary_image": "/media/products/HSH-001.jpg",
+    "primary_image": "/images/services/HSH-001.jpg",
     "created_at": "2026-10-09T11:40:38.110550+03:00",
     "updated_at": "2026-10-09T11:40:38.110728+03:00"
   },
@@ -142,12 +142,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "02128550-bee5-435c-a262-6fc4d596eb26",
-        "image": "/media/products/HBD-001.jpg",
+        "image": "/images/services/HBD-001.jpg",
         "is_primary": true,
         "caption": "Industrial Steel Canopy Bed (HBD-001)"
       }
     ],
-    "primary_image": "/media/products/HBD-001.jpg",
+    "primary_image": "/images/services/HBD-001.jpg",
     "created_at": "2026-10-09T11:40:37.757730+03:00",
     "updated_at": "2026-10-09T11:40:37.757777+03:00"
   },
@@ -192,12 +192,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "33c6a9c6-3e82-4b2c-845b-afaa9b6816fe",
-        "image": "/media/products/HTB-001.jpg",
+        "image": "/images/services/HTB-001.jpg",
         "is_primary": true,
         "caption": "Live Edge Steel Frame Dining Table (HTB-001)"
       }
     ],
-    "primary_image": "/media/products/HTB-001.jpg",
+    "primary_image": "/images/services/HTB-001.jpg",
     "created_at": "2026-10-09T11:40:37.452880+03:00",
     "updated_at": "2026-10-09T11:40:37.452916+03:00"
   },
@@ -242,12 +242,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "31ef6a1a-8d8b-4b06-9e99-4a0e1c533baf",
-        "image": "/media/products/HCH-001.jpg",
+        "image": "/images/services/HCH-001.jpg",
         "is_primary": true,
         "caption": "Industrial Steel & Oak Dining Chair (HCH-001)"
       }
     ],
-    "primary_image": "/media/products/HCH-001.jpg",
+    "primary_image": "/images/services/HCH-001.jpg",
     "created_at": "2026-10-09T11:40:37.235376+03:00",
     "updated_at": "2026-10-09T11:40:37.235415+03:00"
   },
@@ -292,12 +292,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "5d037bd4-902c-4920-ac17-501514baab7d",
-        "image": "/media/products/OWP-001.jpg",
+        "image": "/images/services/OWP-001.jpg",
         "is_primary": true,
         "caption": "Solid Timber Geometric Wall Shelf (OWP-001)"
       }
     ],
-    "primary_image": "/media/products/OWP-001.jpg",
+    "primary_image": "/images/services/OWP-001.jpg",
     "created_at": "2026-10-09T11:00:39.676249+03:00",
     "updated_at": "2026-10-09T11:40:36.378309+03:00"
   },
@@ -342,12 +342,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "45a1e196-2ea7-4ef9-9540-b396a86d4a6d",
-        "image": "/media/products/WCB-001.jpg",
+        "image": "/images/services/WCB-001.jpg",
         "is_primary": true,
         "caption": "Solid Hardwood Sideboard Storage Cabinet (WCB-001)"
       }
     ],
-    "primary_image": "/media/products/WCB-001.jpg",
+    "primary_image": "/images/services/WCB-001.jpg",
     "created_at": "2026-10-09T11:00:39.542537+03:00",
     "updated_at": "2026-10-09T11:40:35.995579+03:00"
   },
@@ -392,12 +392,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "bdd4e0b2-363c-41b1-8dd4-2fb104599102",
-        "image": "/media/products/TBL-001.jpg",
+        "image": "/images/services/TBL-001.jpg",
         "is_primary": true,
         "caption": "Solid Hardwood Dining Table (TBL-001)"
       }
     ],
-    "primary_image": "/media/products/TBL-001.jpg",
+    "primary_image": "/images/services/TBL-001.jpg",
     "created_at": "2026-10-09T11:00:38.698278+03:00",
     "updated_at": "2026-10-09T11:40:34.729469+03:00"
   },
@@ -442,12 +442,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "086dba7c-6ee4-4261-949c-a3bac1abdccb",
-        "image": "/media/products/CHR-001.jpg",
+        "image": "/images/services/CHR-001.jpg",
         "is_primary": true,
         "caption": "Solid Oak Dining Chair (CHR-001)"
       }
     ],
-    "primary_image": "/media/products/CHR-001.jpg",
+    "primary_image": "/images/services/CHR-001.jpg",
     "created_at": "2026-10-09T11:00:38.569156+03:00",
     "updated_at": "2026-10-09T11:40:34.425605+03:00"
   },
@@ -492,12 +492,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "1dca8b58-d644-40ff-b0c5-90046f89048e",
-        "image": "/media/products/WKT-001.jpg",
+        "image": "/images/services/WKT-001.jpg",
         "is_primary": true,
         "caption": "Modern Luxury Hardwood Kitchen Suite (WKT-001)"
       }
     ],
-    "primary_image": "/media/products/WKT-001.jpg",
+    "primary_image": "/images/services/WKT-001.jpg",
     "created_at": "2026-10-08T14:25:47.964035+03:00",
     "updated_at": "2026-10-09T11:40:35.467453+03:00"
   },
@@ -542,12 +542,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "25383968-4767-46af-8b91-65b1570f67d3",
-        "image": "/media/products/WDR-001.jpg",
+        "image": "/images/services/WDR-001.jpg",
         "is_primary": true,
         "caption": "Solid Timber Architectural Entrance Door (WDR-001)"
       }
     ],
-    "primary_image": "/media/products/WDR-001.jpg",
+    "primary_image": "/images/services/WDR-001.jpg",
     "created_at": "2026-10-08T14:25:47.872592+03:00",
     "updated_at": "2026-10-09T11:40:35.261046+03:00"
   },
@@ -592,12 +592,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "9746279b-2916-41ef-91f6-1b24e8a1600c",
-        "image": "/media/products/WRD-001.jpg",
+        "image": "/images/services/WRD-001.jpg",
         "is_primary": true,
         "caption": "Modern 3-Door Solid Wood Wardrobe (WRD-001)"
       }
     ],
-    "primary_image": "/media/products/WRD-001.jpg",
+    "primary_image": "/images/services/WRD-001.jpg",
     "created_at": "2026-10-08T14:25:47.795073+03:00",
     "updated_at": "2026-10-09T11:40:35.086660+03:00"
   },
@@ -642,12 +642,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "8ddf7cc1-bbce-4efa-8a01-af0128e5d6b6",
-        "image": "/media/products/TVS-001.jpg",
+        "image": "/images/services/TVS-001.jpg",
         "is_primary": true,
         "caption": "Modern Lowline Hardwood TV Console (TVS-001)"
       }
     ],
-    "primary_image": "/media/products/TVS-001.jpg",
+    "primary_image": "/images/services/TVS-001.jpg",
     "created_at": "2026-10-08T14:25:47.718721+03:00",
     "updated_at": "2026-10-09T11:40:35.806950+03:00"
   },
@@ -692,12 +692,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "8ecdfef9-af8e-429f-911a-df5ab7029650",
-        "image": "/media/products/ODS-001.jpg",
+        "image": "/images/services/ODS-001.jpg",
         "is_primary": true,
         "caption": "Solid Timber Executive Office Desk (ODS-001)"
       }
     ],
-    "primary_image": "/media/products/ODS-001.jpg",
+    "primary_image": "/images/services/ODS-001.jpg",
     "created_at": "2026-10-08T14:25:47.575398+03:00",
     "updated_at": "2026-10-09T11:40:35.636060+03:00"
   },
@@ -742,12 +742,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "33396624-3602-4d73-8d60-c4eaf76b2075",
-        "image": "/media/products/MWN-001.jpg",
+        "image": "/images/services/MWN-001.jpg",
         "is_primary": true,
         "caption": "Architectural Steel Frame Casement Window (MWN-001)"
       }
     ],
-    "primary_image": "/media/products/MWN-001.jpg",
+    "primary_image": "/images/services/MWN-001.jpg",
     "created_at": "2026-10-08T14:25:47.500945+03:00",
     "updated_at": "2026-10-09T11:40:36.829668+03:00"
   },
@@ -792,12 +792,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "64f0a505-2340-40a9-a917-e97742aa4ad5",
-        "image": "/media/products/MHR-001.jpg",
+        "image": "/images/services/MHR-001.jpg",
         "is_primary": true,
         "caption": "Modern Architectural Steel Handrail (MHR-001)"
       }
     ],
-    "primary_image": "/media/products/MHR-001.jpg",
+    "primary_image": "/images/services/MHR-001.jpg",
     "created_at": "2026-10-08T14:25:47.423008+03:00",
     "updated_at": "2026-10-09T11:40:36.959857+03:00"
   },
@@ -842,12 +842,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "e01ace99-0953-4e65-a711-f9bd84f3c036",
-        "image": "/media/products/MGT-001.jpg",
+        "image": "/images/services/MGT-001.jpg",
         "is_primary": true,
         "caption": "Heavy-Duty Modern Steel Driveway Gate (MGT-001)"
       }
     ],
-    "primary_image": "/media/products/MGT-001.jpg",
+    "primary_image": "/images/services/MGT-001.jpg",
     "created_at": "2026-10-08T14:25:47.344086+03:00",
     "updated_at": "2026-10-09T11:40:36.684746+03:00"
   },
@@ -892,12 +892,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "a00c07a1-ef9b-4b31-a189-d8aa0cd243e4",
-        "image": "/media/products/BED-001.jpg",
+        "image": "/images/services/BED-001.jpg",
         "is_primary": true,
         "caption": "Modern Solid Timber Platform Bed (BED-001)"
       }
     ],
-    "primary_image": "/media/products/BED-001.jpg",
+    "primary_image": "/images/services/BED-001.jpg",
     "created_at": "2026-10-08T14:25:47.161864+03:00",
     "updated_at": "2026-10-09T11:40:34.905893+03:00"
   },
@@ -1142,12 +1142,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "8b3fcb93-39b0-4e61-abbc-299300a75d3e",
-        "image": "/media/products/HSH-005.jpg",
+        "image": "/images/services/HSH-005.jpg",
         "is_primary": true,
         "caption": "Minimalist Floating Pipe Shelf (HSH-005)"
       }
     ],
-    "primary_image": "/media/products/HSH-005.jpg",
+    "primary_image": "/images/services/HSH-005.jpg",
     "created_at": "2026-10-09T11:40:38.285199+03:00",
     "updated_at": "2026-10-09T11:40:38.285238+03:00"
   },
@@ -1192,12 +1192,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "97b4e174-41bb-481f-b727-6d7d2bc5ba29",
-        "image": "/media/products/HSH-004.jpg",
+        "image": "/images/services/HSH-004.jpg",
         "is_primary": true,
         "caption": "Heavy Duty Industrial Storage Rack (HSH-004)"
       }
     ],
-    "primary_image": "/media/products/HSH-004.jpg",
+    "primary_image": "/images/services/HSH-004.jpg",
     "created_at": "2026-10-09T11:40:38.238126+03:00",
     "updated_at": "2026-10-09T11:40:38.238202+03:00"
   },
@@ -1242,12 +1242,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "b75888be-96c3-4030-8ce4-6db7fbb13e61",
-        "image": "/media/products/HSH-003.jpg",
+        "image": "/images/services/HSH-003.jpg",
         "is_primary": true,
         "caption": "Geometric Metal Wood Display Shelf (HSH-003)"
       }
     ],
-    "primary_image": "/media/products/HSH-003.jpg",
+    "primary_image": "/images/services/HSH-003.jpg",
     "created_at": "2026-10-09T11:40:38.195231+03:00",
     "updated_at": "2026-10-09T11:40:38.195354+03:00"
   },
@@ -1292,12 +1292,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "729572b6-dd89-4445-9426-a39228645b4d",
-        "image": "/media/products/HSH-002.jpg",
+        "image": "/images/services/HSH-002.jpg",
         "is_primary": true,
         "caption": "Modular Steel & Oak Wall Unit (HSH-002)"
       }
     ],
-    "primary_image": "/media/products/HSH-002.jpg",
+    "primary_image": "/images/services/HSH-002.jpg",
     "created_at": "2026-10-09T11:40:38.149198+03:00",
     "updated_at": "2026-10-09T11:40:38.149237+03:00"
   },
@@ -1342,12 +1342,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "833f616b-4fff-4fb6-9264-6f4059d67b87",
-        "image": "/media/products/HBD-005.jpg",
+        "image": "/images/services/HBD-005.jpg",
         "is_primary": true,
         "caption": "Minimalist Steel & Walnut Bedframe (HBD-005)"
       }
     ],
-    "primary_image": "/media/products/HBD-005.jpg",
+    "primary_image": "/images/services/HBD-005.jpg",
     "created_at": "2026-10-09T11:40:38.064365+03:00",
     "updated_at": "2026-10-09T11:40:38.064404+03:00"
   },
@@ -1392,12 +1392,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "17d83108-b541-45a5-aad4-91865ba41f22",
-        "image": "/media/products/HBD-004.jpg",
+        "image": "/images/services/HBD-004.jpg",
         "is_primary": true,
         "caption": "Heavy-Duty Metal Frame Bunk Bed (HBD-004)"
       }
     ],
-    "primary_image": "/media/products/HBD-004.jpg",
+    "primary_image": "/images/services/HBD-004.jpg",
     "created_at": "2026-10-09T11:40:38.003371+03:00",
     "updated_at": "2026-10-09T11:40:38.003414+03:00"
   },
@@ -1442,12 +1442,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "1c82321e-5688-4508-8fd0-19463431c477",
-        "image": "/media/products/HBD-003.jpg",
+        "image": "/images/services/HBD-003.jpg",
         "is_primary": true,
         "caption": "Floating Hybrid Master Bedstead (HBD-003)"
       }
     ],
-    "primary_image": "/media/products/HBD-003.jpg",
+    "primary_image": "/images/services/HBD-003.jpg",
     "created_at": "2026-10-09T11:40:37.860975+03:00",
     "updated_at": "2026-10-09T11:40:37.863743+03:00"
   },
@@ -1492,12 +1492,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "902cfc56-032f-402f-9299-e02dc0e88586",
-        "image": "/media/products/HBD-002.jpg",
+        "image": "/images/services/HBD-002.jpg",
         "is_primary": true,
         "caption": "Timber & Metal Platform Bed (HBD-002)"
       }
     ],
-    "primary_image": "/media/products/HBD-002.jpg",
+    "primary_image": "/images/services/HBD-002.jpg",
     "created_at": "2026-10-09T11:40:37.804995+03:00",
     "updated_at": "2026-10-09T11:40:37.805034+03:00"
   },
@@ -1542,12 +1542,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "7e4b374d-a688-47c2-9e1b-2e12927e4ddc",
-        "image": "/media/products/HTB-005.jpg",
+        "image": "/images/services/HTB-005.jpg",
         "is_primary": true,
         "caption": "Heavy Timber & Iron Console Table (HTB-005)"
       }
     ],
-    "primary_image": "/media/products/HTB-005.jpg",
+    "primary_image": "/images/services/HTB-005.jpg",
     "created_at": "2026-10-09T11:40:37.682253+03:00",
     "updated_at": "2026-10-09T11:40:37.682295+03:00"
   },
@@ -1592,12 +1592,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "10ac5d73-a824-4f57-8ad5-8e4898d1c01f",
-        "image": "/media/products/HTB-004.jpg",
+        "image": "/images/services/HTB-004.jpg",
         "is_primary": true,
         "caption": "Minimalist Hybrid Side Table (HTB-004)"
       }
     ],
-    "primary_image": "/media/products/HTB-004.jpg",
+    "primary_image": "/images/services/HTB-004.jpg",
     "created_at": "2026-10-09T11:40:37.642295+03:00",
     "updated_at": "2026-10-09T11:40:37.642340+03:00"
   },
@@ -1642,12 +1642,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "7337ad74-e439-430e-b839-82dad7ec10a7",
-        "image": "/media/products/HTB-003.jpg",
+        "image": "/images/services/HTB-003.jpg",
         "is_primary": true,
         "caption": "Executive Metal Wood Conference Table (HTB-003)"
       }
     ],
-    "primary_image": "/media/products/HTB-003.jpg",
+    "primary_image": "/images/services/HTB-003.jpg",
     "created_at": "2026-10-09T11:40:37.580664+03:00",
     "updated_at": "2026-10-09T11:40:37.580706+03:00"
   },
@@ -1692,12 +1692,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "85627e6d-1e07-4443-831b-c6787a15e43d",
-        "image": "/media/products/HTB-002.jpg",
+        "image": "/images/services/HTB-002.jpg",
         "is_primary": true,
         "caption": "Industrial Coffee Table with Steel Base (HTB-002)"
       }
     ],
-    "primary_image": "/media/products/HTB-002.jpg",
+    "primary_image": "/images/services/HTB-002.jpg",
     "created_at": "2026-10-09T11:40:37.526429+03:00",
     "updated_at": "2026-10-09T11:40:37.526471+03:00"
   },
@@ -1742,12 +1742,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "bcb50fda-68b6-420b-a13b-231534c860fc",
-        "image": "/media/products/HCH-005.jpg",
+        "image": "/images/services/HCH-005.jpg",
         "is_primary": true,
         "caption": "Architectural Lounge Hybrid Chair (HCH-005)"
       }
     ],
-    "primary_image": "/media/products/HCH-005.jpg",
+    "primary_image": "/images/services/HCH-005.jpg",
     "created_at": "2026-10-09T11:40:37.396025+03:00",
     "updated_at": "2026-10-09T11:40:37.396060+03:00"
   },
@@ -1792,12 +1792,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "429f647e-9316-40a6-8dd3-213ac8615f12",
-        "image": "/media/products/HCH-004.jpg",
+        "image": "/images/services/HCH-004.jpg",
         "is_primary": true,
         "caption": "Vintage Industrial Swivel Stool (HCH-004)"
       }
     ],
-    "primary_image": "/media/products/HCH-004.jpg",
+    "primary_image": "/images/services/HCH-004.jpg",
     "created_at": "2026-10-09T11:40:37.353983+03:00",
     "updated_at": "2026-10-09T11:40:37.354021+03:00"
   },
@@ -1842,12 +1842,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "ba895222-389b-4d13-9435-f04b118fc6e6",
-        "image": "/media/products/HCH-003.jpg",
+        "image": "/images/services/HCH-003.jpg",
         "is_primary": true,
         "caption": "Ergonomic Hybrid Study Chair (HCH-003)"
       }
     ],
-    "primary_image": "/media/products/HCH-003.jpg",
+    "primary_image": "/images/services/HCH-003.jpg",
     "created_at": "2026-10-09T11:40:37.316563+03:00",
     "updated_at": "2026-10-09T11:40:37.316602+03:00"
   },
@@ -1892,12 +1892,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "c70be7f4-2446-456f-a064-dcdb2fafd661",
-        "image": "/media/products/HCH-002.jpg",
+        "image": "/images/services/HCH-002.jpg",
         "is_primary": true,
         "caption": "Minimalist Metal Wood Armchair (HCH-002)"
       }
     ],
-    "primary_image": "/media/products/HCH-002.jpg",
+    "primary_image": "/images/services/HCH-002.jpg",
     "created_at": "2026-10-09T11:40:37.277402+03:00",
     "updated_at": "2026-10-09T11:40:37.277436+03:00"
   },
@@ -1942,12 +1942,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "5db84158-5130-43e4-b4c1-b581fd1890f7",
-        "image": "/media/products/MHR-005.jpg",
+        "image": "/images/services/MHR-005.jpg",
         "is_primary": true,
         "caption": "Exterior Galvanized Balcony Railing (MHR-005)"
       }
     ],
-    "primary_image": "/media/products/MHR-005.jpg",
+    "primary_image": "/images/services/MHR-005.jpg",
     "created_at": "2026-10-09T11:40:37.179728+03:00",
     "updated_at": "2026-10-09T11:40:37.179767+03:00"
   },
@@ -1992,12 +1992,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "445d7c15-44f8-413a-9739-8f2a9b0fee50",
-        "image": "/media/products/MWN-005.jpg",
+        "image": "/images/services/MWN-005.jpg",
         "is_primary": true,
         "caption": "Custom Fixed & Awning Steel Glass Window (MWN-005)"
       }
     ],
-    "primary_image": "/media/products/MWN-005.jpg",
+    "primary_image": "/images/services/MWN-005.jpg",
     "created_at": "2026-10-09T11:00:39.971293+03:00",
     "updated_at": "2026-10-09T11:40:36.935375+03:00"
   },
@@ -2042,12 +2042,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "92c83681-d689-40e2-b8e8-9e72cf47d1c7",
-        "image": "/media/products/MGT-005.jpg",
+        "image": "/images/services/MGT-005.jpg",
         "is_primary": true,
         "caption": "Industrial Heavy Steel Double Swing Gate (MGT-005)"
       }
     ],
-    "primary_image": "/media/products/MGT-005.jpg",
+    "primary_image": "/images/services/MGT-005.jpg",
     "created_at": "2026-10-09T11:00:39.868295+03:00",
     "updated_at": "2026-10-09T11:40:36.801061+03:00"
   },
@@ -2092,12 +2092,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "e2aa200c-3421-4d6c-bf44-24a15ae6bc39",
-        "image": "/media/products/OWP-005.jpg",
+        "image": "/images/services/OWP-005.jpg",
         "is_primary": true,
         "caption": "Custom Solid Timber Floating Shelf Set (OWP-005)"
       }
     ],
-    "primary_image": "/media/products/OWP-005.jpg",
+    "primary_image": "/images/services/OWP-005.jpg",
     "created_at": "2026-10-09T11:00:39.765055+03:00",
     "updated_at": "2026-10-09T11:40:36.640209+03:00"
   },
@@ -2142,12 +2142,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "8bf059a9-757b-461d-8246-34e9414bb131",
-        "image": "/media/products/OWP-004.jpg",
+        "image": "/images/services/OWP-004.jpg",
         "is_primary": true,
         "caption": "Handcrafted Hardwood Room Divider Screen (OWP-004)"
       }
     ],
-    "primary_image": "/media/products/OWP-004.jpg",
+    "primary_image": "/images/services/OWP-004.jpg",
     "created_at": "2026-10-09T11:00:39.745196+03:00",
     "updated_at": "2026-10-09T11:40:36.593719+03:00"
   },
@@ -2192,12 +2192,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "b50ff8be-e780-4ee3-b88f-78fff347291e",
-        "image": "/media/products/OWP-003.jpg",
+        "image": "/images/services/OWP-003.jpg",
         "is_primary": true,
         "caption": "Artisan Timber Entryway Coat & Key Rack (OWP-003)"
       }
     ],
-    "primary_image": "/media/products/OWP-003.jpg",
+    "primary_image": "/images/services/OWP-003.jpg",
     "created_at": "2026-10-09T11:00:39.723356+03:00",
     "updated_at": "2026-10-09T11:40:36.532901+03:00"
   },
@@ -2242,12 +2242,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "22291acd-0c64-432c-9d16-c5fbff45a648",
-        "image": "/media/products/OWP-002.jpg",
+        "image": "/images/services/OWP-002.jpg",
         "is_primary": true,
         "caption": "Architectural Wood Wall Cladding Panels (OWP-002)"
       }
     ],
-    "primary_image": "/media/products/OWP-002.jpg",
+    "primary_image": "/images/services/OWP-002.jpg",
     "created_at": "2026-10-09T11:00:39.703145+03:00",
     "updated_at": "2026-10-09T11:40:36.443424+03:00"
   },
@@ -2292,12 +2292,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "dc790de1-0385-46a3-9fcf-dd216d7c821e",
-        "image": "/media/products/WCB-005.jpg",
+        "image": "/images/services/WCB-005.jpg",
         "is_primary": true,
         "caption": "Tall Multi-Compartment Timber Utility Cabinet (WCB-005)"
       }
     ],
-    "primary_image": "/media/products/WCB-005.jpg",
+    "primary_image": "/images/services/WCB-005.jpg",
     "created_at": "2026-10-09T11:00:39.650608+03:00",
     "updated_at": "2026-10-09T11:40:36.313315+03:00"
   },
@@ -2342,12 +2342,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "8a9682ed-34d8-4160-97a7-820536cfb5f7",
-        "image": "/media/products/WCB-004.jpg",
+        "image": "/images/services/WCB-004.jpg",
         "is_primary": true,
         "caption": "Minimalist Oak Credenza Storage Unit (WCB-004)"
       }
     ],
-    "primary_image": "/media/products/WCB-004.jpg",
+    "primary_image": "/images/services/WCB-004.jpg",
     "created_at": "2026-10-09T11:00:39.629224+03:00",
     "updated_at": "2026-10-09T11:40:36.240765+03:00"
   },
@@ -2392,12 +2392,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "542d6cc9-4018-49c7-8c58-5d99665a609d",
-        "image": "/media/products/WCB-003.jpg",
+        "image": "/images/services/WCB-003.jpg",
         "is_primary": true,
         "caption": "Modular Wood Accent Storage Cabinet (WCB-003)"
       }
     ],
-    "primary_image": "/media/products/WCB-003.jpg",
+    "primary_image": "/images/services/WCB-003.jpg",
     "created_at": "2026-10-09T11:00:39.607573+03:00",
     "updated_at": "2026-10-09T11:40:36.173967+03:00"
   },
@@ -2442,12 +2442,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "51906297-e882-4d62-a474-e1d51eb2faf3",
-        "image": "/media/products/WCB-002.jpg",
+        "image": "/images/services/WCB-002.jpg",
         "is_primary": true,
         "caption": "Contemporary Display Glass & Timber Cabinet (WCB-002)"
       }
     ],
-    "primary_image": "/media/products/WCB-002.jpg",
+    "primary_image": "/images/services/WCB-002.jpg",
     "created_at": "2026-10-09T11:00:39.571680+03:00",
     "updated_at": "2026-10-09T11:40:36.057827+03:00"
   },
@@ -2492,12 +2492,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "2cd8eed8-653e-4314-9efd-368cc964ad42",
-        "image": "/media/products/TVS-005.jpg",
+        "image": "/images/services/TVS-005.jpg",
         "is_primary": true,
         "caption": "Minimalist Solid Timber TV Bench (TVS-005)"
       }
     ],
-    "primary_image": "/media/products/TVS-005.jpg",
+    "primary_image": "/images/services/TVS-005.jpg",
     "created_at": "2026-10-09T11:00:39.505006+03:00",
     "updated_at": "2026-10-09T11:40:35.959498+03:00"
   },
@@ -2542,12 +2542,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "6d9a6990-80b9-4781-97c3-47648048ab03",
-        "image": "/media/products/ODS-005.jpg",
+        "image": "/images/services/ODS-005.jpg",
         "is_primary": true,
         "caption": "Architectural Walnut Study & Laptop Desk (ODS-005)"
       }
     ],
-    "primary_image": "/media/products/ODS-005.jpg",
+    "primary_image": "/images/services/ODS-005.jpg",
     "created_at": "2026-10-09T11:00:39.390045+03:00",
     "updated_at": "2026-10-09T11:40:35.775961+03:00"
   },
@@ -2592,12 +2592,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "c832f546-9d69-405d-b400-ffc66f0c7a8e",
-        "image": "/media/products/WRD-005.jpg",
+        "image": "/images/services/WRD-005.jpg",
         "is_primary": true,
         "caption": "Custom Modular Wood Armoire with Drawers (WRD-005)"
       }
     ],
-    "primary_image": "/media/products/WRD-005.jpg",
+    "primary_image": "/images/services/WRD-005.jpg",
     "created_at": "2026-10-09T11:00:39.041111+03:00",
     "updated_at": "2026-10-09T11:40:35.225966+03:00"
   },
@@ -2642,12 +2642,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "d0360fb2-a781-4f50-9c9e-285c3c1918f6",
-        "image": "/media/products/BED-005.jpg",
+        "image": "/images/services/BED-005.jpg",
         "is_primary": true,
         "caption": "Handcrafted Hardwood Queen Bed Frame (BED-005)"
       }
     ],
-    "primary_image": "/media/products/BED-005.jpg",
+    "primary_image": "/images/services/BED-005.jpg",
     "created_at": "2026-10-09T11:00:38.901032+03:00",
     "updated_at": "2026-10-09T11:40:35.050728+03:00"
   },
@@ -2692,12 +2692,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "0e4be038-fbcd-4b89-853e-533b293f0409",
-        "image": "/media/products/TBL-005.jpg",
+        "image": "/images/services/TBL-005.jpg",
         "is_primary": true,
         "caption": "Executive Timber Conference Table (TBL-005)"
       }
     ],
-    "primary_image": "/media/products/TBL-005.jpg",
+    "primary_image": "/images/services/TBL-005.jpg",
     "created_at": "2026-10-09T11:00:38.787412+03:00",
     "updated_at": "2026-10-09T11:40:34.868143+03:00"
   },
@@ -2742,12 +2742,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "ae02e15f-458b-4cd6-be99-2d394d5caadb",
-        "image": "/media/products/TBL-004.jpg",
+        "image": "/images/services/TBL-004.jpg",
         "is_primary": true,
         "caption": "Minimalist Solid Wood Side Table (TBL-004)"
       }
     ],
-    "primary_image": "/media/products/TBL-004.jpg",
+    "primary_image": "/images/services/TBL-004.jpg",
     "created_at": "2026-10-09T11:00:38.760001+03:00",
     "updated_at": "2026-10-09T11:40:34.832216+03:00"
   },
@@ -2792,12 +2792,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "87a08c94-2516-4a82-a9e1-42d75edb9f0c",
-        "image": "/media/products/TBL-003.jpg",
+        "image": "/images/services/TBL-003.jpg",
         "is_primary": true,
         "caption": "Bespoke Oak Family Dining Table (TBL-003)"
       }
     ],
-    "primary_image": "/media/products/TBL-003.jpg",
+    "primary_image": "/images/services/TBL-003.jpg",
     "created_at": "2026-10-09T11:00:38.736377+03:00",
     "updated_at": "2026-10-09T11:40:34.799175+03:00"
   },
@@ -2842,12 +2842,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "fda1a800-562d-4561-b14b-4e393a77c2ba",
-        "image": "/media/products/TBL-002.jpg",
+        "image": "/images/services/TBL-002.jpg",
         "is_primary": true,
         "caption": "Live-Edge Timber Coffee Table (TBL-002)"
       }
     ],
-    "primary_image": "/media/products/TBL-002.jpg",
+    "primary_image": "/images/services/TBL-002.jpg",
     "created_at": "2026-10-09T11:00:38.718368+03:00",
     "updated_at": "2026-10-09T11:40:34.764665+03:00"
   },
@@ -2892,12 +2892,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "89aae0cf-8b4e-44ea-9a7f-5c0c3fea3030",
-        "image": "/media/products/CHR-005.jpg",
+        "image": "/images/services/CHR-005.jpg",
         "is_primary": true,
         "caption": "Handcrafted Timber Lounge Chair (CHR-005)"
       }
     ],
-    "primary_image": "/media/products/CHR-005.jpg",
+    "primary_image": "/images/services/CHR-005.jpg",
     "created_at": "2026-10-09T11:00:38.674717+03:00",
     "updated_at": "2026-10-09T11:40:34.693447+03:00"
   },
@@ -2942,12 +2942,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "27c781b1-55d9-484e-9d61-e9867db1b1f3",
-        "image": "/media/products/CHR-004.jpg",
+        "image": "/images/services/CHR-004.jpg",
         "is_primary": true,
         "caption": "Classic Spindle Back Chair (CHR-004)"
       }
     ],
-    "primary_image": "/media/products/CHR-004.jpg",
+    "primary_image": "/images/services/CHR-004.jpg",
     "created_at": "2026-10-09T11:00:38.652701+03:00",
     "updated_at": "2026-10-09T11:40:34.658332+03:00"
   },
@@ -2992,12 +2992,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "3ee89c2f-017d-45ad-8629-cbd792fef556",
-        "image": "/media/products/CHR-003.jpg",
+        "image": "/images/services/CHR-003.jpg",
         "is_primary": true,
         "caption": "Ergonomic Timber Desk Chair (CHR-003)"
       }
     ],
-    "primary_image": "/media/products/CHR-003.jpg",
+    "primary_image": "/images/services/CHR-003.jpg",
     "created_at": "2026-10-09T11:00:38.630316+03:00",
     "updated_at": "2026-10-09T11:40:34.601205+03:00"
   },
@@ -3042,12 +3042,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "ead41146-f809-4562-9ebb-50fd13023d9d",
-        "image": "/media/products/CHR-002.jpg",
+        "image": "/images/services/CHR-002.jpg",
         "is_primary": true,
         "caption": "Sculpted Hardwood Armchair (CHR-002)"
       }
     ],
-    "primary_image": "/media/products/CHR-002.jpg",
+    "primary_image": "/images/services/CHR-002.jpg",
     "created_at": "2026-10-09T11:00:38.604354+03:00",
     "updated_at": "2026-10-09T11:40:34.476949+03:00"
   },
@@ -3092,12 +3092,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "f3be1d68-2301-41d9-9e0b-e804f27e1ecf",
-        "image": "/media/products/WKT-005.webp",
+        "image": "/images/services/WKT-005.webp",
         "is_primary": true,
         "caption": "Custom Solid Oak Island & Pantry Kitchen (WKT-005)"
       }
     ],
-    "primary_image": "/media/products/WKT-005.webp",
+    "primary_image": "/images/services/WKT-005.webp",
     "created_at": "2026-10-08T14:25:48.039269+03:00",
     "updated_at": "2026-10-09T11:40:35.603359+03:00"
   },
@@ -3142,12 +3142,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "38f0a305-1ddd-4253-9133-b5ff1f42a5fc",
-        "image": "/media/products/WKT-004.jpg",
+        "image": "/images/services/WKT-004.jpg",
         "is_primary": true,
         "caption": "Classic Shaker Style Wooden Kitchen Suite (WKT-004)"
       }
     ],
-    "primary_image": "/media/products/WKT-004.jpg",
+    "primary_image": "/images/services/WKT-004.jpg",
     "created_at": "2026-10-08T14:25:48.021793+03:00",
     "updated_at": "2026-10-09T11:40:35.568301+03:00"
   },
@@ -3192,12 +3192,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "cc254b50-3e28-42fe-81c6-ed4ea60bfea5",
-        "image": "/media/products/WKT-003.webp",
+        "image": "/images/services/WKT-003.webp",
         "is_primary": true,
         "caption": "European Style Solid Timber Kitchen System (WKT-003)"
       }
     ],
-    "primary_image": "/media/products/WKT-003.webp",
+    "primary_image": "/images/services/WKT-003.webp",
     "created_at": "2026-10-08T14:25:48.004733+03:00",
     "updated_at": "2026-10-09T11:40:35.533065+03:00"
   },
@@ -3242,12 +3242,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "a8c3dba8-31c9-40fe-9a2d-3c5366716bf4",
-        "image": "/media/products/WKT-002.webp",
+        "image": "/images/services/WKT-002.webp",
         "is_primary": true,
         "caption": "Contemporary Flat-Panel Wood Kitchen (WKT-002)"
       }
     ],
-    "primary_image": "/media/products/WKT-002.webp",
+    "primary_image": "/images/services/WKT-002.webp",
     "created_at": "2026-10-08T14:25:47.984917+03:00",
     "updated_at": "2026-10-09T11:40:35.499871+03:00"
   },
@@ -3292,12 +3292,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "1e2975f3-381f-4d29-9ef1-4051f8c08707",
-        "image": "/media/products/WDR-005.jpg",
+        "image": "/images/services/WDR-005.jpg",
         "is_primary": true,
         "caption": "Carved Artisan Solid Wood Entrance Door (WDR-005)"
       }
     ],
-    "primary_image": "/media/products/WDR-005.jpg",
+    "primary_image": "/images/services/WDR-005.jpg",
     "created_at": "2026-10-08T14:25:47.945596+03:00",
     "updated_at": "2026-10-09T11:40:35.429172+03:00"
   },
@@ -3342,12 +3342,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "18924c4f-3558-4db5-a733-9fa9a268601f",
-        "image": "/media/products/WDR-004.png",
+        "image": "/images/services/WDR-004.png",
         "is_primary": true,
         "caption": "Contemporary Pivot Timber Main Door (WDR-004)"
       }
     ],
-    "primary_image": "/media/products/WDR-004.png",
+    "primary_image": "/images/services/WDR-004.png",
     "created_at": "2026-10-08T14:25:47.927645+03:00",
     "updated_at": "2026-10-09T11:40:35.390841+03:00"
   },
@@ -3392,12 +3392,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "c6471395-04b2-4b3c-923d-9c9e77a4ac0a",
-        "image": "/media/products/WDR-003.jpg",
+        "image": "/images/services/WDR-003.jpg",
         "is_primary": true,
         "caption": "Craftsman Panel Solid Hardwood Door (WDR-003)"
       }
     ],
-    "primary_image": "/media/products/WDR-003.jpg",
+    "primary_image": "/images/services/WDR-003.jpg",
     "created_at": "2026-10-08T14:25:47.908704+03:00",
     "updated_at": "2026-10-09T11:40:35.349800+03:00"
   },
@@ -3442,12 +3442,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "884d5b5a-eba5-4a01-9d35-9cdc84579ad1",
-        "image": "/media/products/WDR-002.jpg",
+        "image": "/images/services/WDR-002.jpg",
         "is_primary": true,
         "caption": "Modern Flush Veneer Interior Wood Door (WDR-002)"
       }
     ],
-    "primary_image": "/media/products/WDR-002.jpg",
+    "primary_image": "/images/services/WDR-002.jpg",
     "created_at": "2026-10-08T14:25:47.890609+03:00",
     "updated_at": "2026-10-09T11:40:35.309759+03:00"
   },
@@ -3492,12 +3492,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "18bdef69-c931-4b62-81bf-4d0dc43caf94",
-        "image": "/media/products/WRD-004.jpg",
+        "image": "/images/services/WRD-004.jpg",
         "is_primary": true,
         "caption": "Minimalist Scandinavian Timber Wardrobe (WRD-004)"
       }
     ],
-    "primary_image": "/media/products/WRD-004.jpg",
+    "primary_image": "/images/services/WRD-004.jpg",
     "created_at": "2026-10-08T14:25:47.853447+03:00",
     "updated_at": "2026-10-09T11:40:35.190213+03:00"
   },
@@ -3542,12 +3542,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "a8fbe54e-550a-439b-8a6f-45a1252dd594",
-        "image": "/media/products/WRD-003.jpg",
+        "image": "/images/services/WRD-003.jpg",
         "is_primary": true,
         "caption": "Floor-to-Ceiling Built-In Hardwood Wardrobe (WRD-003)"
       }
     ],
-    "primary_image": "/media/products/WRD-003.jpg",
+    "primary_image": "/images/services/WRD-003.jpg",
     "created_at": "2026-10-08T14:25:47.833212+03:00",
     "updated_at": "2026-10-09T11:40:35.157019+03:00"
   },
@@ -3592,12 +3592,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "fa69d78c-b40f-466e-b2c7-0aaac39eb3a4",
-        "image": "/media/products/WRD-002.jpg",
+        "image": "/images/services/WRD-002.jpg",
         "is_primary": true,
         "caption": "Contemporary Sliding Door Timber Wardrobe (WRD-002)"
       }
     ],
-    "primary_image": "/media/products/WRD-002.jpg",
+    "primary_image": "/images/services/WRD-002.jpg",
     "created_at": "2026-10-08T14:25:47.814084+03:00",
     "updated_at": "2026-10-09T11:40:35.120252+03:00"
   },
@@ -3642,12 +3642,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "95dbc883-ced8-4ce4-bcf3-6372b1c78f4f",
-        "image": "/media/products/TVS-004.jpg",
+        "image": "/images/services/TVS-004.jpg",
         "is_primary": true,
         "caption": "Contemporary Walnut Credenza TV Stand (TVS-004)"
       }
     ],
-    "primary_image": "/media/products/TVS-004.jpg",
+    "primary_image": "/images/services/TVS-004.jpg",
     "created_at": "2026-10-08T14:25:47.777269+03:00",
     "updated_at": "2026-10-09T11:40:35.924211+03:00"
   },
@@ -3692,12 +3692,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "539216f6-c27b-470c-bed0-b71f6b4c5e84",
-        "image": "/media/products/TVS-003.jpg",
+        "image": "/images/services/TVS-003.jpg",
         "is_primary": true,
         "caption": "Scandinavian Oak Media Console with Slatted Doors (TVS-003)"
       }
     ],
-    "primary_image": "/media/products/TVS-003.jpg",
+    "primary_image": "/images/services/TVS-003.jpg",
     "created_at": "2026-10-08T14:25:47.757975+03:00",
     "updated_at": "2026-10-09T11:40:35.869657+03:00"
   },
@@ -3742,12 +3742,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "f202c7e5-23c6-48d5-9a31-d67f95a4c210",
-        "image": "/media/products/TVS-002.jpg",
+        "image": "/images/services/TVS-002.jpg",
         "is_primary": true,
         "caption": "Floating Timber Entertainment Wall Unit (TVS-002)"
       }
     ],
-    "primary_image": "/media/products/TVS-002.jpg",
+    "primary_image": "/images/services/TVS-002.jpg",
     "created_at": "2026-10-08T14:25:47.737772+03:00",
     "updated_at": "2026-10-09T11:40:35.836010+03:00"
   },
@@ -3792,12 +3792,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "758ce7c8-7e99-4b9e-a54a-45adcb62ecd5",
-        "image": "/media/products/ODS-004.jpg",
+        "image": "/images/services/ODS-004.jpg",
         "is_primary": true,
         "caption": "Contemporary Hardwood Writing Desk (ODS-004)"
       }
     ],
-    "primary_image": "/media/products/ODS-004.jpg",
+    "primary_image": "/images/services/ODS-004.jpg",
     "created_at": "2026-10-08T14:25:47.628347+03:00",
     "updated_at": "2026-10-09T11:40:35.738641+03:00"
   },
@@ -3842,12 +3842,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "c01e4c53-711a-46a8-ad24-e32cd35618da",
-        "image": "/media/products/ODS-003.jpg",
+        "image": "/images/services/ODS-003.jpg",
         "is_primary": true,
         "caption": "Handcrafted Oak Desk with Integrated Drawers (ODS-003)"
       }
     ],
-    "primary_image": "/media/products/ODS-003.jpg",
+    "primary_image": "/images/services/ODS-003.jpg",
     "created_at": "2026-10-08T14:25:47.610544+03:00",
     "updated_at": "2026-10-09T11:40:35.702836+03:00"
   },
@@ -3892,12 +3892,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "82134538-245f-43de-a5de-90afa6ddcdea",
-        "image": "/media/products/ODS-002.jpg",
+        "image": "/images/services/ODS-002.jpg",
         "is_primary": true,
         "caption": "Modern Minimalist Wooden Workstation Desk (ODS-002)"
       }
     ],
-    "primary_image": "/media/products/ODS-002.jpg",
+    "primary_image": "/images/services/ODS-002.jpg",
     "created_at": "2026-10-08T14:25:47.593899+03:00",
     "updated_at": "2026-10-09T11:40:35.669730+03:00"
   },
@@ -3942,12 +3942,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "0d6f0257-35b6-4715-8d36-669da838cbbf",
-        "image": "/media/products/MWN-004.jpg",
+        "image": "/images/services/MWN-004.jpg",
         "is_primary": true,
         "caption": "Contemporary Steel Pivot French Window (MWN-004)"
       }
     ],
-    "primary_image": "/media/products/MWN-004.jpg",
+    "primary_image": "/images/services/MWN-004.jpg",
     "created_at": "2026-10-08T14:25:47.557568+03:00",
     "updated_at": "2026-10-09T11:40:36.910175+03:00"
   },
@@ -3992,12 +3992,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "92101463-e7dc-478e-b144-b27298deaf9e",
-        "image": "/media/products/MWN-003.jpg",
+        "image": "/images/services/MWN-003.jpg",
         "is_primary": true,
         "caption": "High-Security Heavy Metal Window Unit (MWN-003)"
       }
     ],
-    "primary_image": "/media/products/MWN-003.jpg",
+    "primary_image": "/images/services/MWN-003.jpg",
     "created_at": "2026-10-08T14:25:47.539125+03:00",
     "updated_at": "2026-10-09T11:40:36.883105+03:00"
   },
@@ -4042,12 +4042,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "d68b6aa3-2e5c-48d5-8c92-7d43afedc2a7",
-        "image": "/media/products/MWN-002.jpg",
+        "image": "/images/services/MWN-002.jpg",
         "is_primary": true,
         "caption": "Industrial Black Steel Grille Window Suite (MWN-002)"
       }
     ],
-    "primary_image": "/media/products/MWN-002.jpg",
+    "primary_image": "/images/services/MWN-002.jpg",
     "created_at": "2026-10-08T14:25:47.520909+03:00",
     "updated_at": "2026-10-09T11:40:36.855377+03:00"
   },
@@ -4092,12 +4092,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "57325b64-bf00-4e23-beda-755fa0ef189b",
-        "image": "/media/products/MHR-004.jpg",
+        "image": "/images/services/MHR-004.jpg",
         "is_primary": true,
         "caption": "Classic Forged Wrought Iron Railing (MHR-004)"
       }
     ],
-    "primary_image": "/media/products/MHR-004.jpg",
+    "primary_image": "/images/services/MHR-004.jpg",
     "created_at": "2026-10-08T14:25:47.483681+03:00",
     "updated_at": "2026-10-09T11:40:37.086208+03:00"
   },
@@ -4142,12 +4142,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "0d9c46e0-88c4-4a7f-9d7f-890954b5c76a",
-        "image": "/media/products/MHR-003.jpg",
+        "image": "/images/services/MHR-003.jpg",
         "is_primary": true,
         "caption": "Minimalist Industrial Wall Handrail (MHR-003)"
       }
     ],
-    "primary_image": "/media/products/MHR-003.jpg",
+    "primary_image": "/images/services/MHR-003.jpg",
     "created_at": "2026-10-08T14:25:47.465193+03:00",
     "updated_at": "2026-10-09T11:40:37.021978+03:00"
   },
@@ -4192,12 +4192,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "bad675b7-75d3-42ce-8cee-cfaa0e45d4a0",
-        "image": "/media/products/MHR-002.jpg",
+        "image": "/images/services/MHR-002.jpg",
         "is_primary": true,
         "caption": "Geometric Decorative Metal Balustrade (MHR-002)"
       }
     ],
-    "primary_image": "/media/products/MHR-002.jpg",
+    "primary_image": "/images/services/MHR-002.jpg",
     "created_at": "2026-10-08T14:25:47.443984+03:00",
     "updated_at": "2026-10-09T11:40:36.988377+03:00"
   },
@@ -4242,12 +4242,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "130e84ee-7e84-48f8-b321-5f92e0e89247",
-        "image": "/media/products/MGT-004.jpg",
+        "image": "/images/services/MGT-004.jpg",
         "is_primary": true,
         "caption": "Wrought Iron Ornamental Perimeter Gate (MGT-004)"
       }
     ],
-    "primary_image": "/media/products/MGT-004.jpg",
+    "primary_image": "/images/services/MGT-004.jpg",
     "created_at": "2026-10-08T14:25:47.400367+03:00",
     "updated_at": "2026-10-09T11:40:36.770972+03:00"
   },
@@ -4292,12 +4292,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "bbf93509-0b5d-4e40-ab01-26c73dd0b79f",
-        "image": "/media/products/MGT-003.jpg",
+        "image": "/images/services/MGT-003.jpg",
         "is_primary": true,
         "caption": "Architectural Steel Sliding Security Gate (MGT-003)"
       }
     ],
-    "primary_image": "/media/products/MGT-003.jpg",
+    "primary_image": "/images/services/MGT-003.jpg",
     "created_at": "2026-10-08T14:25:47.380019+03:00",
     "updated_at": "2026-10-09T11:40:36.740330+03:00"
   },
@@ -4342,12 +4342,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "e4efb498-a04b-4ed6-8b4b-acbd07c78b81",
-        "image": "/media/products/MGT-002.jpg",
+        "image": "/images/services/MGT-002.jpg",
         "is_primary": true,
         "caption": "Contemporary Laser-Cut Metal Compound Gate (MGT-002)"
       }
     ],
-    "primary_image": "/media/products/MGT-002.jpg",
+    "primary_image": "/images/services/MGT-002.jpg",
     "created_at": "2026-10-08T14:25:47.361687+03:00",
     "updated_at": "2026-10-09T11:40:36.713975+03:00"
   },
@@ -4392,12 +4392,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "64ce19ce-682f-4453-8d72-31424db2950d",
-        "image": "/media/products/BED-004.jpg",
+        "image": "/images/services/BED-004.jpg",
         "is_primary": true,
         "caption": "Luxury American Walnut King Bed (BED-004)"
       }
     ],
-    "primary_image": "/media/products/BED-004.jpg",
+    "primary_image": "/images/services/BED-004.jpg",
     "created_at": "2026-10-08T14:25:47.229376+03:00",
     "updated_at": "2026-10-09T11:40:35.013367+03:00"
   },
@@ -4442,12 +4442,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "9029c5dd-fc81-4563-964d-e588dc1c29c5",
-        "image": "/media/products/BED-003.jpg",
+        "image": "/images/services/BED-003.jpg",
         "is_primary": true,
         "caption": "Bespoke Oak Floating Bed with Nightstands (BED-003)"
       }
     ],
-    "primary_image": "/media/products/BED-003.jpg",
+    "primary_image": "/images/services/BED-003.jpg",
     "created_at": "2026-10-08T14:25:47.209017+03:00",
     "updated_at": "2026-10-09T11:40:34.974759+03:00"
   },
@@ -4492,12 +4492,12 @@ export const CATALOG_PRODUCTS: Product[] = [
     "images": [
       {
         "id": "d558acc6-4db0-489b-ad68-196d2755ff9a",
-        "image": "/media/products/BED-002.jpg",
+        "image": "/images/services/BED-002.jpg",
         "is_primary": true,
         "caption": "Contemporary Upholstered Headboard Wood Bed (BED-002)"
       }
     ],
-    "primary_image": "/media/products/BED-002.jpg",
+    "primary_image": "/images/services/BED-002.jpg",
     "created_at": "2026-10-08T14:25:47.189871+03:00",
     "updated_at": "2026-10-09T11:40:34.941068+03:00"
   }
