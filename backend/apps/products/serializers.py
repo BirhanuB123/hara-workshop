@@ -9,7 +9,10 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image', 'is_primary', 'caption']
 
     def get_image(self, obj):
-        return obj.image.url if obj.image else None
+        try:
+            return obj.image.url if obj.image else None
+        except Exception:
+            return None
 
 class CategorySerializer(serializers.ModelSerializer):
     product_count = serializers.IntegerField(source='products.count', read_only=True)
@@ -20,7 +23,10 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'name_am', 'slug', 'description', 'description_am', 'image', 'is_active', 'product_count']
 
     def get_image(self, obj):
-        return obj.image.url if obj.image else None
+        try:
+            return obj.image.url if obj.image else None
+        except Exception:
+            return None
 
 class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True, default='')

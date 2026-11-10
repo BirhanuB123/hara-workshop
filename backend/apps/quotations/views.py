@@ -1,3 +1,4 @@
+from django.utils import timezone
 import os
 import logging
 from rest_framework import viewsets, permissions, status, views
@@ -528,15 +529,33 @@ class QuoteViewSet(viewsets.ModelViewSet):
 class TelegramWebhookView(views.APIView):
     """
     Receives incoming webhook updates from Telegram.
+    Handles commands, text buttons ('My Orders'), and inline callback queries.
     """
     permission_classes = [permissions.AllowAny]
 
+    def get(self, request):
+        """Diagnostic endpoint to verify webhook route health."""
+        token = getattr(settings, 'TELEGRAM_BOT_TOKEN', '').strip()
+        return Response({
+            'status': 'active',
+            'service': 'hara-workshop-telegram-webhook',
+            'bot_configured': bool(token),
+            'timestamp': timezone.now().isoformat()
+        }, status=status.HTTP_200_OK)
+
     def post(self, request):
         from .telegram_bot import process_telegram_update
+        from .tasks import _sanitize_for_logging
+        token = getattr(settings, 'TELEGRAM_BOT_TOKEN', '').strip()
         try:
+            update_keys = list(request.data.keys()) if isinstance(request.data, dict) else type(request.data)
+            logger.info(f"[TELEGRAM WEBHOOK] Incoming update with keys: {update_keys}")
             res = process_telegram_update(request.data)
+            logger.info(f"[TELEGRAM WEBHOOK] Processed result: {res.get('status')}")
             return Response(res, status=status.HTTP_200_OK)
         except Exception as e:
-            logger.error(f"Error in telegram webhook: {e}")
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            safe_err = _sanitize_for_logging(str(e), token)
+            logger.error(f"[TELEGRAM WEBHOOK EXCEPTION] {safe_err}", exc_info=True)
+            # Return 200 to prevent Telegram retry spam on application-level exceptions
+            return Response({'ok': True, 'error': safe_err}, status=status.HTTP_200_OK)
 
