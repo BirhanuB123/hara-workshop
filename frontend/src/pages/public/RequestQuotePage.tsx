@@ -472,6 +472,13 @@ export const RequestQuotePage: React.FC = () => {
                       <span>{language === 'am' ? 'በሲስተም ተመዝግቧል (የሙከራ ሁነታ)' : 'Logged in Ledger (Simulation Mode)'}</span>
                     </div>
                   );
+                } else if (telStatus === 'failed') {
+                  return (
+                    <div className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
+                      <Clock className="w-4 h-4 text-amber-600" />
+                      <span>{language === 'am' ? 'በሲስተም ተመዝግቧል (የቴሌግራም ማሳወቂያ አልደረሰም — ማናጀሩ ይመለከተዋል)' : 'Logged in Ledger (Telegram delivery failed — staff will review)'}</span>
+                    </div>
+                  );
                 } else {
                   return (
                     <div className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">

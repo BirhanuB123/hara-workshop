@@ -127,6 +127,21 @@ class TelegramQuotationNotificationTests(TestCase):
         self.assertEqual(result["destinations"]["-5374750855"]["status"], "failed")
         self.assertEqual(result["destinations"]["860309749"]["status"], "failed")
 
+    @patch("apps.quotations.tasks._send_telegram_http")
+    def test_telegram_delivery_invalid_recipient_configuration(self, mock_http):
+        """Invalid recipient format or chat ID -> captured gracefully, fails destination safely."""
+        from apps.quotations.tasks import resolve_chat_id
+        # Verify handle resolution
+        self.assertEqual(resolve_chat_id("@Manager_Samuel_A"), "860309749")
+        self.assertEqual(resolve_chat_id("@haraworkshop"), "-5374750855")
+
+        # When targeted with an invalid recipient ID that Telegram rejects
+        mock_http.side_effect = RuntimeError("Telegram API HTTP 400: Bad Request - chat not found")
+        result = send_telegram_quote_notification(str(self.quote.id), target_chat_id="invalid_recipient_9999")
+        self.assertEqual(result["status"], "failed")
+        self.assertIn("invalid_recipient_9999", result["destinations"])
+        self.assertEqual(result["destinations"]["invalid_recipient_9999"]["status"], "failed")
+
     @override_settings(TELEGRAM_BOT_TOKEN="")
     def test_telegram_delivery_missing_bot_token(self):
         """Missing bot token -> status is 'simulated', no HTTP calls attempted."""
