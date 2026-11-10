@@ -11,7 +11,7 @@ import { Service, Product } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
 import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
-import { getProductImageUrl } from '../../utils/productUtils';
+import { getProductImageUrl, getServiceImageUrl } from '../../utils/productUtils';
 import { useProductOrderStore } from '../../store/productOrderStore';
 
 export interface CategoryCardDef {
@@ -253,8 +253,8 @@ export const ServiceDetailPage: React.FC = () => {
       price_unit: 'per project',
       turnaround_time: '1-3 weeks',
       is_active: true,
-      image: `/images/services/${resolvedSlug}.jpg`,
-      primary_image: `/images/services/${resolvedSlug}.jpg`,
+      image: getServiceImageUrl(resolvedSlug),
+      primary_image: getServiceImageUrl(resolvedSlug),
       offerings: [],
       applications: [],
       materials: [],
@@ -539,9 +539,16 @@ export const ServiceDetailPage: React.FC = () => {
       <section className="relative overflow-hidden bg-[#FAF7F2] border-b border-stone-200">
         <div className="absolute inset-0 z-0">
           <img
-            src={(service?.primary_image && !service.primary_image.includes('service-hero-workshop')) ? service.primary_image : (SERVICE_HERO_ASSETS[resolvedSlug] || '/images/services/service-wood-works.jpg')}
+            src={getServiceImageUrl(service || resolvedSlug)}
             alt={meta.title}
             className="w-full h-full object-cover object-center opacity-15 filter blur-[1px] scale-105"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              const fallback = SERVICE_HERO_ASSETS[resolvedSlug] || getServiceImageUrl(resolvedSlug);
+              if (target.src !== fallback) {
+                target.src = fallback;
+              }
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#FAF7F2] via-[#FAF7F2]/80 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/90 to-transparent" />
