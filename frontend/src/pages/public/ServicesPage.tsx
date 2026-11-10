@@ -14,6 +14,7 @@ import { servicesApi, productsApi, extractResults } from '../../services/api';
 import { Service, Product } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
+import { getServiceImageUrl } from '../../utils/productUtils';
 
 // Mapping fallback high-resolution imagery and capabilities for the 3 primary services
 const SERVICE_ENHANCEMENTS: Record<string, {
@@ -138,8 +139,11 @@ export const ServicesPage: React.FC = () => {
             : 'ቅይጥ የብረት + እንጨት ስራዎች';
 
           if (match) {
+            const verifiedImage = getServiceImageUrl(match);
             return {
               ...match,
+              image: verifiedImage,
+              primary_image: verifiedImage,
               title_am: amharicTitle,
               short_description_am: match.short_description_am,
               full_description_am: match.full_description_am,
@@ -313,9 +317,16 @@ export const ServicesPage: React.FC = () => {
                     {/* Visual Photo Header */}
                     <div className="relative h-60 w-full overflow-hidden bg-stone-100">
                       <img 
-                        src={service.primary_image || service.image || enhancement.image} 
+                        src={getServiceImageUrl(service)} 
                         alt={displayTitle} 
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          const fallback = enhancement.image || getServiceImageUrl(service.title);
+                          if (target.src !== fallback) {
+                            target.src = fallback;
+                          }
+                        }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-black/20" />
                       
