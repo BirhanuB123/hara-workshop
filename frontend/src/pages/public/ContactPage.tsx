@@ -13,28 +13,33 @@ export const ContactPage: React.FC = () => {
     email: '',
     message: '',
   });
-  const [errors, setErrors] = useState<{ name?: string; phone?: string; message?: string }>({});
+  const [phoneCountry, setPhoneCountry] = useState('ET');
+  const [errors, setErrors] = useState<{ name?: string; phone?: string; email?: string; message?: string }>({});
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validate = () => {
-    const newErrors: { name?: string; phone?: string; message?: string } = {};
-    if (!formData.name.trim()) {
+    const newErrors: { name?: string; phone?: string; email?: string; message?: string } = {};
+    const nameClean = formData.name.trim();
+    if (!nameClean) {
       newErrors.name = t('contact.nameRequired') || 'Customer name is required.';
+    } else if (nameClean.length > 200) {
+      newErrors.name = 'Name cannot exceed 200 characters.';
     }
-    const phoneClean = formData.phone.trim();
-    if (!phoneClean) {
-      newErrors.phone = t('contact.phoneRequired') || 'Phone number is required.';
-    } else if (!/^\d+$/.test(phoneClean)) {
-      newErrors.phone = language === 'am' ? 'ቁጥሮች (0–9) ብቻ ይፈቀዳሉ' : 'Allow only numeric digits (0–9)';
-    } else if (phoneClean.length !== 10 && phoneClean.length !== 12) {
-      newErrors.phone = language === 'am'
-        ? `ስልክ ቁጥር በትክክል 10 ወይም 12 አሃዞች መሆን አለበት (ያስገቡት: ${phoneClean.length})`
-        : `Phone number must contain exactly 10 or 12 digits (entered: ${phoneClean.length})`;
+    const phoneRes = validatePhoneNumber(formData.phone, phoneCountry, language);
+    if (!phoneRes.isValid) {
+      newErrors.phone = phoneRes.error || t('contact.phoneRequired') || 'Phone number is required.';
     }
-    if (!formData.message.trim()) {
+    const emailClean = formData.email.trim();
+    if (emailClean && (emailClean.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailClean))) {
+      newErrors.email = language === 'am' ? 'ትክክለኛ ኢሜይል አድራሻ ያስገቡ' : 'Please enter a valid email address.';
+    }
+    const messageClean = formData.message.trim();
+    if (!messageClean) {
       newErrors.message = t('contact.messageRequired') || 'Message / inquiry is required.';
+    } else if (messageClean.length > 5000) {
+      newErrors.message = 'Message cannot exceed 5000 characters.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -68,7 +73,7 @@ export const ContactPage: React.FC = () => {
     try {
       const res = await contactApi.sendMessage({
         name: formData.name.trim(),
-        phone: validatePhoneNumber(formData.phone, undefined, language).normalized || formData.phone.trim(),
+        phone: validatePhoneNumber(formData.phone, phoneCountry, language).normalized || formData.phone.trim(),
         email: formData.email.trim() || undefined,
         message: formData.message.trim(),
       });
@@ -91,7 +96,7 @@ export const ContactPage: React.FC = () => {
       if (errData?.errors) {
         setErrors(errData.errors);
       }
-      setSubmitError(errData?.error || errData?.message || t('contact.deliveryError'));
+      setSubmitError(errData?.error || errData?.detail || errData?.message || t('contact.deliveryError'));
       // Keep form inputs preserved so the customer can retry without retyping!
     } finally {
       setSubmitting(false);
@@ -105,7 +110,7 @@ export const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 select-none text-left">
+    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 text-left">
       {/* Top Banner Header */}
       <div className="bg-[#FAF7F2] border-b border-stone-200 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-3xl mx-auto space-y-3">
@@ -291,8 +296,9 @@ export const ContactPage: React.FC = () => {
                     <div>
                       <PhoneInputWithCountry
                         value={formData.phone}
-                        onChange={(phone, isValid, countryCode) => {
+                        onChange={(phone, _isValid, countryCode) => {
                           setFormData((prev) => ({ ...prev, phone }));
+                          setPhoneCountry(countryCode);
                           if (errors.phone) {
                             const res = validatePhoneNumber(phone, countryCode, language);
                             if (res.isValid) {
@@ -301,7 +307,7 @@ export const ContactPage: React.FC = () => {
                           }
                         }}
                         onBlur={() => {
-                          const res = validatePhoneNumber(formData.phone, undefined, language);
+                          const res = validatePhoneNumber(formData.phone, phoneCountry, language);
                           if (!res.isValid && formData.phone.trim()) {
                             setErrors((prev) => ({ ...prev, phone: res.error }));
                           }
@@ -323,8 +329,13 @@ export const ContactPage: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder={t('contact.emailPlaceholder')}
-                      className="w-full bg-white border border-stone-300 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors"
+                      className={`w-full bg-white border ${
+                        errors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-stone-300'
+                      } rounded-xl px-4 py-2.5 text-xs sm:text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors`}
                     />
+                    {errors.email && (
+                      <p className="text-red-600 text-xs mt-1">{errors.email}</p>
+                    )}
                   </div>
 
                   <div>

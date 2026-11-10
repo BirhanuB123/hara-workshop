@@ -68,6 +68,28 @@ export default {
       borderWidth: {
         '3': '3px',
       },
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+      },
+      backdropBlur: {
+        'xs': '2px',
+      },
+      spacing: {
+        '0.8': '0.2rem',
+        '18': '4.5rem',
+      },
+      scale: {
+        '108': '1.08',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(4px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.2s ease-out both',
+      },
       fontFamily: {
         sans: ['Inter', 'Noto Sans Ethiopic', 'system-ui', '-apple-system', 'sans-serif'],
         amharic: ['Noto Sans Ethiopic', 'sans-serif'],

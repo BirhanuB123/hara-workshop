@@ -1,15 +1,26 @@
 import html
 import logging
 from rest_framework import viewsets, permissions, views, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.utils import timezone
 from .models import WorkshopSettings, AuditLog
 from .serializers import WorkshopSettingsSerializer, AuditLogSerializer
 from apps.quotations.tasks import _send_telegram_http, _sanitize_for_logging
 from apps.core.phone_validator import validate_phone_number
+from apps.core.throttles import ContactSubmitThrottle
 
 logger = logging.getLogger(__name__)
+
+
+def _clean_text(value) -> str:
+    if value is None or isinstance(value, (dict, list, tuple, bool)):
+        return ''
+    return str(value).strip()
+
 
 class PublicSettingsView(views.APIView):
     permission_classes = [permissions.AllowAny]
@@ -24,6 +35,22 @@ class AdminSettingsViewSet(viewsets.ModelViewSet):
     queryset = WorkshopSettings.objects.all()
     serializer_class = WorkshopSettingsSerializer
     permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=False, methods=['get', 'patch', 'put'])
+    def update_settings(self, request):
+        settings_obj = WorkshopSettings.objects.first()
+        if not settings_obj:
+            settings_obj = WorkshopSettings.objects.create()
+        if request.method == 'GET':
+            return Response(self.get_serializer(settings_obj).data)
+        serializer = self.get_serializer(
+            settings_obj,
+            data=request.data,
+            partial=(request.method == 'PATCH'),
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all()
@@ -40,13 +67,14 @@ class ContactInquiryView(views.APIView):
     Guarantees inquiries are securely stored in the database first so customer messages are never lost.
     """
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [ContactSubmitThrottle]
 
     def post(self, request):
-        name = str(request.data.get('name', '')).strip()
-        phone = str(request.data.get('phone', '')).strip()
-        email = str(request.data.get('email', '')).strip()
-        subject = str(request.data.get('subject', '')).strip()
-        message = str(request.data.get('message', '')).strip()
+        name = _clean_text(request.data.get('name'))
+        phone = _clean_text(request.data.get('phone'))
+        email = _clean_text(request.data.get('email'))
+        subject = _clean_text(request.data.get('subject'))
+        message = _clean_text(request.data.get('message'))
 
         errors = {}
         if not name:
@@ -60,17 +88,26 @@ class ContactInquiryView(views.APIView):
         else:
             phone = normalized_phone
 
+        if subject and len(subject) > 200:
+            errors['subject'] = 'Subject cannot exceed 200 characters.'
+
         if not message:
             errors['message'] = 'Message is required.'
         elif len(message) > 5000:
             errors['message'] = 'Message cannot exceed 5000 characters.'
 
-        if email and len(email) > 200:
-            errors['email'] = 'Email cannot exceed 200 characters.'
+        if email:
+            if len(email) > 254:
+                errors['email'] = 'Email cannot exceed 254 characters.'
+            else:
+                try:
+                    validate_email(email)
+                except ValidationError:
+                    errors['email'] = 'Please enter a valid email address.'
 
         if errors:
             return Response(
-                {'errors': errors, 'message': 'Please fill in all required fields.'},
+                {'errors': errors, 'message': 'Please correct the highlighted fields and try again.'},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -132,8 +169,8 @@ class ContactInquiryView(views.APIView):
         except Exception as audit_err:
             logger.warning(f'[CONTACT INQUIRY] Audit log creation failed: {audit_err}')
 
-        if not bot_token:
-            logger.warning('[CONTACT INQUIRY] TELEGRAM_BOT_TOKEN is not configured. Saved in database.')
+        if not bot_token or not chat_id:
+            logger.warning('[CONTACT INQUIRY] Telegram bot token or target chat ID is not configured. Saved in database.')
             return Response({
                 'success': True,
                 'telegram_delivered': False,

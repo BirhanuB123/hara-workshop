@@ -80,7 +80,6 @@ class Product(TimeStampedModel):
     def save(self, *args, **kwargs):
         if not self.slug:
             from django.utils.text import slugify
-            import uuid
             base_slug = slugify(self.name)
             slug = base_slug
             counter = 1

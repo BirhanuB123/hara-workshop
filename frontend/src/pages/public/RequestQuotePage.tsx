@@ -7,7 +7,6 @@ import {
   AlertCircle, 
   Truck, 
   Wrench, 
-  Layers, 
   ArrowRight, 
   Upload, 
   FileText, 
@@ -19,7 +18,6 @@ import {
   Calendar,
   MapPin,
   Sparkles,
-  ChevronDown,
   Clock
 } from 'lucide-react';
 import { productsApi, quotesApi } from '../../services/api';
@@ -34,7 +32,7 @@ import { validatePhoneNumber } from '../../utils/phoneValidation';
 export const RequestQuotePage: React.FC = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { t, language } = useLanguageStore();
+  const { language } = useLanguageStore();
   const { selectedProduct: storeProduct, setSelectedProduct, clearSelectedProduct } = useProductOrderStore();
 
   // 1. URL Query Parameters
@@ -43,7 +41,6 @@ export const RequestQuotePage: React.FC = () => {
   const nameParam = searchParams.get('name') || searchParams.get('product') || '';
   const serviceParam = searchParams.get('service') || '';
   const materialParam = searchParams.get('material') || '';
-  const imageParam = searchParams.get('image') || '';
 
   // Synchronously resolve candidate product from route state, query params, store, or in-memory catalog
   const resolveCandidate = (): Product | null => {
@@ -64,33 +61,19 @@ export const RequestQuotePage: React.FC = () => {
       if (match) return match;
     }
 
-    // C. Check persistent store (sessionStorage)
+    // C. Check persistent store (sessionStorage) only when no conflicting query params are present
     const stored = storeProduct || useProductOrderStore.getState().selectedProduct;
     if (stored) {
-      if (!lookupKey) return stored;
+      if (!lookupKey && !serviceParam && !materialParam) return stored;
       if (
-        (stored.sku && stored.sku.toLowerCase() === lookupKey) ||
-        (stored.id && stored.id.toLowerCase() === lookupKey) ||
-        (stored.name && stored.name.toLowerCase() === lookupKey)
+        lookupKey && (
+          (stored.sku && stored.sku.toLowerCase() === lookupKey) ||
+          (stored.id && stored.id.toLowerCase() === lookupKey) ||
+          (stored.name && stored.name.toLowerCase() === lookupKey)
+        )
       ) {
         return stored;
       }
-    }
-
-    // D. Synthetic fallback if URL has at least name or sku
-    if (nameParam || skuParam) {
-      return {
-        id: productIdParam || 'custom-model',
-        name: nameParam || 'Custom Item',
-        sku: skuParam || 'CUSTOM',
-        category: '',
-        category_name: '',
-        service_category_display: serviceParam,
-        description: '',
-        material: materialParam,
-        primary_image: imageParam,
-        images: imageParam ? [{ id: '1', image: imageParam, is_primary: true }] : [],
-      } as unknown as Product;
     }
 
     return null;
@@ -98,7 +81,6 @@ export const RequestQuotePage: React.FC = () => {
 
   const initialProd = resolveCandidate();
   const [selectedProduct, setLocalSelectedProduct] = useState<Product | null>(initialProd);
-  const [productLoading, setProductLoading] = useState(false);
 
   // 2. Customer Information (always blank and editable by customer)
   const [customerName, setCustomerName] = useState('');
@@ -107,7 +89,11 @@ export const RequestQuotePage: React.FC = () => {
   const [email, setEmail] = useState('');
 
   // 3. Project Specifications (pre-filled from selected product, editable by customer)
-  const [projectTitle, setProjectTitle] = useState(initialProd ? initialProd.name : (nameParam || ''));
+  const [projectTitle, setProjectTitle] = useState(
+    initialProd
+      ? (language === 'am' && initialProd.name_am ? initialProd.name_am : initialProd.name)
+      : (nameParam || '')
+  );
   const [serviceCategory, setServiceCategory] = useState<string>(
     initialProd
       ? mapServiceCategoryToDropdown(initialProd.service_category, initialProd.service_category_display)
@@ -115,16 +101,24 @@ export const RequestQuotePage: React.FC = () => {
   );
   const [description, setDescription] = useState(
     initialProd
-      ? (initialProd.description || initialProd.short_description || `Order request for ${initialProd.name} (${initialProd.sku}).`)
+      ? (language === 'am' && (initialProd.description_am || initialProd.short_description_am)
+          ? (initialProd.description_am || initialProd.short_description_am)!
+          : (initialProd.description || initialProd.short_description || `Order request for ${initialProd.name} (${initialProd.sku}).`))
       : ''
   );
   const [materialPreference, setMaterialPreference] = useState(
-    initialProd ? (initialProd.material || '') : materialParam
+    initialProd
+      ? (language === 'am' && initialProd.material_am ? initialProd.material_am : (initialProd.material || ''))
+      : materialParam
+  );
+  const [customProductCode, setCustomProductCode] = useState(
+    initialProd ? (initialProd.sku || '') : (skuParam || '')
   );
   const [customerNotes, setCustomerNotes] = useState('');
 
   // 4. Order Quantity (editable by customer, required)
   const [quantity, setQuantity] = useState<number>(1);
+  const [quantityInput, setQuantityInput] = useState<string>('1');
 
   // 5. Architectural Drawings & Reference Files (Section 14)
   const [attachments, setAttachments] = useState<File[]>([]);
@@ -145,6 +139,7 @@ export const RequestQuotePage: React.FC = () => {
 
   const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg', '.dxf', '.dwg', '.webp'];
   const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+  const MAX_FILES = 10;
 
   // Helper to apply product details to state
   const applyProductData = (prod: Product | null) => {
@@ -155,10 +150,15 @@ export const RequestQuotePage: React.FC = () => {
     }
     setLocalSelectedProduct(prod);
     setSelectedProduct(prod);
-    setProjectTitle(prod.name);
+    setProjectTitle(language === 'am' && prod.name_am ? prod.name_am : prod.name);
     setServiceCategory(mapServiceCategoryToDropdown(prod.service_category, prod.service_category_display));
-    setDescription(prod.description || prod.short_description || `Order request for ${prod.name} (${prod.sku}).`);
-    setMaterialPreference(prod.material || prod.material_am || '');
+    setDescription(
+      language === 'am' && (prod.description_am || prod.short_description_am)
+        ? (prod.description_am || prod.short_description_am)!
+        : (prod.description || prod.short_description || `Order request for ${prod.name} (${prod.sku}).`)
+    );
+    setMaterialPreference(language === 'am' && prod.material_am ? prod.material_am : (prod.material || prod.material_am || ''));
+    setCustomProductCode(prod.sku || '');
   };
 
   // Synchronize on navigation, query parameter changes, or page refresh
@@ -169,10 +169,21 @@ export const RequestQuotePage: React.FC = () => {
       return;
     }
 
-    // If not found in memory catalog and query parameter exists, fetch from backend API
     const lookupKey = productIdParam || skuParam;
-    if (lookupKey && !selectedProduct) {
-      setProductLoading(true);
+    if (!lookupKey && (serviceParam || nameParam || materialParam)) {
+      clearSelectedProduct();
+      setLocalSelectedProduct(null);
+      setProjectTitle(nameParam || '');
+      if (serviceParam) {
+        setServiceCategory(mapServiceCategoryToDropdown(serviceParam, serviceParam));
+      }
+      setMaterialPreference(materialParam || '');
+      setCustomProductCode('');
+      return;
+    }
+
+    // If not found in memory catalog and query parameter exists, fetch from backend API
+    if (lookupKey) {
       const apiCall = (lookupKey.length === 36 && productIdParam)
         ? productsApi.getById(productIdParam)
         : productsApi.getAll({ search: skuParam || lookupKey, page_size: 1 });
@@ -182,12 +193,18 @@ export const RequestQuotePage: React.FC = () => {
           const list = res.data?.results || (Array.isArray(res.data) ? res.data : [res.data]);
           if (list && list.length > 0 && list[0]?.name) {
             applyProductData(list[0]);
+          } else {
+            clearSelectedProduct();
+            setLocalSelectedProduct(null);
+            if (nameParam) setProjectTitle(nameParam);
+            if (serviceParam) setServiceCategory(mapServiceCategoryToDropdown(serviceParam, serviceParam));
+            if (materialParam) setMaterialPreference(materialParam);
+            setCustomProductCode(skuParam || '');
           }
         })
-        .catch((err: any) => console.warn('Product pre-fetch warning:', err))
-        .finally(() => setProductLoading(false));
+        .catch((err: any) => console.warn('Product pre-fetch warning:', err));
     }
-  }, [location.state, productIdParam, skuParam, nameParam]);
+  }, [location.state, productIdParam, skuParam, nameParam, serviceParam, materialParam]);
 
   // Handle clearing the selected product (allows custom request mode)
   const handleClearSelectedProduct = () => {
@@ -197,20 +214,39 @@ export const RequestQuotePage: React.FC = () => {
     setProjectTitle('');
     setDescription('');
     setMaterialPreference('');
+    setCustomProductCode('');
   };
 
   // File handling
   const processFiles = (files: File[]) => {
     setFileError(null);
+    if (attachments.length + files.length > MAX_FILES) {
+      setFileError(
+        language === 'am'
+          ? `በአንድ ጥያቄ ውስጥ እስከ ${MAX_FILES} ፋይሎች ብቻ ማያያዝ ይችላሉ።`
+          : `You can attach at most ${MAX_FILES} files per request.`
+      );
+      return;
+    }
+
     const valid: File[] = [];
 
     for (const file of files) {
-      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      const parts = file.name.split('.');
+      const ext = parts.length > 1 ? '.' + parts.pop()!.toLowerCase() : '';
+      if (!ext || !ALLOWED_EXTENSIONS.includes(ext)) {
         setFileError(
           language === 'am'
-            ? `የፋይል አይነት "${ext}" ተቀባይነት የለውም። እባክዎ PDF, DXF, DWG, PNG, JPG ወይም WEBP ይስቀሉ።`
-            : `File type "${ext}" is not supported. Please upload PDF, DXF, DWG, PNG, JPG, or WEBP.`
+            ? `የፋይል አይነት "${ext || 'none'}" ተቀባይነት የለውም። እባክዎ PDF, DXF, DWG, PNG, JPG ወይም WEBP ይስቀሉ።`
+            : `File type "${ext || 'none'}" is not supported. Please upload PDF, DXF, DWG, PNG, JPG, or WEBP.`
+        );
+        return;
+      }
+      if (file.size <= 0) {
+        setFileError(
+          language === 'am'
+            ? `ፋይል "${file.name}" ባዶ ነው።`
+            : `File "${file.name}" is empty.`
         );
         return;
       }
@@ -231,6 +267,7 @@ export const RequestQuotePage: React.FC = () => {
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     processFiles(Array.from(e.target.files));
+    e.target.value = '';
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -264,51 +301,16 @@ export const RequestQuotePage: React.FC = () => {
 
   const baselineQuote = calculateBaselineQuote();
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    // Allow only numeric digits (0–9), up to 12 digits max
-    const digitsOnly = raw.replace(/\D/g, '').slice(0, 12);
-    setPhoneNumber(digitsOnly);
-
-    if (raw !== digitsOnly) {
-      setValidationErrors((prev) => ({
-        ...prev,
-        phoneNumber: language === 'am' ? 'ቁጥሮች (0–9) ብቻ ይፈቀዳሉ' : 'Allow only numeric digits (0–9)'
-      }));
-    } else if (digitsOnly.length > 0 && digitsOnly.length !== 10 && digitsOnly.length !== 12) {
-      setValidationErrors((prev) => ({
-        ...prev,
-        phoneNumber: language === 'am'
-          ? `ስልክ ቁጥር በትክክል 10 ወይም 12 አሃዞች መሆን አለበት (ያስገቡት: ${digitsOnly.length})`
-          : `Phone number must contain exactly 10 or 12 digits (entered: ${digitsOnly.length})`
-      }));
-    } else {
-      setValidationErrors((prev) => ({ ...prev, phoneNumber: '' }));
-    }
-  };
-
-  const handlePhoneBlur = () => {
-    const clean = phoneNumber.trim();
-    if (!clean) {
-      setValidationErrors((prev) => ({
-        ...prev,
-        phoneNumber: language === 'am' ? 'ስልክ ቁጥር ማስገባት ግዴታ ነው' : 'Phone Number is required'
-      }));
-    } else if (clean.length !== 10 && clean.length !== 12) {
-      setValidationErrors((prev) => ({
-        ...prev,
-        phoneNumber: language === 'am'
-          ? `ስልክ ቁጥር በትክክል 10 ወይም 12 አሃዞች መሆን አለበት (ያስገቡት: ${clean.length})`
-          : `Phone number must contain exactly 10 or 12 digits (entered: ${clean.length})`
-      }));
-    }
-  };
-
   const validate = (): boolean => {
     const errors: Record<string, string> = {};
+    const nameTrim = customerName.trim();
+    const emailTrim = email.trim();
+    const titleTrim = projectTitle.trim();
 
-    if (!customerName.trim()) {
+    if (!nameTrim) {
       errors.customerName = language === 'am' ? 'የደንበኛ ስም ማስገባት ግዴታ ነው' : 'Customer Name is required';
+    } else if (nameTrim.length > 200) {
+      errors.customerName = 'Customer Name cannot exceed 200 characters.';
     }
 
     const phoneRes = validatePhoneNumber(phoneNumber, phoneCountry, language);
@@ -316,17 +318,22 @@ export const RequestQuotePage: React.FC = () => {
       errors.phoneNumber = phoneRes.error || (language === 'am' ? 'ስልክ ቁጥር ማስገባት ግዴታ ነው' : 'Please enter a valid phone number');
     }
 
-    if (!email.trim() || !email.includes('@')) {
+    if (!emailTrim || emailTrim.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
       errors.email = language === 'am' ? 'ትክክለኛ ኢሜይል አድራሻ ያስገቡ' : 'A valid Email address is required';
     }
-    if (!projectTitle.trim()) {
+    if (!titleTrim) {
       errors.projectTitle = language === 'am' ? 'የፕሮጀክት ርዕስ ማስገባት ግዴታ ነው' : 'Project Title is required';
+    } else if (titleTrim.length > 200) {
+      errors.projectTitle = 'Project Title cannot exceed 200 characters.';
     }
     if (!description.trim()) {
       errors.description = language === 'am' ? 'የፕሮጀክት ዝርዝር መግለጫ ማስገባት ግዴታ ነው' : 'Project description & requirements are required';
     }
-    if (quantity <= 0) {
-      errors.quantity = language === 'am' ? 'ብዛት ከዜሮ መብለጥ አለበት' : 'Quantity must be a positive number';
+    const parsedQty = parseInt(quantityInput, 10);
+    if (Number.isNaN(parsedQty) || parsedQty < 1 || parsedQty > 1000000) {
+      errors.quantity = language === 'am'
+        ? 'ብዛት ከ1 እስከ 1,000,000 መሆን አለበት'
+        : 'Quantity must be between 1 and 1,000,000';
     }
 
     setValidationErrors(errors);
@@ -360,7 +367,8 @@ export const RequestQuotePage: React.FC = () => {
       if (materialPreference) formData.append('material_preference', materialPreference.trim());
       if (customerNotes) formData.append('customer_notes', customerNotes.trim());
 
-      formData.append('quantity', String(quantity || 1));
+      const safeQuantity = Math.min(1000000, Math.max(1, parseInt(quantityInput, 10) || quantity || 1));
+      formData.append('quantity', String(safeQuantity));
 
       formData.append('delivery_required', String(deliveryRequired));
       formData.append('installation_required', String(installationRequired));
@@ -378,13 +386,15 @@ export const RequestQuotePage: React.FC = () => {
           formData.append('product_id', selectedProduct.id);
           formData.append('product', selectedProduct.id);
         }
-        formData.append('product_code', selectedProduct.sku);
+        if (selectedProduct.sku) formData.append('product_code', selectedProduct.sku);
         formData.append('product_name', selectedProduct.name);
         formData.append('product_category', selectedProduct.subcategory || selectedProduct.category_name || selectedProduct.product_type || '');
         const pImg = getProductImageUrl(selectedProduct);
         if (pImg) {
           formData.append('product_image_url', pImg);
         }
+      } else if (customProductCode.trim()) {
+        formData.append('product_code', customProductCode.trim());
       }
 
       attachments.forEach((file) => {
@@ -392,11 +402,15 @@ export const RequestQuotePage: React.FC = () => {
       });
 
       const res = await quotesApi.create(formData);
+      clearSelectedProduct();
+      setAttachments([]);
+      setValidationErrors({});
+      setFileError(null);
       setSubmittedResult(res.data);
       window.scrollTo({ top: 100, behavior: 'smooth' });
     } catch (err: any) {
       console.error('Order submission error:', err);
-      const detail = err.response?.data?.error || err.response?.data?.detail;
+      const detail = err.response?.data?.error || err.response?.data?.detail || err.response?.data?.message;
       setErrorMsg(
         detail ||
         (language === 'am'
@@ -414,7 +428,7 @@ export const RequestQuotePage: React.FC = () => {
   // =========================================================================
   if (submittedResult) {
     return (
-      <div className="min-h-screen bg-[#FDFBF7] text-stone-900 py-16 px-4 sm:px-6 lg:px-8 select-none text-left">
+      <div className="min-h-screen bg-[#FDFBF7] text-stone-900 py-16 px-4 sm:px-6 lg:px-8 text-left">
         <div className="max-w-3xl mx-auto space-y-8">
           <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mx-auto shadow-sm">
             <CheckCircle2 className="w-12 h-12" />
@@ -448,17 +462,19 @@ export const RequestQuotePage: React.FC = () => {
               {(() => {
                 const telStatus = submittedResult.telegram_status;
                 const details = submittedResult.telegram_details || {};
-                const managerDelivered = details['860309749']?.status === 'sent' || details['860309749']?.status === 'already_sent';
-                const groupDelivered = details['-5374750855']?.status === 'sent' || details['-5374750855']?.status === 'already_sent';
+                const destEntries = Object.values(details) as Array<{ status?: string }>;
+                const deliveredCount = destEntries.filter(
+                  (d) => d?.status === 'sent' || d?.status === 'already_sent'
+                ).length;
 
-                if (telStatus === 'sent' || (managerDelivered && groupDelivered)) {
+                if (telStatus === 'sent' || (destEntries.length > 0 && deliveredCount === destEntries.length)) {
                   return (
                     <div className="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
                       <Check className="w-4 h-4 text-emerald-600" />
                       <span>{language === 'am' ? 'ለማኔጅመንት እና ለማናጀር ሳሙኤል ተልኳል' : 'Dispatched to Management & Manager Samuel'}</span>
                     </div>
                   );
-                } else if (telStatus === 'partial' || groupDelivered) {
+                } else if (telStatus === 'partial' || deliveredCount > 0) {
                   return (
                     <div className="text-xs font-semibold text-blue-800 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg inline-flex items-center gap-1.5 self-start">
                       <Check className="w-4 h-4 text-blue-600" />
@@ -504,7 +520,7 @@ export const RequestQuotePage: React.FC = () => {
               <div>
                 <span className="text-stone-500 uppercase font-semibold text-xs">{language === 'am' ? 'የተመረጠ ምርት' : 'Selected Product'}:</span>
                 <p className="text-stone-900 font-semibold mt-0.5">
-                  {submittedResult.product_name || (selectedProduct ? selectedProduct.name : (language === 'am' ? 'ብጁ የዕደ-ጥበብ ማዘዣ' : 'Custom Bespoke Fabrication'))}
+                  {submittedResult.product_name || (selectedProduct ? (language === 'am' && selectedProduct.name_am ? selectedProduct.name_am : selectedProduct.name) : (language === 'am' ? 'ብጁ የዕደ-ጥበብ ማዘዣ' : 'Custom Bespoke Fabrication'))}
                 </p>
               </div>
               {submittedResult.product_code && (
@@ -526,7 +542,7 @@ export const RequestQuotePage: React.FC = () => {
                 </span>
                 {submittedResult.has_predefined_price && Number(submittedResult.estimated_baseline) > 0 ? (
                   <p className="text-stone-900 font-mono font-bold mt-0.5">
-                    {Number(submittedResult.estimated_baseline).toLocaleString()} ETB
+                    {Number(submittedResult.estimated_baseline).toLocaleString()} {language === 'am' ? 'ብር' : 'ETB'}
                   </p>
                 ) : (
                   <p className="text-amber-800 bg-amber-50 border border-amber-200/80 px-2.5 py-1 rounded-lg text-xs font-semibold mt-1 inline-block">
@@ -557,15 +573,15 @@ export const RequestQuotePage: React.FC = () => {
                 </h3>
                 <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
                   {language === 'am'
-                    ? 'የእኛን ይፋዊ ቴሌግራም ቦት (@HaraWorkshopOrdersBot) በማገናኘት ትዕዛዝዎ ሲገመገም፣ ማምረት ሲጀመር እና ዝግጁ ሲሆን ፈጣን ማሳወቂያዎችን በቀጥታ ያግኙ።'
-                    : 'Connect our official Telegram bot (@HaraWorkshopOrdersBot) to receive instant confirmation and real-time status updates as your order progresses through fabrication.'}
+                    ? `የእኛን ይፋዊ ቴሌግራም ቦት (@${submittedResult.telegram_bot_username || 'HaraWorkshopOrdersBot'}) በማገናኘት ትዕዛዝዎ ሲገመገም፣ ማምረት ሲጀመር እና ዝግጁ ሲሆን ፈጣን ማሳወቂያዎችን በቀጥታ ያግኙ።`
+                    : `Connect our official Telegram bot (@${submittedResult.telegram_bot_username || 'HaraWorkshopOrdersBot'}) to receive instant confirmation and real-time status updates as your order progresses through fabrication.`}
                 </p>
               </div>
             </div>
 
             <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <a
-                href={submittedResult.telegram_deep_link || 'https://t.me/HaraWorkshopOrdersBot'}
+                href={submittedResult.telegram_deep_link || `https://t.me/${submittedResult.telegram_bot_username || 'HaraWorkshopOrdersBot'}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2.5 bg-[#229ED9] hover:bg-[#1b88bd] text-white font-bold py-3.5 px-6 rounded-xl text-xs sm:text-sm uppercase tracking-wider transition-all shadow-md hover:shadow-lg active:scale-95"
@@ -611,7 +627,7 @@ export const RequestQuotePage: React.FC = () => {
   // MAIN PUBLIC ORDER FORM
   // =========================================================================
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 select-none text-left">
+    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 text-left">
       {/* Top Banner Header */}
       <div className="bg-[#FAF7F2] border-b border-stone-200 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-3xl mx-auto space-y-3">
@@ -686,7 +702,7 @@ export const RequestQuotePage: React.FC = () => {
                     }
                   }}
                 />
-                <div className="absolute top-2 right-2 z-10 bg-brand-red text-white text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm tracking-wider select-none">
+                <div className="absolute top-2 right-2 z-10 bg-brand-red text-white text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm tracking-wider">
                   {selectedProduct.sku}
                 </div>
               </div>
@@ -697,7 +713,9 @@ export const RequestQuotePage: React.FC = () => {
                     {selectedProduct.sku}
                   </span>
                   <span className="text-xs text-stone-500 font-semibold uppercase">
-                    {selectedProduct.subcategory || selectedProduct.category_name}
+                    {language === 'am' && selectedProduct.subcategory_am
+                      ? selectedProduct.subcategory_am
+                      : (selectedProduct.subcategory || selectedProduct.category_name)}
                   </span>
                   <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-medium">
                     ✓ {language === 'am' ? 'ዝርዝሮች በቅጹ ላይ ተሞልተዋል' : 'Specifications auto-filled in form'}
@@ -707,16 +725,23 @@ export const RequestQuotePage: React.FC = () => {
                   {language === 'am' && selectedProduct.name_am ? selectedProduct.name_am : selectedProduct.name}
                 </h3>
                 <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-                  {selectedProduct.short_description || selectedProduct.description}
+                  {language === 'am' && (selectedProduct.short_description_am || selectedProduct.description_am)
+                    ? (selectedProduct.short_description_am || selectedProduct.description_am)
+                    : (selectedProduct.short_description || selectedProduct.description)}
                 </p>
                 <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-stone-600">
-                  {selectedProduct.material && (
-                    <span><strong className="text-stone-900">{language === 'am' ? 'ቁሳቁስ' : 'Material'}:</strong> {selectedProduct.material}</span>
+                  {(selectedProduct.material || selectedProduct.material_am) && (
+                    <span>
+                      <strong className="text-stone-900">{language === 'am' ? 'ቁሳቁስ' : 'Material'}:</strong>{' '}
+                      {language === 'am' && selectedProduct.material_am ? selectedProduct.material_am : selectedProduct.material}
+                    </span>
                   )}
                   {Number(selectedProduct.starting_price) > 0 && (
                     <span>
                       <strong className="text-stone-900">{language === 'am' ? 'መነሻ ዋጋ' : 'Baseline'}:</strong>{' '}
-                      <span className="font-bold text-stone-900 font-mono">{Number(selectedProduct.starting_price).toLocaleString()} ETB</span>
+                      <span className="font-bold text-stone-900 font-mono">
+                        {Number(selectedProduct.starting_price).toLocaleString()} {language === 'am' ? 'ብር' : 'ETB'}
+                      </span>
                     </span>
                   )}
                 </div>
@@ -769,7 +794,7 @@ export const RequestQuotePage: React.FC = () => {
                 <div>
                   <PhoneInputWithCountry
                     value={phoneNumber}
-                    onChange={(phone, isValid, countryCode) => {
+                    onChange={(phone, _isValid, countryCode) => {
                       setPhoneNumber(phone);
                       setPhoneCountry(countryCode);
                       if (validationErrors.phoneNumber) {
@@ -934,10 +959,12 @@ export const RequestQuotePage: React.FC = () => {
                     <input
                       type="text"
                       readOnly={Boolean(selectedProduct?.sku)}
-                      value={selectedProduct?.sku || ''}
+                      value={selectedProduct?.sku || customProductCode}
+                      maxLength={100}
+                      onChange={(e) => setCustomProductCode(e.target.value)}
                       placeholder={language === 'am' ? 'ለምሳሌ፡ CHR-001 ወይም ብጁ' : 'e.g. CHR-001 (or Custom)'}
                       className={`w-full border rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-stone-900 font-mono transition shadow-xs ${
-                        selectedProduct?.sku ? 'bg-stone-50 border-stone-300 font-bold' : 'bg-white border-stone-300'
+                        selectedProduct?.sku ? 'bg-stone-50 border-stone-300 font-bold' : 'bg-white border-stone-300 focus:outline-none focus:border-brand-red'
                       }`}
                     />
                   </div>
@@ -982,11 +1009,30 @@ export const RequestQuotePage: React.FC = () => {
                   <input
                     type="number"
                     min="1"
+                    max="1000000"
                     required
-                    value={quantity}
+                    value={quantityInput}
                     onChange={(e) => {
-                      setQuantity(Math.max(1, parseInt(e.target.value) || 1));
+                      const val = e.target.value;
+                      setQuantityInput(val);
+                      const parsed = parseInt(val, 10);
+                      if (!Number.isNaN(parsed) && parsed > 0) {
+                        setQuantity(Math.min(1000000, parsed));
+                      } else if (val.trim() === '') {
+                        setQuantity(0);
+                      }
                       if (validationErrors.quantity) setValidationErrors(prev => ({ ...prev, quantity: '' }));
+                    }}
+                    onBlur={() => {
+                      const parsed = parseInt(quantityInput, 10);
+                      if (Number.isNaN(parsed) || parsed < 1) {
+                        setQuantity(1);
+                        setQuantityInput('1');
+                      } else {
+                        const clamped = Math.min(1000000, parsed);
+                        setQuantity(clamped);
+                        setQuantityInput(String(clamped));
+                      }
                     }}
                     className={`w-full bg-white border rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-stone-900 font-mono font-bold focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red transition shadow-xs ${
                       validationErrors.quantity ? 'border-red-500 ring-1 ring-red-500' : 'border-stone-300'
@@ -1044,7 +1090,7 @@ export const RequestQuotePage: React.FC = () => {
                   {language === 'am' ? 'ፋይሎችን እዚህ ይጎትቱ ወይም ለመምረጥ ይጫኑ' : 'Click to browse or drag and drop files here'}
                 </p>
                 <p className="text-[11px] text-stone-500 mt-1">
-                  PDF, DXF, DWG, PNG, JPG, WEBP • Max 25 MB per file
+                  {language === 'am' ? 'PDF, DXF, DWG, PNG, JPG, WEBP • እስከ 25 MB በአንድ ፋይል' : 'PDF, DXF, DWG, PNG, JPG, WEBP • Max 25 MB per file'}
                 </p>
               </div>
 
@@ -1215,11 +1261,12 @@ export const RequestQuotePage: React.FC = () => {
                       <div className="flex justify-between items-start text-stone-600">
                         <span className="text-stone-500">{language === 'am' ? 'የምርት ዋጋ' : 'Catalog Price'}:</span>
                         <span className="font-mono font-bold text-stone-900 text-xs text-right">
-                          {unitPrice.toLocaleString()} ETB / unit
+                          {unitPrice.toLocaleString()} {language === 'am' ? 'ብር / ፍሬ' : 'ETB / unit'}
                         </span>
                       </div>
                       <div className="text-[11px] text-stone-500 truncate">
-                        {selectedProduct.sku ? `[${selectedProduct.sku}] ` : ''}{selectedProduct.name}
+                        {selectedProduct.sku ? `[${selectedProduct.sku}] ` : ''}
+                        {language === 'am' && selectedProduct.name_am ? selectedProduct.name_am : selectedProduct.name}
                       </div>
                     </div>
                   )}
@@ -1227,7 +1274,7 @@ export const RequestQuotePage: React.FC = () => {
                   <div className="flex justify-between items-center text-stone-600">
                     <span>{language === 'am' ? 'ብዛት' : 'Quantity'}:</span>
                     <span className="font-mono font-bold text-stone-900 text-sm">
-                      {quantity} unit(s)
+                      {quantity > 0 ? quantity : 1} {language === 'am' ? 'ፍሬ' : 'unit(s)'}
                     </span>
                   </div>
 
@@ -1235,7 +1282,7 @@ export const RequestQuotePage: React.FC = () => {
                     <span>{language === 'am' ? 'ትራንስፖርት' : 'Workshop Delivery'}:</span>
                     <span className={`font-semibold ${deliveryRequired ? 'text-emerald-700' : 'text-stone-400'}`}>
                       {deliveryRequired
-                        ? (hasPredefinedPrice ? '+1,500 ETB' : (language === 'am' ? 'ተካቷል (Included)' : 'Included'))
+                        ? (hasPredefinedPrice ? `+1,500 ${language === 'am' ? 'ብር' : 'ETB'}` : (language === 'am' ? 'ተካቷል' : 'Included'))
                         : (language === 'am' ? 'አልተካተተም' : 'Not Included')}
                     </span>
                   </div>
@@ -1244,7 +1291,7 @@ export const RequestQuotePage: React.FC = () => {
                     <span>{language === 'am' ? 'የቦታው ተከላ' : 'On-Site Fitting'}:</span>
                     <span className={`font-semibold ${installationRequired ? 'text-emerald-700' : 'text-stone-400'}`}>
                       {installationRequired
-                        ? (hasPredefinedPrice ? '+2,500 ETB' : (language === 'am' ? 'ተካቷል (Included)' : 'Included'))
+                        ? (hasPredefinedPrice ? `+2,500 ${language === 'am' ? 'ብር' : 'ETB'}` : (language === 'am' ? 'ተካቷል' : 'Included'))
                         : (language === 'am' ? 'አልተካተተም' : 'Not Included')}
                     </span>
                   </div>
@@ -1256,7 +1303,9 @@ export const RequestQuotePage: React.FC = () => {
                       </span>
                       <div className="text-2xl font-black text-stone-900 font-mono flex items-baseline gap-1.5">
                         <span>{baselineQuote.toLocaleString()}</span>
-                        <span className="text-sm font-sans font-bold text-brand-red">ETB</span>
+                        <span className="text-sm font-sans font-bold text-brand-red">
+                          {language === 'am' ? 'ብር' : 'ETB'}
+                        </span>
                       </div>
                       <p className="text-[10px] text-stone-400 leading-tight pt-1">
                         {language === 'am'

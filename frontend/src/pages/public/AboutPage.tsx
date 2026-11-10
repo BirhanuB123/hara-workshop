@@ -6,7 +6,7 @@ export const AboutPage: React.FC = () => {
   const { t } = useLanguageStore();
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 select-none text-left">
+    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 text-left">
       {/* Top Banner Header */}
       <div className="bg-[#FAF7F2] border-b border-stone-200 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-3xl mx-auto space-y-3">

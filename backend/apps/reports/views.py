@@ -1,11 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
-from django.db.models import Count
 from apps.accounts.models import User, UserRole
 from apps.orders.models import Order, OrderStatus
 from apps.quotations.models import Quote, QuoteStatus
-from apps.production.models import ProductionJob, ProductionStage
 from apps.inventory.models import Material
 from apps.accounts.permissions import IsAdmin
 

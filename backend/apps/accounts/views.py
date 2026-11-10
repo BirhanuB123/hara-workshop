@@ -2,22 +2,25 @@ from rest_framework import generics, status, views, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, CustomerProfile, EmployeeProfile, UserRole
+from .models import User, UserRole
 from .serializers import (
     UserSerializer, RegisterSerializer, CustomTokenObtainPairSerializer,
-    ChangePasswordSerializer, UserAdminCreateUpdateSerializer,
-    CustomerProfileSerializer, EmployeeProfileSerializer
+    ChangePasswordSerializer, UserAdminCreateUpdateSerializer
 )
-from .permissions import IsSuperAdmin, IsManagerOrAdmin, IsStaffUser
+from .permissions import IsManagerOrAdmin, IsStaffUser
+from apps.core.throttles import AuthLoginThrottle, AuthRegisterThrottle
 
 from django.db import IntegrityError
 from .utils import normalize_phone_number, normalize_email_address
 
 class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = [permissions.AllowAny]
+    throttle_classes = [AuthLoginThrottle]
     serializer_class = CustomTokenObtainPairSerializer
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [AuthRegisterThrottle]
     serializer_class = RegisterSerializer
 
     def create(self, request, *args, **kwargs):

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, ArrowRight, Check, ShieldCheck, Truck, Wrench, Layers, PlusCircle, 
+  ArrowLeft, ArrowRight, ShieldCheck, Truck, Wrench, Layers, PlusCircle, 
   Clock, Phone, CheckCircle2, ChevronRight, ChevronLeft, X, ZoomIn, 
-  Sparkles, Hammer, Box, ArrowUpRight, Ruler, Palette, FileText
+  Hammer, Ruler, Palette, FileText
 } from 'lucide-react';
 import { productsApi, extractResults } from '../../services/api';
 import { Product } from '../../types';
@@ -12,7 +12,7 @@ import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
 import { useProductOrderStore } from '../../store/productOrderStore';
 import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
-import { getProductImageUrl } from '../../utils/productUtils';
+import { getProductImageUrl, resolveProductImagePath } from '../../utils/productUtils';
 
 export const ProductDetailPage: React.FC = () => {
   const { serviceSlug, productSlug, id } = useParams<{ 
@@ -47,7 +47,15 @@ export const ProductDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (!lookupKey) return;
-    if (!product) setLoading(true);
+    if (initialFallback) {
+      setProduct(initialFallback);
+      setSelectedImage(initialFallback.primary_image || initialFallback.images?.[0]?.image || null);
+      setLoading(false);
+    } else {
+      setProduct(null);
+      setSelectedImage(null);
+      setLoading(true);
+    }
 
     productsApi.getById(lookupKey)
       .then((res) => {
@@ -66,7 +74,7 @@ export const ProductDetailPage: React.FC = () => {
         } else {
           prod.images = prod.images.map(img => ({
             ...img,
-            image: getProductImageUrl({ sku: prod.sku, primary_image: img.image })
+            image: resolveProductImagePath(img.image) || resolvedMainImg
           }));
         }
         setProduct(prod);
@@ -78,17 +86,26 @@ export const ProductDetailPage: React.FC = () => {
           serviceSlug?.includes('wood') ? 'WOOD_WORKS' : 'HYBRID_METAL_WOOD'
         );
 
-        if (serviceCategoryParam === 'HYBRID_METAL_WOOD' || serviceSlug?.includes('hybrid')) {
-          const hybridOther = CATALOG_PRODUCTS.filter(p => p.service_category === 'HYBRID_METAL_WOOD' && p.sku !== prod.sku);
-          setRelatedProducts(hybridOther.slice(0, 4));
-        } else {
-          productsApi.getAll({ service_category: serviceCategoryParam, page_size: 8 })
-            .then((relRes) => {
-              const relList: Product[] = extractResults<Product>(relRes.data);
-              setRelatedProducts(relList.filter(p => p.id !== prod.id).slice(0, 4));
-            })
-            .catch(console.error);
-        }
+        productsApi.getAll({ service_category: serviceCategoryParam, page_size: 8 })
+          .then((relRes) => {
+            const relList: Product[] = extractResults<Product>(relRes.data);
+            const filtered = relList.filter(p => p.id !== prod.id && p.sku !== prod.sku).slice(0, 4);
+            if (filtered.length > 0) {
+              setRelatedProducts(filtered);
+            } else {
+              const fallbackRel = CATALOG_PRODUCTS.filter(
+                p => p.service_category === serviceCategoryParam && p.id !== prod.id && p.sku !== prod.sku
+              ).slice(0, 4);
+              setRelatedProducts(fallbackRel);
+            }
+          })
+          .catch((relErr) => {
+            console.error(relErr);
+            const fallbackRel = CATALOG_PRODUCTS.filter(
+              p => p.service_category === serviceCategoryParam && p.id !== prod.id && p.sku !== prod.sku
+            ).slice(0, 4);
+            setRelatedProducts(fallbackRel);
+          });
       })
       .catch((err) => {
         console.warn('Failed to load live product details, checking catalog fallback:', err);
@@ -199,10 +216,6 @@ export const ProductDetailPage: React.FC = () => {
   const prodShortDesc = localize(product, 'short_description') || prodDesc;
   const prodMaterial = localize(product, 'material');
 
-  const isMetalCategory = product.service_category === 'METAL_WORKS';
-  const isWoodCategory = product.service_category === 'WOOD_WORKS';
-  const isHybridCategory = product.service_category === 'HYBRID_METAL_WOOD';
-
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-left text-stone-900 pb-20 space-y-16">
       
@@ -233,9 +246,22 @@ export const ProductDetailPage: React.FC = () => {
             
             {/* Left: Interactive Image Gallery */}
             <div className="lg:col-span-7 space-y-4">
-              <div 
-                onClick={() => openLightbox(0)}
-                className="bg-white border border-stone-200 rounded-2xl overflow-hidden h-[400px] sm:h-[480px] relative flex items-center justify-center group shadow-xs cursor-pointer"
+              <div
+                role="button"
+                tabIndex={0}
+                aria-label={t('products.expandLightbox')}
+                onClick={() => {
+                  const activeIdx = Math.max(0, galleryImages.findIndex((img) => img.image === selectedImage));
+                  openLightbox(activeIdx);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const activeIdx = Math.max(0, galleryImages.findIndex((img) => img.image === selectedImage));
+                    openLightbox(activeIdx);
+                  }
+                }}
+                className="bg-white border border-stone-200 rounded-2xl overflow-hidden h-[400px] sm:h-[480px] relative flex items-center justify-center group shadow-xs cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
               >
                 {selectedImage ? (
                   <img
@@ -249,7 +275,7 @@ export const ProductDetailPage: React.FC = () => {
                 ) : (
                   <div className="text-center text-stone-400">
                     <Layers className="w-16 h-16 mx-auto mb-2" />
-                    <span className="text-xs uppercase font-bold">Hara Workshop Product</span>
+                    <span className="text-xs uppercase font-bold">{language === 'am' ? 'የሐራ ወርክሾፕ ምርት' : 'Hara Workshop Product'}</span>
                   </div>
                 )}
                 
@@ -257,7 +283,7 @@ export const ProductDetailPage: React.FC = () => {
 
                 {/* Dynamic Product Code / SKU Overlay Badge */}
                 {product.sku && (
-                  <div className="absolute top-4 right-4 z-20 bg-brand-red text-white text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-md shadow-sm tracking-wider border border-white/20 select-none flex items-center gap-1.5">
+                  <div className="absolute top-4 right-4 z-20 bg-brand-red text-white text-xs sm:text-sm font-mono font-bold px-3 py-1 rounded-md shadow-sm tracking-wider border border-white/20 flex items-center gap-1.5">
                     <span>{product.sku}</span>
                   </div>
                 )}
@@ -301,7 +327,7 @@ export const ProductDetailPage: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <span className="text-xs font-bold text-brand-red uppercase tracking-wider bg-brand-red/10 px-2.5 py-1 rounded border border-brand-red/20">
-                    {subcategoryDisplay || 'Custom Work'}
+                    {subcategoryDisplay || (language === 'am' ? 'ልዩ ስራ' : 'Custom Work')}
                   </span>
                   <StatusBadge status={product.stock_status} />
                   <span className="text-xs text-stone-500 font-mono">SKU: {product.sku}</span>
@@ -380,9 +406,18 @@ export const ProductDetailPage: React.FC = () => {
 
       {/* 2. LIGHTBOX / FULLSCREEN VIEWER MODAL */}
       {isLightboxOpen && galleryImages[lightboxIndex] && (
-        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 animate-fadeIn">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={prodName}
+          onClick={() => setIsLightboxOpen(false)}
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 animate-fadeIn"
+        >
           {/* Top Bar */}
-          <div className="w-full max-w-6xl flex items-center justify-between text-xs text-gray-400 py-2 border-b border-metal-800">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-6xl flex items-center justify-between text-xs text-stone-300 py-2 border-b border-stone-800"
+          >
             <div className="flex items-center gap-2">
               <span className="font-bold text-white uppercase">{prodName}</span>
               <span>•</span>
@@ -392,9 +427,11 @@ export const ProductDetailPage: React.FC = () => {
             </div>
             
             <button
+              type="button"
               onClick={() => setIsLightboxOpen(false)}
-              className="p-2 bg-metal-900 hover:bg-metal-800 text-white rounded-lg transition"
-              title="Close (Esc)"
+              className="p-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg border border-stone-700 transition"
+              title={t('common.close')}
+              aria-label={t('common.close')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -403,6 +440,7 @@ export const ProductDetailPage: React.FC = () => {
           {/* Main Image */}
           <div className="relative w-full max-w-5xl flex-1 flex items-center justify-center my-4 overflow-hidden">
             <img
+              onClick={(e) => e.stopPropagation()}
               src={galleryImages[lightboxIndex].image}
               alt={galleryImages[lightboxIndex].caption || prodName}
               className="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl transition-all"
@@ -411,23 +449,27 @@ export const ProductDetailPage: React.FC = () => {
             {galleryImages.length > 1 && (
               <>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setLightboxIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
                   }}
-                  className="absolute left-2 sm:left-4 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full backdrop-blur-md border border-metal-700 transition"
-                  title="Previous (Left Arrow)"
+                  className="absolute left-2 sm:left-4 p-3 bg-stone-900/80 hover:bg-stone-900 text-white rounded-full backdrop-blur-md border border-stone-700 transition"
+                  title={t('common.previous')}
+                  aria-label={t('common.previous')}
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
 
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setLightboxIndex((prev) => (prev + 1) % galleryImages.length);
                   }}
-                  className="absolute right-2 sm:right-4 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full backdrop-blur-md border border-metal-700 transition"
-                  title="Next (Right Arrow)"
+                  className="absolute right-2 sm:right-4 p-3 bg-stone-900/80 hover:bg-stone-900 text-white rounded-full backdrop-blur-md border border-stone-700 transition"
+                  title={t('common.next')}
+                  aria-label={t('common.next')}
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
@@ -436,11 +478,11 @@ export const ProductDetailPage: React.FC = () => {
           </div>
 
           {/* Caption & Controls Footer */}
-          <div className="w-full max-w-3xl text-center py-2">
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-3xl text-center py-2">
             <p className="text-sm font-semibold text-white">
               {galleryImages[lightboxIndex].caption || prodName}
             </p>
-            <p className="text-[11px] text-gray-500 mt-0.5">
+            <p className="text-[11px] text-stone-400 mt-0.5">
               {t('products.lightboxNavHint')}
             </p>
           </div>
@@ -696,7 +738,7 @@ export const ProductDetailPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts.map((rel) => {
-              const relUrl = `/services/${currentServiceSlug}/products/${rel.slug || rel.id}`;
+              const relUrl = `/services/${currentServiceSlug}/products/${rel.slug || rel.sku || rel.id}`;
               const relImage = getProductImageUrl(rel);
               const relName = localize(rel, 'name');
               const relDesc = localize(rel, 'short_description') || localize(rel, 'description');
@@ -705,8 +747,18 @@ export const ProductDetailPage: React.FC = () => {
               return (
                 <div
                   key={rel.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={relName}
                   onClick={() => navigate(relUrl)}
-                  className="bg-white border border-stone-200/90 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-brand-red/60 hover:shadow-lg transition-all duration-300 group cursor-pointer shadow-xs"
+                  onKeyDown={(e) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      navigate(relUrl);
+                    }
+                  }}
+                  className="bg-white border border-stone-200/90 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-brand-red/60 hover:shadow-lg transition-all duration-300 group cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
                 >
                   <div className="h-44 bg-stone-100 relative overflow-hidden">
                     <img
@@ -719,11 +771,11 @@ export const ProductDetailPage: React.FC = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-stone-900/50 via-transparent to-transparent opacity-60" />
                     <span className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-white/95 text-stone-800 border border-stone-200 shadow-xs">
-                      {relMaterial || 'Custom'}
+                      {relMaterial || (language === 'am' ? 'ልዩ ስራ' : 'Custom')}
                     </span>
                     {/* Dynamic Product Code / SKU Overlay Badge */}
                     {rel.sku && (
-                      <span className="absolute top-2 right-2 z-10 bg-brand-red text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded shadow-sm tracking-wider border border-white/20 select-none">
+                      <span className="absolute top-2 right-2 z-10 bg-brand-red text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded shadow-sm tracking-wider border border-white/20">
                         {rel.sku}
                       </span>
                     )}

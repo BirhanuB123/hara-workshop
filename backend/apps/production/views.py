@@ -2,9 +2,9 @@ from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import ProductionJob, ProductionStage, ProductionTask, ProductionLog
-from .serializers import ProductionJobSerializer, ProductionTaskSerializer, ProductionLogSerializer
-from apps.accounts.permissions import IsAdmin, IsOwnerOrAdmin
+from .models import ProductionJob, ProductionStage, ProductionLog
+from .serializers import ProductionJobSerializer
+from apps.accounts.permissions import IsAdmin
 from apps.core.models import AuditLog
 
 class ProductionJobViewSet(viewsets.ModelViewSet):

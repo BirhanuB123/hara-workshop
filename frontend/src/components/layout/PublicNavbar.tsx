@@ -21,14 +21,10 @@ export const PublicNavbar: React.FC = () => {
     { name: t('navigation.services'), path: '/services' },
     { name: t('navigation.about'), path: '/about' },
     { name: t('navigation.contact'), path: '/contact' },
-    { 
-      name: language === 'am' ? 'ትዕዛዝ ይጠይቁ' : 'Request a Project', 
-      path: '/request-quote' 
-    },
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 select-none shadow-sm transition-colors">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm transition-colors">
       {/* Top micro bar with contact info & language selector */}
       <div className="bg-[#F8F5EE] border-b border-stone-200/80 py-1.5 px-4 sm:px-6 lg:px-8 text-[11px] text-stone-600">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">

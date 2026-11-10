@@ -27,7 +27,7 @@ class ProductionLogSerializer(serializers.ModelSerializer):
 
 class ProductionJobSerializer(serializers.ModelSerializer):
     order_number = serializers.CharField(source='order.order_number', read_only=True)
-    customer_name = serializers.CharField(source='order.customer.get_full_name', read_only=True)
+    customer_name = serializers.SerializerMethodField()
     supervisor = UserSerializer(read_only=True)
     tasks = ProductionTaskSerializer(many=True, read_only=True)
     logs = ProductionLogSerializer(many=True, read_only=True)
@@ -40,3 +40,8 @@ class ProductionJobSerializer(serializers.ModelSerializer):
             'start_date', 'expected_completion', 'actual_completion', 'notes',
             'tasks', 'logs', 'created_at', 'updated_at'
         ]
+
+    def get_customer_name(self, obj):
+        if obj.order:
+            return obj.order.get_customer_name()
+        return ''

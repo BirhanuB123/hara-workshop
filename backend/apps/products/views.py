@@ -9,13 +9,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
     queryset = Category.objects.filter(is_active=True)
     serializer_class = CategorySerializer
     pagination_class = None
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', 'description']
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated(), IsStaffUser()]
 
     def get_queryset(self):
         qs = Category.objects.all()
@@ -48,9 +51,12 @@ class CatalogPagination(PageNumberPagination):
     max_page_size = 200
 
 class ProductViewSet(viewsets.ModelViewSet):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
     queryset = Product.objects.select_related('category', 'service').prefetch_related('images').all()
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve', 'subcategories']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated(), IsStaffUser()]
     serializer_class = ProductSerializer
     pagination_class = CatalogPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -136,21 +142,25 @@ class ProductViewSet(viewsets.ModelViewSet):
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         lookup_value = str(self.kwargs.get(lookup_url_kwarg) or '').strip()
 
+        fallback_qs = self.queryset
+        if not (self.request.user and self.request.user.is_authenticated and getattr(self.request.user, 'role', '') != 'CUSTOMER'):
+            fallback_qs = fallback_qs.filter(is_active=True)
+
         obj = None
         # 1. Try UUID primary key
         try:
             uuid.UUID(lookup_value)
-            obj = queryset.filter(pk=lookup_value).first() or Product.objects.filter(pk=lookup_value).first()
+            obj = queryset.filter(pk=lookup_value).first() or fallback_qs.filter(pk=lookup_value).first()
         except (ValueError, TypeError, AttributeError):
             pass
 
         # 2. Try SKU exact / case-insensitive
         if not obj:
-            obj = queryset.filter(sku__iexact=lookup_value).first() or Product.objects.filter(sku__iexact=lookup_value).first()
+            obj = queryset.filter(sku__iexact=lookup_value).first() or fallback_qs.filter(sku__iexact=lookup_value).first()
 
         # 3. Try slug exact / case-insensitive
         if not obj:
-            obj = queryset.filter(slug__iexact=lookup_value).first() or Product.objects.filter(slug__iexact=lookup_value).first()
+            obj = queryset.filter(slug__iexact=lookup_value).first() or fallback_qs.filter(slug__iexact=lookup_value).first()
 
         if not obj:
             raise Http404(f"No Product found matching {lookup_value}")
@@ -211,7 +221,19 @@ class ProductViewSet(viewsets.ModelViewSet):
             'hybrid-metal-wood': 'HYBRID_METAL_WOOD',
             'hybrid-metal-wood-construction': 'HYBRID_METAL_WOOD',
         }
-        target_cat = service_category.upper() if service_category else slug_mapping.get(service_slug.lower() if service_slug else '')
+        target_cat = None
+        if service_category:
+            cat_norm = service_category.strip().upper().replace('-', '_').replace(' ', '_')
+            if 'HYBRID' in cat_norm:
+                target_cat = 'HYBRID_METAL_WOOD'
+            elif 'WOOD' in cat_norm:
+                target_cat = 'WOOD_WORKS'
+            elif 'METAL' in cat_norm:
+                target_cat = 'METAL_WORKS'
+            else:
+                target_cat = cat_norm
+        elif service_slug:
+            target_cat = slug_mapping.get(service_slug.strip().lower())
 
         STANDARD_SUBCATEGORIES = {
             'WOOD_WORKS': [
@@ -219,10 +241,10 @@ class ProductViewSet(viewsets.ModelViewSet):
                 'Wooden Kitchens', 'Office Desks', 'TV Stands', 'Wooden Cabinets', 'Other Wood Products'
             ],
             'METAL_WORKS': [
-                'Metal Gates', 'Metal Windows'
+                'Metal Gates', 'Metal Windows', 'Metal Handrails'
             ],
             'HYBRID_METAL_WOOD': [
-                'Chairs', 'Tables', 'Beds', 'Wardrobes', 'Office Desks', 'TV Stands', 'Wooden Cabinets'
+                'Hybrid Chairs', 'Hybrid Tables', 'Hybrid Beds', 'Hybrid Shelving', 'Hybrid Wardrobes & Cabinets'
             ]
         }
 
@@ -239,6 +261,12 @@ class ProductViewSet(viewsets.ModelViewSet):
             'Other Wood Products': 'ሌሎች የእንጨት ውጤቶች',
             'Metal Gates': 'የብረት ግቢ በሮች',
             'Metal Windows': 'የብረት መስኮቶች',
+            'Metal Handrails': 'የብረት የእጅ መደገፊያዎች',
+            'Hybrid Chairs': 'የእንጨት እና ብረት ወንበሮች',
+            'Hybrid Tables': 'የእንጨት እና ብረት ጠረጴዛዎች',
+            'Hybrid Beds': 'የእንጨት እና ብረት አልጋዎች',
+            'Hybrid Shelving': 'የእንጨት እና ብረት መደርደሪያዎች',
+            'Hybrid Wardrobes & Cabinets': 'የእንጨት እና ብረት ቁም ሳጥኖች እና ካቢኔቶች',
         }
 
         cats_to_process = [target_cat] if target_cat and target_cat in STANDARD_SUBCATEGORIES else list(STANDARD_SUBCATEGORIES.keys())
@@ -276,4 +304,4 @@ class ProductViewSet(viewsets.ModelViewSet):
 class ProductImageViewSet(viewsets.ModelViewSet):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
-    permission_classes = [IsStaffUser]
+    permission_classes = [permissions.IsAuthenticated, IsStaffUser]

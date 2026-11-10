@@ -39,11 +39,11 @@ class IsOwnerOrAdmin(permissions.BasePermission):
         # Customer ownership validation
         if request.user.role == UserRole.CUSTOMER:
             if hasattr(obj, 'customer'):
-                return obj.customer == request.user
+                return obj.customer is not None and obj.customer == request.user
             if hasattr(obj, 'user'):
-                return obj.user == request.user
+                return obj.user is not None and obj.user == request.user
             if hasattr(obj, 'order') and hasattr(obj.order, 'customer'):
-                return obj.order.customer == request.user
+                return obj.order is not None and obj.order.customer is not None and obj.order.customer == request.user
         return False
 
 # Aliases to guarantee 100% backward-compatibility across all existing app viewsets

@@ -15,7 +15,7 @@ export const ProductsPage: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await productsApi.getAll({ page_size: 100 });
+      const res = await productsApi.getAll({ page_size: 200 });
       const items = extractResults<Product>(res.data);
       if (items.length > 0) {
         setProducts(items);
@@ -26,7 +26,7 @@ export const ProductsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-stone-900 select-none text-left">
+    <div className="min-h-screen bg-white text-stone-900 text-left">
       {/* Top Banner Bar - Clean layout with NO search button */}
       <div className="bg-[#FAF7F2] border-b border-stone-200 py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">

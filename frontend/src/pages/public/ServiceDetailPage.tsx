@@ -3,15 +3,15 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Wrench, Hammer, Layers, ShieldCheck, Clock, CheckCircle2, 
   ChevronRight, ChevronLeft, X, ArrowLeft, ArrowRight, Sparkles, 
-  Building, ZoomIn, Phone, Tag, ExternalLink, Search, Filter, 
-  PlusCircle, Eye, Box, ArrowUpRight, ChevronDown, ChevronUp, FolderOpen
+  Building, ZoomIn, Phone, Search, 
+  PlusCircle, Eye, Box, ArrowUpRight, ChevronUp, FolderOpen
 } from 'lucide-react';
 import { servicesApi, productsApi, extractResults } from '../../services/api';
 import { Service, Product } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { useLanguageStore } from '../../store/languageStore';
 import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
-import { getProductImageUrl, getServiceImageUrl } from '../../utils/productUtils';
+import { getProductImageUrl, getServiceImageUrl, resolveProductImagePath } from '../../utils/productUtils';
 import { useProductOrderStore } from '../../store/productOrderStore';
 
 export interface CategoryCardDef {
@@ -160,6 +160,58 @@ export const APPROVED_SERVICE_CATEGORIES: Record<string, CategoryCardDef[]> = {
       skuPrefix: 'MHR',
     },
   ],
+  'hybrid-metal-wood': [
+    {
+      name: 'Hybrid Chairs',
+      nameAm: 'የእንጨት እና ብረት ወንበሮች',
+      slug: 'hybrid-chairs',
+      coverImage: '/images/categories/cover-hybrid-chairs.jpg',
+      description: 'Contemporary industrial seating marrying heavy-gauge welded steel frames with contoured solid timber.',
+      descriptionAm: 'ጠንካራ የብረት ፍሬም እና ውብ የእንጨት መቀመጫ ያላቸው ዘመናዊ የኢንዱስትሪ ዲዛይን ወንበሮች።',
+      productCount: 5,
+      skuPrefix: 'HCH',
+    },
+    {
+      name: 'Hybrid Tables',
+      nameAm: 'የእንጨት እና ብረት ጠረጴዛዎች',
+      slug: 'hybrid-tables',
+      coverImage: '/images/categories/cover-hybrid-tables.jpg',
+      description: 'Live-edge and solid hardwood slab dining and conference tables with structural welded steel bases.',
+      descriptionAm: 'በጠንካራ የብረት እግሮች የተደገፉ ውብ የተፈጥሮ እንጨት የመመገቢያ እና የስብሰባ ጠረጴዛዎች።',
+      productCount: 5,
+      skuPrefix: 'HTB',
+    },
+    {
+      name: 'Hybrid Beds',
+      nameAm: 'የእንጨት እና ብረት አልጋዎች',
+      slug: 'hybrid-beds',
+      coverImage: '/images/categories/cover-hybrid-beds.jpg',
+      description: 'Architectural platform beds, canopy frames, and lofts built with steel structure and warm timber elements.',
+      descriptionAm: 'የብረት እና የእንጨት ውህደት ያላቸው ዘመናዊ ፕላትፎርም፣ ካኖፒ እና ሎፍት አልጋዎች።',
+      productCount: 5,
+      skuPrefix: 'HBD',
+    },
+    {
+      name: 'Hybrid Shelving',
+      nameAm: 'የእንጨት እና ብረት መደርደሪያዎች',
+      slug: 'hybrid-shelving',
+      coverImage: '/images/categories/cover-hybrid-shelving.jpg',
+      description: 'Industrial modular wall units, bookcases, and heavy-duty display shelving combining steel and timber.',
+      descriptionAm: 'የብረት ፍሬም እና ጠንካራ የእንጨት ሰሌዳ ያላቸው ሞዱላር የመጻሕፍት እና የእቃ መደርደሪያዎች።',
+      productCount: 5,
+      skuPrefix: 'HSH',
+    },
+    {
+      name: 'Hybrid Wardrobes & Cabinets',
+      nameAm: 'የእንጨት እና ብረት ቁም ሳጥኖች እና ካቢኔቶች',
+      slug: 'hybrid-wardrobes-cabinets',
+      coverImage: '/images/categories/cover-hybrid-wardrobes.jpg',
+      description: 'Industrial mesh-front wardrobes, steel-framed credenzas, and contemporary timber armoires.',
+      descriptionAm: 'ጠንካራ የብረት መዋቅር እና ውብ የእንጨት ፊት ለፊት ያላቸው ቁም ሳጥኖች፣ ካቢኔቶች እና ሳይድቦርዶች።',
+      productCount: 5,
+      skuPrefix: 'HWC',
+    },
+  ],
 };
 
 const SERVICE_HERO_ASSETS: Record<string, string> = {
@@ -224,7 +276,7 @@ export const ServiceDetailPage: React.FC = () => {
     ? 'metal-works' 
     : 'wood-works';
 
-  const approvedCategories = isHybrid ? [] : (APPROVED_SERVICE_CATEGORIES[resolvedSlug] || APPROVED_SERVICE_CATEGORIES['wood-works']);
+  const approvedCategories = APPROVED_SERVICE_CATEGORIES[resolvedSlug] || APPROVED_SERVICE_CATEGORIES['wood-works'];
 
   const baseMeta = (resolvedSlug && SERVICE_META[resolvedSlug]) || (slug && SERVICE_META[slug.toLowerCase()]) || {
     title: isHybrid ? 'Hybrid Metal + Wood Construction' : 'Workshop Capability',
@@ -345,7 +397,7 @@ export const ServiceDetailPage: React.FC = () => {
 
     // 2. Fetch Products for this category
     const catCode = baseMeta.category;
-    productsApi.getAll({ service_category: catCode, page_size: 100 })
+    productsApi.getAll({ service_category: catCode, page_size: 200 })
       .then((res) => {
         const list: Product[] = extractResults<Product>(res.data);
         if (list.length > 0) {
@@ -385,9 +437,26 @@ export const ServiceDetailPage: React.FC = () => {
     }
   };
 
-  const safeProducts = Array.isArray(products) && products.length > 0
-    ? products
-    : CATALOG_PRODUCTS.filter(p => p.service_category === baseMeta.category);
+  const safeProducts = useMemo(() => (
+    Array.isArray(products) && products.length > 0
+      ? products
+      : CATALOG_PRODUCTS.filter(p => p.service_category === baseMeta.category)
+  ), [products, baseMeta.category]);
+
+  const getCategoryProducts = useMemo(() => (catDef?: CategoryCardDef | null, catName?: string): Product[] => {
+    const targetName = (catDef?.name || catName || '').toLowerCase();
+    if (!targetName) return [];
+    return safeProducts.filter((p) => {
+      if (catDef && p.sku && p.sku.toUpperCase().startsWith(`${catDef.skuPrefix}-`)) {
+        return true;
+      }
+      const sub = (p.subcategory || '').toLowerCase();
+      const cat = (p.category_name || '').toLowerCase();
+      const ptype = (p.product_type || '').toLowerCase();
+      return sub === targetName || cat === targetName || ptype === targetName ||
+             sub.includes(targetName) || cat.includes(targetName);
+    });
+  }, [safeProducts]);
 
   const hybridProducts = useMemo(() => {
     if (!isHybrid) return [];
@@ -399,7 +468,7 @@ export const ServiceDetailPage: React.FC = () => {
         ...base,
         primary_image: exactImage,
         images: base.images && base.images.length > 0
-          ? base.images.map(img => ({ ...img, image: exactImage }))
+          ? base.images.map(img => ({ ...img, image: resolveProductImagePath(img.image) || exactImage }))
           : [{ id: `img-${base.sku || base.id}`, image: exactImage, is_primary: true, caption: `${base.name} (${base.sku})` }]
       } as Product;
     });
@@ -426,21 +495,8 @@ export const ServiceDetailPage: React.FC = () => {
   const categoryProducts = useMemo(() => {
     if (!expandedCategory) return [];
     const catDef = approvedCategories.find(c => c.name.toLowerCase() === expandedCategory.toLowerCase());
-    const lowerName = expandedCategory.toLowerCase();
-
-    return safeProducts.filter((p) => {
-      // 1. Check SKU prefix match (e.g. CHR, TBL, BED, MGT, MWN)
-      if (catDef && p.sku && p.sku.toUpperCase().startsWith(catDef.skuPrefix)) {
-        return true;
-      }
-      // 2. Check subcategory or category_name
-      const sub = (p.subcategory || '').toLowerCase();
-      const cat = (p.category_name || '').toLowerCase();
-      const ptype = (p.product_type || '').toLowerCase();
-      return sub === lowerName || cat === lowerName || ptype === lowerName ||
-             sub.includes(lowerName) || cat.includes(lowerName);
-    });
-  }, [products, expandedCategory, approvedCategories]);
+    return getCategoryProducts(catDef, expandedCategory);
+  }, [expandedCategory, approvedCategories, getCategoryProducts]);
 
   // Filter products when user enters a search query across the service (non-hybrid)
   const searchResults = useMemo(() => {
@@ -457,7 +513,7 @@ export const ServiceDetailPage: React.FC = () => {
         (p.product_type && p.product_type.toLowerCase().includes(q))
       );
     });
-  }, [products, searchQuery]);
+  }, [safeProducts, searchQuery]);
 
   // Navigate to quote request with prefilled product
   const handleRequestQuoteClick = (e: React.MouseEvent, prodOrName?: Product | string) => {
@@ -471,9 +527,10 @@ export const ServiceDetailPage: React.FC = () => {
       if (p.sku) params.set('sku', p.sku);
       if (p.name) params.set('name', p.name);
       params.set('service', serviceTitle);
+      if (p.material) params.set('material', p.material);
       const exactImage = getProductImageUrl(p);
       if (exactImage) params.set('image', exactImage);
-      navigate(`/request-quote?${params.toString()}`);
+      navigate(`/request-quote?${params.toString()}`, { state: { product: p } });
     } else if (typeof prodOrName === 'string') {
       navigate(`/request-quote?service=${encodeURIComponent(serviceTitle)}&product=${encodeURIComponent(prodOrName)}`);
     } else {
@@ -481,40 +538,53 @@ export const ServiceDetailPage: React.FC = () => {
     }
   };
 
+  const galleryLength =
+    service?.gallery_images && service.gallery_images.length > 0
+      ? service.gallery_images.length
+      : service?.image
+      ? 1
+      : 0;
+
   // Keyboard navigation for Lightbox
   useEffect(() => {
-    if (activeImageIndex === null || !service?.gallery_images?.length) return;
+    if (activeImageIndex === null || galleryLength === 0) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setActiveImageIndex(null);
       } else if (e.key === 'ArrowRight') {
-        setActiveImageIndex((prev) => 
-          prev !== null ? (prev + 1) % service.gallery_images!.length : null
+        setActiveImageIndex((prev) =>
+          prev !== null ? (prev + 1) % galleryLength : null
         );
       } else if (e.key === 'ArrowLeft') {
-        setActiveImageIndex((prev) => 
-          prev !== null ? (prev - 1 + service.gallery_images!.length) % service.gallery_images!.length : null
+        setActiveImageIndex((prev) =>
+          prev !== null ? (prev - 1 + galleryLength) % galleryLength : null
         );
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeImageIndex, service?.gallery_images]);
+  }, [activeImageIndex, galleryLength]);
 
-  if (loading) return <LoadingSpinner text="Loading workshop capability details..." />;
+  if (loading) return <LoadingSpinner text={t('common.loading')} />;
 
   if (error || !service) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-stone-900 uppercase">Service Not Found</h2>
-        <p className="text-sm text-stone-600">The requested workshop capability does not exist or has been relocated.</p>
+        <h2 className="text-2xl font-bold text-stone-900 uppercase">
+          {language === 'am' ? 'አገልግሎቱ አልተገኘም' : 'Service Not Found'}
+        </h2>
+        <p className="text-sm text-stone-600">
+          {language === 'am'
+            ? 'የጠየቁት የዎርክሾፕ አገልግሎት አልተገኘም ወይም ወደ ሌላ ቦታ ተዛውሯል።'
+            : 'The requested workshop capability does not exist or has been relocated.'}
+        </p>
         <Link 
           to="/services" 
           className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-red-700 transition"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to Services Directory
+          <ArrowLeft className="w-4 h-4" /> {t('common.backToServices')}
         </Link>
       </div>
     );
@@ -585,7 +655,7 @@ export const ServiceDetailPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 text-xs font-semibold pt-2">
               <div className="flex items-center gap-1.5 bg-white border border-stone-200 px-3.5 py-2 rounded-lg text-stone-800 shadow-xs">
                 <Box className="w-4 h-4 text-brand-red" />
-                <span>{t('services.productCatalog')}: <strong className="text-brand-red">{isHybrid ? displayedHybridProducts.length : (products.length || (approvedCategories.length * 5))} {t('common.available')}</strong></span>
+                <span>{t('services.productCatalog')}: <strong className="text-brand-red">{isHybrid ? displayedHybridProducts.length : safeProducts.length} {t('common.available')}</strong></span>
               </div>
               <div className="flex items-center gap-1.5 bg-white border border-stone-200 px-3.5 py-2 rounded-lg text-stone-800 shadow-xs">
                 <Clock className="w-4 h-4 text-brand-red" />
@@ -628,11 +698,7 @@ export const ServiceDetailPage: React.FC = () => {
               <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.showroomCollection')}</span>
               <span className="text-stone-300">•</span>
               <span className="text-xs font-mono font-bold text-stone-700 bg-white px-2 py-0.5 rounded border border-stone-200 shadow-xs">
-                {isHybrid ? (
-                  language === 'am' ? `${displayedHybridProducts.length} ምርቶች ዝግጁ` : `${displayedHybridProducts.length} Products Available`
-                ) : (
-                  `${approvedCategories.length} ${language === 'am' ? 'ምድቦች' : 'Categories'} • ${products.length || (approvedCategories.length * 5)} ${t('common.available')}`
-                )}
+                {`${approvedCategories.length} ${language === 'am' ? 'ምድቦች' : 'Categories'} • ${isHybrid ? hybridProducts.length : safeProducts.length} ${t('common.available')}`}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide">
@@ -641,8 +707,8 @@ export const ServiceDetailPage: React.FC = () => {
             <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-2xl">
               {isHybrid
                 ? (language === 'am' 
-                    ? 'በጥንቃቄ የተሰሩ የብረት እና ጠንካራ እንጨት ቅይጥ ውጤቶች ስብስብ።' 
-                    : 'Handcrafted architectural solutions combining heavy-gauge structural steel and seasoned natural hardwood.')
+                    ? 'በምድብ ለመለየት ከታች ያሉትን ካርዶች ይጫኑ ወይም ሁሉንም 25 የቅይጥ ምርቶች በቀጥታ ይመልከቱ።' 
+                    : 'Filter by any of the 5 hybrid categories below or browse all 25 structural steel & timber fusion models underneath.')
                 : (language === 'am' 
                     ? 'ምርቶችን ለማየት ከዚህ በታች ያሉትን የምድብ ካርዶች ይጫኑ። ምርቶቹ በቀጥታ ከካርዶቹ ስር ይዘረጋሉ።' 
                     : 'Click any category cover card below to expand and view its handcrafted products directly underneath.')}
@@ -687,8 +753,8 @@ export const ServiceDetailPage: React.FC = () => {
           </div>
         )}
 
-        {/* CATEGORY COVER CARDS GRID (10 cards for Wood Works, 2 cards for Metal Works; omitted for Hybrid) */}
-        {!isHybrid && approvedCategories.length > 0 && (
+        {/* CATEGORY COVER CARDS GRID (10 cards for Wood Works, 3 cards for Metal Works, 5 cards for Hybrid) */}
+        {approvedCategories.length > 0 && (
           <div className="space-y-3">
           <div className="flex items-center justify-between text-xs font-bold uppercase text-stone-600 px-1">
             <span className="flex items-center gap-1.5 text-stone-900">
@@ -696,13 +762,17 @@ export const ServiceDetailPage: React.FC = () => {
               {language === 'am' ? 'የተፈቀዱ የምርት ምድቦች' : 'Select a Category to Reveal Products:'}
             </span>
             <span className="text-[11px] font-mono text-stone-500">
-              {expandedCategory ? (language === 'am' ? `የተመረጠ: ${activeCategoryDef?.nameAm || expandedCategory}` : `Open: ${expandedCategory}`) : (language === 'am' ? 'ምንም አልተመረጠም' : 'None Expanded')}
+              {expandedCategory
+                ? (language === 'am' ? `የተመረጠ: ${activeCategoryDef?.nameAm || expandedCategory}` : `Open: ${expandedCategory}`)
+                : isHybrid
+                ? (language === 'am' ? 'ሁሉም (25)' : 'Showing All (25)')
+                : (language === 'am' ? 'ምንም አልተመረጠም' : 'None Expanded')}
             </span>
           </div>
 
           <div className={`grid gap-6 ${
-            approvedCategories.length <= 2 
-              ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' 
+            approvedCategories.length <= 3
+              ? 'grid-cols-1 md:grid-cols-3 max-w-5xl mx-auto'
               : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
           }`}>
             {approvedCategories.map((cat) => {
@@ -713,8 +783,18 @@ export const ServiceDetailPage: React.FC = () => {
               return (
                 <div
                   key={cat.name}
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isSelected}
+                  aria-label={catTitle}
                   onClick={() => handleCategoryCardClick(cat.name)}
-                  className={`group cursor-pointer rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 border shadow-xs ${
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleCategoryCardClick(cat.name);
+                    }
+                  }}
+                  className={`group cursor-pointer rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 border shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red ${
                     isSelected
                       ? 'bg-red-50/40 border-2 border-brand-red ring-2 ring-brand-red/20 shadow-md -translate-y-1'
                       : 'bg-white border-stone-200/90 hover:border-brand-red/50 hover:shadow-md hover:-translate-y-1'
@@ -735,7 +815,7 @@ export const ServiceDetailPage: React.FC = () => {
                     {/* Top Badges */}
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
                       <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white/95 backdrop-blur text-stone-800 border border-stone-200 shadow-xs">
-                        5 {language === 'am' ? 'ምርቶች' : 'Products'}
+                        {getCategoryProducts(cat).length} {language === 'am' ? 'ምርቶች' : 'Products'}
                       </span>
 
                       {isSelected && (
@@ -793,93 +873,56 @@ export const ServiceDetailPage: React.FC = () => {
         {/* PRODUCTS SECTION (Directly BELOW Category Cover Cards) */}
         <div ref={productsSectionRef} className="pt-4 scroll-mt-24 space-y-6">
 
-          {isHybrid ? (
-            /* HYBRID VIEW: Displays all 5 products directly without category cards */
-            <div className="space-y-6 animate-fadeIn">
-              {searchQuery.trim() !== '' && (
-                <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-                  <div className="flex items-center gap-2">
-                    <Search className="w-4 h-4 text-brand-red" />
-                    <h3 className="text-lg font-bold text-stone-900 uppercase">
-                      {language === 'am' ? 'የፍለጋ ውጤቶች' : 'Search Results'} ({displayedHybridProducts.length})
-                    </h3>
-                    <span className="text-xs text-stone-500">
-                      for "{searchQuery}"
-                    </span>
+          {searchQuery.trim() !== '' ? (
+            (() => {
+              const activeSearchList = isHybrid ? displayedHybridProducts : searchResults;
+              return (
+                <div className="space-y-6 animate-fadeIn">
+                  <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Search className="w-4 h-4 text-brand-red" />
+                      <h3 className="text-lg font-bold text-stone-900 uppercase">
+                        {language === 'am' ? 'የፍለጋ ውጤቶች' : 'Search Results'} ({activeSearchList.length})
+                      </h3>
+                      <span className="text-xs text-stone-500">
+                        {language === 'am' ? `ለ "${searchQuery}"` : `for "${searchQuery}"`}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="text-xs text-brand-red hover:underline flex items-center gap-1 font-semibold"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>{language === 'am' ? 'ፍለጋ አጽዳ' : 'Clear Search'}</span>
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="text-xs text-brand-red hover:underline flex items-center gap-1 font-semibold"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                    <span>{language === 'am' ? 'ፍለጋ አጽዳ' : 'Clear Search'}</span>
-                  </button>
-                </div>
-              )}
 
-              {displayedHybridProducts.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                  {displayedHybridProducts.map((prod) => renderProductCard(prod))}
+                  {activeSearchList.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {activeSearchList.map((prod) => renderProductCard(prod))}
+                    </div>
+                  ) : (
+                    <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
+                      <Box className="w-12 h-12 mx-auto text-stone-400" />
+                      <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
+                      <p className="text-xs text-stone-600 max-w-md mx-auto">
+                        {t('common.noProductsMatch')}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="px-4 py-2 bg-brand-red text-white text-xs font-bold uppercase rounded-lg hover:bg-red-700 transition shadow-xs"
+                      >
+                        {t('common.resetFilters')}
+                      </button>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
-                  <Box className="w-12 h-12 mx-auto text-stone-400" />
-                  <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
-                  <p className="text-xs text-stone-600 max-w-md mx-auto">
-                    {t('common.noProductsMatch')}
-                  </p>
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="px-4 py-2 bg-brand-red text-white text-xs font-bold uppercase rounded-lg hover:bg-red-700 transition shadow-xs"
-                  >
-                    {t('common.resetFilters')}
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : searchQuery.trim() !== '' ? (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between border-b border-stone-200 pb-3">
-                <div className="flex items-center gap-2">
-                  <Search className="w-4 h-4 text-brand-red" />
-                  <h3 className="text-lg font-bold text-stone-900 uppercase">
-                    {language === 'am' ? 'የፍለጋ ውጤቶች' : 'Search Results'} ({searchResults.length})
-                  </h3>
-                  <span className="text-xs text-stone-500">
-                    for "{searchQuery}"
-                  </span>
-                </div>
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="text-xs text-brand-red hover:underline flex items-center gap-1 font-semibold"
-                >
-                  <X className="w-3.5 h-3.5" />
-                  <span>{language === 'am' ? 'ፍለጋ አጽዳ' : 'Clear Search'}</span>
-                </button>
-              </div>
-
-              {searchResults.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {searchResults.map((prod) => renderProductCard(prod))}
-                </div>
-              ) : (
-                <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
-                  <Box className="w-12 h-12 mx-auto text-stone-400" />
-                  <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
-                  <p className="text-xs text-stone-600 max-w-md mx-auto">
-                    {t('common.noProductsMatch')}
-                  </p>
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="px-4 py-2 bg-brand-red text-white text-xs font-bold uppercase rounded-lg hover:bg-red-700 transition shadow-xs"
-                  >
-                    {t('common.resetFilters')}
-                  </button>
-                </div>
-              )}
-            </div>
+              );
+            })()
           ) : expandedCategory && activeCategoryDef ? (
-            /* CATEGORY EXPANDED VIEW: Revealed 5 Products directly below cards */
+            /* CATEGORY EXPANDED VIEW: Revealed Products directly below cards */
             <div className="space-y-6 animate-fadeIn">
               
               {/* Category Reveal Header Banner */}
@@ -890,7 +933,7 @@ export const ServiceDetailPage: React.FC = () => {
                       {language === 'am' ? 'የተዘረጋ ምድብ' : 'Revealed Category'}
                     </span>
                     <span className="text-xs font-mono font-bold text-stone-700 bg-white px-2 py-0.5 rounded border border-stone-200">
-                      5 {language === 'am' ? 'ምርቶች' : 'Products Available'}
+                      {categoryProducts.length} {language === 'am' ? 'ምርቶች' : 'Products Available'}
                     </span>
                   </div>
 
@@ -907,11 +950,16 @@ export const ServiceDetailPage: React.FC = () => {
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setExpandedCategory(null)}
                   className="self-start sm:self-center px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-900 border border-stone-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition shadow-xs"
                 >
                   <X className="w-3.5 h-3.5 text-brand-red" />
-                  <span>{language === 'am' ? 'ምድብ ዝጋ' : 'Collapse Category'}</span>
+                  <span>
+                    {isHybrid
+                      ? (language === 'am' ? 'ሁሉንም 25 ምርቶች አሳይ' : 'Show All 25 Models')
+                      : (language === 'am' ? 'ምድብ ዝጋ' : 'Collapse Category')}
+                  </span>
                 </button>
               </div>
 
@@ -928,7 +976,24 @@ export const ServiceDetailPage: React.FC = () => {
                 <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
                   <Box className="w-12 h-12 mx-auto text-stone-400" />
                   <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
-                  <p className="text-xs text-stone-600">Loading verified category products...</p>
+                  <p className="text-xs text-stone-600">{t('common.loading')}</p>
+                </div>
+              )}
+            </div>
+          ) : isHybrid ? (
+            /* HYBRID DEFAULT VIEW: Displays all 25 Hybrid Metal+Wood products when no single category filter is active */
+            <div className="space-y-6 animate-fadeIn">
+              {displayedHybridProducts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                  {displayedHybridProducts.map((prod) => renderProductCard(prod))}
+                </div>
+              ) : (
+                <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
+                  <Box className="w-12 h-12 mx-auto text-stone-400" />
+                  <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
+                  <p className="text-xs text-stone-600 max-w-md mx-auto">
+                    {t('common.noProductsMatch')}
+                  </p>
                 </div>
               )}
             </div>
@@ -941,7 +1006,7 @@ export const ServiceDetailPage: React.FC = () => {
               </h4>
               <p className="text-xs text-stone-600 max-w-md mx-auto">
                 {language === 'am'
-                  ? 'ከላይ ከሚገኙት 10 የእንጨት ወይም 2 የብረት ምድቦች አንዱን በመጫን 5 ዝርዝር ምርቶችን በቀጥታ እዚህ ይመልከቱ።'
+                  ? 'ከላይ ከሚገኙት የምድብ ካርዶች አንዱን በመጫን ዝርዝር ምርቶችን በቀጥታ እዚህ ይመልከቱ።'
                   : 'Click any of the category cover cards above to instantly reveal all 5 handcrafted products.'}
               </p>
             </div>
@@ -969,8 +1034,17 @@ export const ServiceDetailPage: React.FC = () => {
             {gallery.map((item, index) => (
               <div
                 key={item.id || index}
+                role="button"
+                tabIndex={0}
+                aria-label={item.caption || `${meta.title} ${t('common.preview')} ${index + 1}`}
                 onClick={() => setActiveImageIndex(index)}
-                className="relative h-64 bg-stone-100 rounded-xl overflow-hidden border border-stone-200 cursor-pointer group shadow-xs hover:border-brand-red/60 transition-all"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveImageIndex(index);
+                  }
+                }}
+                className="relative h-64 bg-stone-100 rounded-xl overflow-hidden border border-stone-200 cursor-pointer group shadow-xs hover:border-brand-red/60 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
               >
                 <img
                   src={item.image}
@@ -1000,8 +1074,17 @@ export const ServiceDetailPage: React.FC = () => {
 
       {/* LIGHTBOX MODAL */}
       {activeImageIndex !== null && gallery[activeImageIndex] && (
-        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 animate-fadeIn">
-          <div className="w-full max-w-6xl flex items-center justify-between text-xs text-gray-400 py-2 border-b border-metal-800">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={meta.title}
+          onClick={() => setActiveImageIndex(null)}
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 animate-fadeIn"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-6xl flex items-center justify-between text-xs text-stone-300 py-2 border-b border-stone-800"
+          >
             <div className="flex items-center gap-2">
               <span className="font-bold text-white uppercase">{meta.title}</span>
               <span>•</span>
@@ -1009,9 +1092,11 @@ export const ServiceDetailPage: React.FC = () => {
             </div>
             
             <button
+              type="button"
               onClick={() => setActiveImageIndex(null)}
-              className="p-2 bg-metal-900 hover:bg-metal-800 text-white rounded-lg transition"
+              className="p-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg border border-stone-700 transition"
               title={t('common.close')}
+              aria-label={t('common.close')}
             >
               <X className="w-5 h-5" />
             </button>
@@ -1019,6 +1104,7 @@ export const ServiceDetailPage: React.FC = () => {
 
           <div className="relative w-full max-w-5xl flex-1 flex items-center justify-center my-4 overflow-hidden">
             <img
+              onClick={(e) => e.stopPropagation()}
               src={gallery[activeImageIndex].image}
               alt={gallery[activeImageIndex].caption || meta.title}
               className="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl transition-all"
@@ -1027,23 +1113,27 @@ export const ServiceDetailPage: React.FC = () => {
             {gallery.length > 1 && (
               <>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setActiveImageIndex((prev) => (prev! - 1 + gallery.length) % gallery.length);
                   }}
-                  className="absolute left-2 sm:left-4 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full backdrop-blur-md border border-metal-700 transition"
+                  className="absolute left-2 sm:left-4 p-3 bg-stone-900/80 hover:bg-stone-900 text-white rounded-full backdrop-blur-md border border-stone-700 transition"
                   title={t('common.previous')}
+                  aria-label={t('common.previous')}
                 >
                   <ChevronLeft className="w-6 h-6" />
                 </button>
 
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setActiveImageIndex((prev) => (prev! + 1) % gallery.length);
                   }}
-                  className="absolute right-2 sm:right-4 p-3 bg-black/60 hover:bg-black/90 text-white rounded-full backdrop-blur-md border border-metal-700 transition"
+                  className="absolute right-2 sm:right-4 p-3 bg-stone-900/80 hover:bg-stone-900 text-white rounded-full backdrop-blur-md border border-stone-700 transition"
                   title={t('common.next')}
+                  aria-label={t('common.next')}
                 >
                   <ChevronRight className="w-6 h-6" />
                 </button>
@@ -1051,11 +1141,11 @@ export const ServiceDetailPage: React.FC = () => {
             )}
           </div>
 
-          <div className="w-full max-w-3xl text-center py-2">
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-3xl text-center py-2">
             <p className="text-sm font-semibold text-white">
               {gallery[activeImageIndex].caption || meta.title}
             </p>
-            <p className="text-[11px] text-gray-500 mt-0.5">
+            <p className="text-[11px] text-stone-400 mt-0.5">
               {t('services.lightboxHint')}
             </p>
           </div>
@@ -1183,7 +1273,7 @@ export const ServiceDetailPage: React.FC = () => {
                   <span className="text-xl font-black text-brand-red font-mono">
                     {p.step}
                   </span>
-                  <span className="text-[10px] uppercase font-bold text-stone-400">Stage {idx + 1}</span>
+                  <span className="text-[10px] uppercase font-bold text-stone-400">{language === 'am' ? `ደረጃ ${idx + 1}` : `Stage ${idx + 1}`}</span>
                 </div>
                 <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider">{p.title}</h4>
                 <p className="text-[11px] text-stone-600 leading-relaxed">{p.description}</p>
@@ -1272,7 +1362,7 @@ export const ServiceDetailPage: React.FC = () => {
 
   // Helper render function for each product card
   function renderProductCard(prod: Product) {
-    const productDetailUrl = `/services/${slug}/products/${prod.slug || prod.id}`;
+    const productDetailUrl = `/services/${resolvedSlug}/products/${prod.slug || prod.sku || prod.id}`;
     const prodImage = getProductImageUrl(prod);
     const prodName = localize(prod, 'name');
     const prodDesc = localize(prod, 'short_description') || localize(prod, 'description');
@@ -1282,8 +1372,18 @@ export const ServiceDetailPage: React.FC = () => {
     return (
       <div
         key={prod.id || prod.sku}
+        role="button"
+        tabIndex={0}
+        aria-label={prodName}
         onClick={() => navigate(productDetailUrl)}
-        className="bg-white border border-stone-200/90 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-brand-red/60 hover:shadow-lg transition-all duration-300 group cursor-pointer shadow-xs"
+        onKeyDown={(e) => {
+          if (e.target !== e.currentTarget) return;
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            navigate(productDetailUrl);
+          }
+        }}
+        className="bg-white border border-stone-200/90 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-brand-red/60 hover:shadow-lg transition-all duration-300 group cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
       >
         {/* Product Card Image Container */}
         <div className="relative h-56 bg-stone-100 overflow-hidden">
@@ -1299,19 +1399,23 @@ export const ServiceDetailPage: React.FC = () => {
 
           {/* Dynamic Product Code / SKU Overlay Badge */}
           {prod.sku && (
-            <span className="absolute top-3 right-3 z-10 bg-brand-red text-white text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm tracking-wider border border-white/20 select-none">
+            <span className="absolute top-3 right-3 z-10 bg-brand-red text-white text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm tracking-wider border border-white/20">
               {prod.sku}
             </span>
           )}
 
           {/* Material Badge */}
           <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200 shadow-xs">
-            {prodMaterial || (isHybrid ? 'Steel + Wood Fusion' : 'Solid Wood')}
+            {prodMaterial || (isHybrid
+              ? (language === 'am' ? 'የብረት + እንጨት ውህደት' : 'Steel + Wood Fusion')
+              : resolvedSlug === 'metal-works'
+              ? (language === 'am' ? 'ጠንካራ ብረት' : 'Structural Steel')
+              : (language === 'am' ? 'ጠንካራ እንጨት' : 'Solid Wood'))}
           </span>
 
           {/* Production Time Badge */}
           {prod.estimated_production_time && (
-            <span className="absolute bottom-3 left-3 z-10 px-2 py-0.8 rounded-lg text-[10px] font-semibold bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200 flex items-center gap-1 shadow-xs">
+            <span className="absolute bottom-3 left-3 z-10 px-2 py-1 rounded-lg text-[10px] font-semibold bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200 flex items-center gap-1 shadow-xs">
               <Clock className="w-3 h-3 text-brand-red" />
               <span>{prod.estimated_production_time}</span>
             </span>
@@ -1345,7 +1449,7 @@ export const ServiceDetailPage: React.FC = () => {
             </h3>
 
             <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
-              {prodDesc || 'Precision engineered workshop item.'}
+              {prodDesc || (language === 'am' ? 'በጥራት የተሰራ የዎርክሾፕ ውጤት።' : 'Precision engineered workshop item.')}
             </p>
 
             <div className="text-[11px] text-stone-500 flex items-center gap-1.5 pt-0.5">

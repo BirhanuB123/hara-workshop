@@ -5,16 +5,10 @@ import {
   Sparkles, 
   Phone, 
   MapPin, 
-  Send,
-  Hammer,
-  Wrench,
-  Layers,
-  ShieldCheck,
-  CheckCircle2
+  ShieldCheck
 } from 'lucide-react';
 import { productsApi, extractResults } from '../../services/api';
 import { Product } from '../../types';
-import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { WorkshopCatalog } from '../../components/products/WorkshopCatalog';
 import { useLanguageStore } from '../../store/languageStore';
 import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
@@ -22,7 +16,6 @@ import { CATALOG_PRODUCTS } from '../../data/catalogProducts';
 export const HomePage: React.FC = () => {
   const { t, language } = useLanguageStore();
   const [products, setProducts] = useState<Product[]>(CATALOG_PRODUCTS);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -30,7 +23,7 @@ export const HomePage: React.FC = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await productsApi.getAll({ page_size: 100 });
+      const res = await productsApi.getAll({ page_size: 200 });
       const items = extractResults<Product>(res.data);
       if (items.length > 0) {
         setProducts(items);
@@ -49,7 +42,7 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-stone-900 select-none">
+    <div className="min-h-screen bg-white text-stone-900">
       
       {/* ============================================================== */}
       {/* 1. HERO BANNER - WIDE CARPENTRY WORKSHOP PHOTOGRAPHY            */}
@@ -140,13 +133,7 @@ export const HomePage: React.FC = () => {
       {/* ============================================================== */}
       {/* 2. MAIN PRODUCT CATALOG (WOOD, METAL, HYBRID)                  */}
       {/* ============================================================== */}
-      {loading ? (
-        <div className="py-24">
-          <LoadingSpinner text={language === 'am' ? 'የዎርክሾፕ ውጤቶች እየተጫኑ ነው...' : 'Loading workshop catalog...'} />
-        </div>
-      ) : (
-        <WorkshopCatalog products={products} />
-      )}
+      <WorkshopCatalog products={products} />
 
       {/* ============================================================== */}
       {/* 3. WORKSHOP FACILITY & LOCATION HIGHLIGHT                       */}
@@ -187,7 +174,7 @@ export const HomePage: React.FC = () => {
                 rel="noopener noreferrer" 
                 className="text-[11px] text-[#229ED9] hover:underline font-semibold block mt-0.5"
               >
-                Telegram: @Manager_Samuel_A
+                {language === 'am' ? 'ቴሌግራም፦ @Manager_Samuel_A' : 'Telegram: @Manager_Samuel_A'}
               </a>
             </div>
           </div>

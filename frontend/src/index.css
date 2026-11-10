@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Ethiopic:wght@300;400;500;600;700;800;900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,8 +15,8 @@
 body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #0E0D0C;
-  color: #FAF8F5;
+  background-color: #FDFBF7;
+  color: #1C1917;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -44,11 +42,11 @@ html[lang="am"] .font-mono {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0E0D0C;
+  background: #F5F0E8;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2E2620;
+  background: #D6CFC4;
   border-radius: 4px;
 }
 
@@ -108,4 +106,19 @@ html[lang="am"] .font-mono {
 .divider-warm {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(200, 138, 54, 0.25), rgba(197, 22, 29, 0.25), transparent);
+}
+
+/* Scrollbar helpers */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }

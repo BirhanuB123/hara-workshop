@@ -20,7 +20,6 @@ Rules:
    - Rejects arbitrary or incomplete phone numbers.
 """
 
-import re
 from typing import Tuple, Optional, Dict
 
 # Country calling code metadata: (Country Name, min_national_digits, max_national_digits)

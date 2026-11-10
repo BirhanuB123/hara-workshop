@@ -62,6 +62,11 @@ class Command(BaseCommand):
             self._delete_webhook(token)
             return
 
+        webhook_secret = getattr(settings, 'TELEGRAM_WEBHOOK_SECRET', '').strip()
+        if not webhook_secret:
+            self.stdout.write(self.style.ERROR("[TELEGRAM SETUP ERROR] TELEGRAM_WEBHOOK_SECRET is not configured on the backend."))
+            return
+
         # Mode: Configure Webhook & Commands
         target_url = options.get('url') or DEFAULT_WEBHOOK_URL
         drop_pending = options.get('drop_pending', False)
@@ -71,8 +76,8 @@ class Command(BaseCommand):
         self.stdout.write(f"Target Webhook: {target_url}")
         self.stdout.write(f"Drop pending updates: {drop_pending}")
 
-        # 1. Set Webhook
-        webhook_success = self._set_webhook(token, target_url, drop_pending)
+        # 1. Set Webhook (registered with X-Telegram-Bot-Api-Secret-Token)
+        webhook_success = self._set_webhook(token, target_url, webhook_secret, drop_pending)
 
         # 2. Set Bot Menu Commands
         commands_success = self._set_bot_commands(token)
@@ -85,13 +90,14 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING("\n[WARNING] Webhook setup completed with warnings. Check logs above."))
 
-    def _set_webhook(self, token: str, url: str, drop_pending: bool = False) -> bool:
+    def _set_webhook(self, token: str, url: str, secret_token: str, drop_pending: bool = False) -> bool:
         api_url = f"https://api.telegram.org/bot{token}/setWebhook"
         payload = {
             "url": url,
             "allowed_updates": ["message", "edited_message", "callback_query"],
             "drop_pending_updates": drop_pending,
-            "max_connections": 40
+            "max_connections": 40,
+            "secret_token": secret_token
         }
         data = json.dumps(payload).encode('utf-8')
         req = urllib.request.Request(

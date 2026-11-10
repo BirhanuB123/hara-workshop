@@ -22,7 +22,13 @@ class OrderStatus(models.TextChoices):
 class Order(TimeStampedModel):
     order_number = models.CharField(max_length=50, unique=True, db_index=True)
     quote = models.OneToOneField('quotations.Quote', on_delete=models.SET_NULL, null=True, blank=True, related_name='order')
-    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+
+    # Guest / Denormalized customer info (copied from Quote on conversion)
+    customer_name = models.CharField(max_length=200, blank=True, default='')
+    customer_phone = models.CharField(max_length=50, blank=True, default='')
+    customer_email = models.EmailField(blank=True, default='')
+
     status = models.CharField(max_length=30, choices=OrderStatus.choices, default=OrderStatus.PENDING, db_index=True)
 
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
@@ -41,8 +47,35 @@ class Order(TimeStampedModel):
     class Meta:
         ordering = ['-created_at']
 
+    def get_customer_name(self):
+        if self.customer_name:
+            return self.customer_name
+        if self.customer:
+            return self.customer.get_full_name() or self.customer.email
+        if self.quote:
+            return self.quote.get_customer_name()
+        return 'Guest Client'
+
+    def get_customer_phone(self):
+        if self.customer_phone:
+            return self.customer_phone
+        if self.customer:
+            return getattr(self.customer, 'phone_number', '') or ''
+        if self.quote:
+            return self.quote.get_customer_phone()
+        return ''
+
+    def get_customer_email(self):
+        if self.customer_email:
+            return self.customer_email
+        if self.customer:
+            return self.customer.email
+        if self.quote:
+            return self.quote.get_customer_email()
+        return ''
+
     def __str__(self):
-        return f'{self.order_number} ({self.customer.get_full_name()})'
+        return f'{self.order_number} ({self.get_customer_name()})'
 
     def save(self, *args, **kwargs):
         if not self.order_number:

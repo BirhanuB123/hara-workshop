@@ -2,14 +2,14 @@ from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 from decimal import Decimal
 from datetime import date, timedelta
-from apps.accounts.models import User, UserRole, CustomerProfile, EmployeeProfile
-from apps.core.models import WorkshopSettings, AuditLog
+from apps.accounts.models import User, UserRole, CustomerProfile
+from apps.core.models import WorkshopSettings
 from apps.products.models import Category, Product, ProductImage
 from apps.services.models import ServiceCategory, Service
-from apps.projects.models import Project, ProjectImage
+from apps.projects.models import Project
 from apps.suppliers.models import Supplier
-from apps.inventory.models import Material, MaterialCategory, MaterialUnit, InventoryTransaction
-from apps.quotations.models import Quote, QuoteStatus, QuoteItem
+from apps.inventory.models import Material, MaterialCategory, MaterialUnit
+from apps.quotations.models import Quote, QuoteStatus
 from apps.orders.models import Order, OrderStatus, OrderItem
 from apps.production.models import ProductionJob, ProductionStage, ProductionTask
 from apps.messaging.models import Conversation, Message

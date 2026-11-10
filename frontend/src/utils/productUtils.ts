@@ -1,4 +1,5 @@
 import { Product, Service } from '../types';
+import { getMediaUrl } from './media';
 
 /**
  * Verified static public asset paths for primary workshop services
@@ -96,8 +97,8 @@ export const OFFICIAL_PRODUCT_EXTENSIONS: Record<string, string> = {
  * All verified official catalog SKU prefixes.
  */
 export const OFFICIAL_SKU_PREFIXES = new Set([
-  'BED', 'CHR', 'DNG', 'HBD', 'HCH', 'HSH', 'HTB', 'HWC', 'MGT', 'MHR',
-  'MWN', 'ODS', 'OWP', 'SHL', 'TBL', 'TVS', 'WCB', 'WDR', 'WKT', 'WRD'
+  'BED', 'CHR', 'HBD', 'HCH', 'HSH', 'HTB', 'HWC', 'MGT', 'MHR',
+  'MWN', 'ODS', 'OWP', 'TBL', 'TVS', 'WCB', 'WDR', 'WKT', 'WRD'
 ]);
 
 /**
@@ -116,45 +117,63 @@ export const getOfficialProductImage = (sku?: string | null): string | null => {
 };
 
 /**
+ * Normalizes a single product image URL/path while preserving external/media URLs
+ * and mapping seeded legacy `/media/products/<OFFICIAL_SKU>.*` paths to verified static assets.
+ */
+export const resolveProductImagePath = (raw?: string | null): string | null => {
+  if (!raw) return null;
+  const img = raw.trim();
+  if (!img || img.includes('service-hero-workshop.jpg')) {
+    return null;
+  }
+
+  if (img.startsWith('blob:') || img.startsWith('data:')) {
+    return img;
+  }
+
+  if (img.includes('/media/products/')) {
+    const filename = img.split('?')[0].split('/').pop() || '';
+    const skuCandidate = filename.split('.')[0].toUpperCase();
+    if (/^[A-Z]{3}-\d{3}$/.test(skuCandidate)) {
+      const officialAsset = getOfficialProductImage(skuCandidate);
+      if (officialAsset) return officialAsset;
+    }
+  }
+
+  if (
+    img.startsWith('http://') ||
+    img.startsWith('https://') ||
+    img.includes('/media/') ||
+    img.startsWith('media/')
+  ) {
+    return getMediaUrl(img);
+  }
+
+  return img.startsWith('/') ? img : `/${img}`;
+};
+
+/**
  * Returns the reliable image URL for a given product with fallback support.
+ * Honors custom uploaded `primary_image` and `images[0]` first, then falls back to SKU asset.
  * Guaranteed never to return a generic workshop hero photo as a product fallback.
  */
 export const getProductImageUrl = (prod: Partial<Product> | null | undefined): string => {
   if (!prod) return '/hara-official-logo.png';
 
-  // 1. Check if product has an official SKU matching a verified catalog image
+  // 1. Check explicit primary_image first (supports admin overrides & static catalog URLs)
+  const resolvedPrimary = resolveProductImagePath(prod.primary_image);
+  if (resolvedPrimary) return resolvedPrimary;
+
+  // 2. Check images list first entry
+  if (prod.images && prod.images.length > 0 && prod.images[0]?.image) {
+    const resolvedGallery = resolveProductImagePath(prod.images[0].image);
+    if (resolvedGallery) return resolvedGallery;
+  }
+
+  // 3. Fall back to verified official catalog image by SKU
   if (prod.sku) {
     const officialAsset = getOfficialProductImage(prod.sku);
     if (officialAsset) return officialAsset;
-  }
-
-  // 2. Check primary_image
-  if (prod.primary_image) {
-    const img = prod.primary_image.trim();
-    // Intercept legacy or backend /media/products/ paths and map to official static asset
-    if (img.includes('/media/products/')) {
-      const filename = img.split('/').pop() || '';
-      const skuCandidate = filename.split('.')[0].toUpperCase();
-      const officialAsset = getOfficialProductImage(skuCandidate);
-      if (officialAsset) return officialAsset;
-    }
-    if (!img.includes('service-hero-workshop.jpg')) {
-      return img.startsWith('/') ? img : `/${img}`;
-    }
-  }
-
-  // 3. Check images list
-  if (prod.images && prod.images.length > 0 && prod.images[0]?.image) {
-    const img = prod.images[0].image.trim();
-    if (img.includes('/media/products/')) {
-      const filename = img.split('/').pop() || '';
-      const skuCandidate = filename.split('.')[0].toUpperCase();
-      const officialAsset = getOfficialProductImage(skuCandidate);
-      if (officialAsset) return officialAsset;
-    }
-    if (!img.includes('service-hero-workshop.jpg')) {
-      return img.startsWith('/') ? img : `/${img}`;
-    }
   }
 
   // 4. Default to official neutral workshop branding logo (never generic workshop photo)

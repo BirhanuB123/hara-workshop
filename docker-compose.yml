@@ -4,9 +4,9 @@ services:
     container_name: hara_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: hara_workshop_db
-      POSTGRES_USER: hara_user
-      POSTGRES_PASSWORD: hara_password
+      POSTGRES_DB: ${POSTGRES_DB:-hara_workshop_db}
+      POSTGRES_USER: ${POSTGRES_USER:-hara_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
       - '5432:5432'
     volumes:
@@ -34,20 +34,22 @@ services:
     ports:
       - '8000:8000'
     environment:
-      - DEBUG=True
-      - SECRET_KEY=hara-workshop-production-docker-secret-key-2026
-      - DATABASE_URL=postgresql://hara_user:hara_password@db:5432/hara_workshop_db
+      - DEBUG=${DEBUG:-True}
+      - SECRET_KEY=${SECRET_KEY:-}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-hara_user}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-hara_workshop_db}
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_TASK_ALWAYS_EAGER=False
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-8819328437:AAE20iWA_66JEj0qLSNmjh2jexmx6sDnOok}
-      - TELEGRAM_GROUP_CHAT_ID=${TELEGRAM_GROUP_CHAT_ID:--5374750855}
-      - TELEGRAM_ADMIN_CHAT_ID=${TELEGRAM_ADMIN_CHAT_ID:-1774429006}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-1774429006}
-      - FRONTEND_URL=http://localhost:5173
-      - ALLOWED_HOSTS=localhost,127.0.0.1,backend,frontend,0.0.0.0
-      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
+      - TELEGRAM_GROUP_CHAT_ID=${TELEGRAM_GROUP_CHAT_ID:-}
+      - TELEGRAM_MANAGER_CHAT_ID=${TELEGRAM_MANAGER_CHAT_ID:-}
+      - TELEGRAM_ADMIN_CHAT_ID=${TELEGRAM_ADMIN_CHAT_ID:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,backend,frontend,0.0.0.0}
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}
     depends_on:
       - db
       - redis
@@ -63,18 +65,20 @@ services:
       - ./backend:/app
       - ./backend/media:/app/media
     environment:
-      - DEBUG=True
-      - SECRET_KEY=hara-workshop-production-docker-secret-key-2026
-      - DATABASE_URL=postgresql://hara_user:hara_password@db:5432/hara_workshop_db
+      - DEBUG=${DEBUG:-True}
+      - SECRET_KEY=${SECRET_KEY:-}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-hara_user}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-hara_workshop_db}
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - CELERY_TASK_ALWAYS_EAGER=False
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-8819328437:AAE20iWA_66JEj0qLSNmjh2jexmx6sDnOok}
-      - TELEGRAM_GROUP_CHAT_ID=${TELEGRAM_GROUP_CHAT_ID:--5374750855}
-      - TELEGRAM_ADMIN_CHAT_ID=${TELEGRAM_ADMIN_CHAT_ID:-1774429006}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-1774429006}
-      - FRONTEND_URL=http://localhost:5173
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
+      - TELEGRAM_GROUP_CHAT_ID=${TELEGRAM_GROUP_CHAT_ID:-}
+      - TELEGRAM_MANAGER_CHAT_ID=${TELEGRAM_MANAGER_CHAT_ID:-}
+      - TELEGRAM_ADMIN_CHAT_ID=${TELEGRAM_ADMIN_CHAT_ID:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
     depends_on:
       - backend
       - redis
@@ -89,15 +93,17 @@ services:
       - ./backend/media:/app/media
     environment:
       - PYTHONUNBUFFERED=1
-      - DEBUG=True
-      - SECRET_KEY=hara-workshop-production-docker-secret-key-2026
-      - DATABASE_URL=postgresql://hara_user:hara_password@db:5432/hara_workshop_db
+      - DEBUG=${DEBUG:-True}
+      - SECRET_KEY=${SECRET_KEY:-}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-hara_user}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-hara_workshop_db}
       - REDIS_URL=redis://redis:6379/0
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-8819328437:AAE20iWA_66JEj0qLSNmjh2jexmx6sDnOok}
-      - TELEGRAM_GROUP_CHAT_ID=${TELEGRAM_GROUP_CHAT_ID:--5374750855}
-      - TELEGRAM_ADMIN_CHAT_ID=${TELEGRAM_ADMIN_CHAT_ID:-1774429006}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-1774429006}
-      - FRONTEND_URL=http://localhost:5173
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_WEBHOOK_SECRET=${TELEGRAM_WEBHOOK_SECRET:-}
+      - TELEGRAM_GROUP_CHAT_ID=${TELEGRAM_GROUP_CHAT_ID:-}
+      - TELEGRAM_MANAGER_CHAT_ID=${TELEGRAM_MANAGER_CHAT_ID:-}
+      - TELEGRAM_ADMIN_CHAT_ID=${TELEGRAM_ADMIN_CHAT_ID:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:5173}
     depends_on:
       - backend
       - db

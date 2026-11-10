@@ -4,7 +4,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 
-from apps.accounts.urls import customer_router
+from apps.accounts.urls import customer_router, user_router
+from apps.core.urls import settings_router, audit_log_router
 from apps.core.views import ContactInquiryView
 from apps.quotations.views import TelegramWebhookView
 
@@ -26,9 +27,9 @@ urlpatterns = [
     path('api/core/', include('apps.core.urls')),
     path('api/contact/', ContactInquiryView.as_view(), name='contact-inquiry-direct'),
     path('api/telegram/webhook/', TelegramWebhookView.as_view(), name='telegram-webhook-direct'),
-    path('api/settings/', include('apps.core.urls')),
-    path('api/audit-logs/', include('apps.core.urls')),
-    path('api/users/', include('apps.accounts.urls')),
+    path('api/settings/', include(settings_router.urls)),
+    path('api/audit-logs/', include(audit_log_router.urls)),
+    path('api/users/', include(user_router.urls)),
     path('api/customers/', include(customer_router.urls)),
     path('api/products/', include('apps.products.urls')),
     path('api/services/', include('apps.services.urls')),

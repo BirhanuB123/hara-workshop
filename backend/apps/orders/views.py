@@ -12,7 +12,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status']
-    search_fields = ['order_number', 'customer__email', 'customer__first_name', 'customer__last_name']
+    search_fields = [
+        'order_number', 'customer_name', 'customer_phone', 'customer_email',
+        'customer__email', 'customer__first_name', 'customer__last_name'
+    ]
     ordering_fields = ['created_at', 'total_amount', 'status']
 
     def get_permissions(self):

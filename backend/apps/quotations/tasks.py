@@ -288,14 +288,16 @@ def send_telegram_quote_notification(self, quote_id: str, target_chat_id: str = 
 
     if target_chat_id:
         resolved_target = resolve_chat_id(target_chat_id)
-        destinations = [
-            {"id": resolved_target, "label": "Specified Recipient", "is_required": True}
-        ]
+        destinations = (
+            [{"id": resolved_target, "label": "Specified Recipient", "is_required": True}]
+            if resolved_target else []
+        )
     else:
-        destinations = [
-            {"id": group_chat_id, "label": "Management Group", "is_required": True},
-            {"id": manager_chat_id, "label": "Manager Samuel", "is_required": True},
-        ]
+        destinations = []
+        if group_chat_id:
+            destinations.append({"id": group_chat_id, "label": "Management Group", "is_required": True})
+        if manager_chat_id:
+            destinations.append({"id": manager_chat_id, "label": "Manager Samuel", "is_required": True})
 
     # Inspect prior successful dispatches for idempotency / retry protection
     previously_delivered = set()

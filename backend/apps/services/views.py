@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+from django.core.files.uploadedfile import UploadedFile
 from django.http import Http404
 from django.utils.text import slugify
 from rest_framework import viewsets, permissions, filters, status
@@ -12,28 +13,36 @@ from .serializers import ServiceCategorySerializer, ServiceSerializer, ServiceIm
 from apps.accounts.permissions import IsStaffUser
 
 class ServiceCategoryViewSet(viewsets.ModelViewSet):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
     queryset = ServiceCategory.objects.prefetch_related('services').all()
     serializer_class = ServiceCategorySerializer
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated(), IsStaffUser()]
+
 class ServiceViewSet(viewsets.ModelViewSet):
-    authentication_classes = []
-    permission_classes = [permissions.AllowAny]
     queryset = Service.objects.select_related('category').prefetch_related('gallery_images').all()
     serializer_class = ServiceSerializer
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['category', 'is_active']
     search_fields = ['title', 'short_description', 'full_description', 'tagline']
 
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated(), IsStaffUser()]
+
     def get_queryset(self):
         qs = super().get_queryset()
-        if not (self.request.user and self.request.user.is_authenticated and self.request.user.role != 'CUSTOMER'):
+        if not (self.request.user and self.request.user.is_authenticated and getattr(self.request.user, 'role', '') != 'CUSTOMER'):
             qs = qs.filter(is_active=True)
         return qs
 
     def get_object(self):
-        lookup = self.kwargs.get('pk')
+        lookup = (self.kwargs.get('pk') or '').strip()
+        if not lookup:
+            raise Http404("Service not found.")
         try:
             uuid.UUID(str(lookup))
             return super().get_object()
@@ -60,7 +69,13 @@ class ServiceViewSet(viewsets.ModelViewSet):
         return obj
 
     def _parse_json_fields(self, data):
-        parsed = data.copy()
+        parsed = {}
+        for k, v in data.items():
+            if isinstance(v, UploadedFile):
+                continue
+            if isinstance(v, (list, tuple)) and any(isinstance(item, UploadedFile) for item in v):
+                continue
+            parsed[k] = v
         json_fields = ['offerings', 'applications', 'materials', 'benefits', 'process_steps']
         for f in json_fields:
             val = parsed.get(f)
@@ -121,7 +136,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
         return Response(ServiceSerializer(service).data)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def upload_image(self, request, pk=None):
         """Upload a single image from device to this service's gallery."""
         service = self.get_object()
@@ -161,7 +176,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
         return Response(ServiceImageSerializer(service_image).data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def replace_image(self, request, pk=None):
         """Replace an existing image file in-place, preserving slot position and metadata."""
         service = self.get_object()
@@ -194,7 +209,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
         return Response(ServiceImageSerializer(target_image).data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post', 'delete'], permission_classes=[IsStaffUser])
+    @action(detail=True, methods=['post', 'delete'], permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def delete_image(self, request, pk=None, image_id=None):
         """Delete an image, remove from disk, and re-sequence remaining images contiguously."""
         service = self.get_object()
@@ -234,7 +249,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
             'images': ServiceImageSerializer(service.gallery_images.all(), many=True).data
         }, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['patch', 'post'], permission_classes=[IsStaffUser])
+    @action(detail=True, methods=['patch', 'post'], permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def update_image(self, request, pk=None):
         """Update caption, description, or primary status of an image."""
         service = self.get_object()
@@ -264,7 +279,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
         img.save()
         return Response(ServiceImageSerializer(img).data, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def reorder_images(self, request, pk=None):
         """Reorder gallery images based on an array of image IDs."""
         service = self.get_object()
@@ -284,7 +299,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
                 item.order = idx
                 item.save(update_fields=['order'])
 
-    @action(detail=True, methods=['post'], permission_classes=[IsStaffUser])
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def upload_images(self, request, pk=None):
         """Legacy batch upload support."""
         service = self.get_object()
@@ -301,7 +316,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
             created.append(ServiceImageSerializer(si).data)
         return Response({'images': created, 'total': service.gallery_images.count()})
 
-    @action(detail=True, methods=['delete'], url_path='images/(?P<image_id>[^/.]+)', permission_classes=[IsStaffUser])
+    @action(detail=True, methods=['delete'], url_path='images/(?P<image_id>[^/.]+)', permission_classes=[permissions.IsAuthenticated, IsStaffUser])
     def legacy_delete_image(self, request, pk=None, image_id=None):
         """URL-path based delete."""
         return self.delete_image(request, pk=pk, image_id=image_id)

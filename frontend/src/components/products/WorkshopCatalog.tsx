@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { 
   ArrowRight, 
   X, 
-  Sparkles, 
   Hammer, 
   Wrench, 
   Layers, 
   Eye, 
-  PlusCircle, 
-  ChevronDown, 
-  ChevronUp,
-  ShieldCheck,
-  Check
+  PlusCircle 
 } from 'lucide-react';
 import { Product } from '../../types';
 import { useLanguageStore } from '../../store/languageStore';
@@ -230,18 +225,19 @@ interface WorkshopCatalogProps {
 }
 
 export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: propProducts }) => {
-  const { language, localize } = useLanguageStore();
+  const { language } = useLanguageStore();
+  const [searchParams] = useSearchParams();
 
   // Ensure products are always populated with all 90 items even before API loads or on network issues
   const [products, setProducts] = useState<Product[]>(() => {
     return (Array.isArray(propProducts) && propProducts.length > 0) ? propProducts : CATALOG_PRODUCTS;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (Array.isArray(propProducts) && propProducts.length > 0) {
       setProducts(propProducts);
     } else {
-      productsApi.getAll({ page_size: 100 })
+      productsApi.getAll({ page_size: 200 })
         .then(res => {
           const list = extractResults<Product>(res.data);
           if (list.length > 0) {
@@ -262,27 +258,55 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
   const [activeMetalCat, setActiveMetalCat] = useState<string | null>(null);
   const [activeHybridCat, setActiveHybridCat] = useState<string | null>(null);
 
-  // Helper to resolve product image reliably
-  const getProductImage = (prod?: Product | null): string => {
-    if (!prod) return '/hara-official-logo.png';
-    if (prod.primary_image) {
-      if (prod.primary_image.startsWith('http://') || prod.primary_image.startsWith('https://')) {
-        return prod.primary_image;
+  // Sync section scroll & category expansion with ?service= or ?category= URL parameters
+  useEffect(() => {
+    const serviceParam = (searchParams.get('service') || '').toLowerCase();
+    const categoryParam = (searchParams.get('category') || '').toLowerCase();
+
+    let targetSectionId = '';
+
+    if (categoryParam) {
+      const woodMatch = WOOD_CATEGORIES.find(
+        (c) => c.slug === categoryParam || c.id === categoryParam || c.name.toLowerCase() === categoryParam
+      );
+      const metalMatch = METAL_CATEGORIES.find(
+        (c) => c.slug === categoryParam || c.id === categoryParam || c.name.toLowerCase() === categoryParam
+      );
+      const hybridMatch = HYBRID_CATEGORIES.find(
+        (c) => c.slug === categoryParam || c.id === categoryParam || c.name.toLowerCase() === categoryParam
+      );
+      if (woodMatch) {
+        setActiveWoodCat(woodMatch.id);
+        targetSectionId = 'wood-works-section';
+      } else if (metalMatch) {
+        setActiveMetalCat(metalMatch.id);
+        targetSectionId = 'metal-works-section';
+      } else if (hybridMatch) {
+        setActiveHybridCat(hybridMatch.id);
+        targetSectionId = 'hybrid-works-section';
       }
-      if (prod.primary_image.startsWith('/')) return prod.primary_image;
-      return `/${prod.primary_image}`;
     }
-    if (prod.images && prod.images.length > 0 && prod.images[0].image) {
-      const img = prod.images[0].image;
-      return img.startsWith('/') ? img : `/${img}`;
+
+    if (!targetSectionId && serviceParam) {
+      if (serviceParam.includes('hybrid') || (serviceParam.includes('metal') && serviceParam.includes('wood'))) {
+        targetSectionId = 'hybrid-works-section';
+      } else if (serviceParam.includes('metal')) {
+        targetSectionId = 'metal-works-section';
+      } else if (serviceParam.includes('wood')) {
+        targetSectionId = 'wood-works-section';
+      }
     }
-    // Fallback to SKU image path
-    if (prod.sku) {
-      const ext = prod.sku === 'WDR-004' ? 'png' : ['WKT-002', 'WKT-003', 'WKT-005'].includes(prod.sku) ? 'webp' : 'jpg';
-      return `/images/services/${prod.sku}.${ext}`;
+
+    if (targetSectionId) {
+      const timer = setTimeout(() => {
+        const el = document.getElementById(targetSectionId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 80);
+      return () => clearTimeout(timer);
     }
-    return '/hara-official-logo.png';
-  };
+  }, [searchParams]);
 
   // Filter products by SKU prefix
   const getProductsByPrefix = (prefix: string): Product[] => {
@@ -378,7 +402,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
                 {language === 'am' ? 'መነሻ ዋጋ' : 'Starting from'}
               </span>
               <span className="text-sm font-bold text-stone-900">
-                {product.starting_price ? `${Number(product.starting_price).toLocaleString()} ETB` : 'By Quote'}
+                {product.starting_price ? `${Number(product.starting_price).toLocaleString()} ${language === 'am' ? 'ብር' : 'ETB'}` : (language === 'am' ? 'በዋጋ ግምት' : 'By Quote')}
               </span>
             </div>
           </div>
@@ -416,13 +440,23 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
     const isExpanded = activeCatId === cat.id;
     const catTitle = language === 'am' ? cat.nameAm : cat.name;
     const catProducts = getProductsByPrefix(cat.prefix);
-    const count = catProducts.length || 5;
+    const count = catProducts.length;
 
     return (
       <div
         key={cat.id}
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        aria-label={`${catTitle} (${count})`}
         onClick={() => onToggle(cat.id)}
-        className={`bg-white rounded-2xl overflow-hidden border cursor-pointer transition-all duration-300 flex flex-col group select-none ${
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onToggle(cat.id);
+          }
+        }}
+        className={`bg-white rounded-2xl overflow-hidden border cursor-pointer transition-all duration-300 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red ${
           isExpanded 
             ? 'border-brand-red ring-2 ring-brand-red/20 shadow-md scale-[1.02]' 
             : 'border-stone-200/90 shadow-xs hover:shadow-md hover:border-stone-300'
@@ -452,22 +486,21 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
               {catTitle}
             </h3>
             <p className="text-[11px] text-stone-400 font-mono mt-0.5">
-              Code: {cat.prefix}
+              {language === 'am' ? `ኮድ፦ ${cat.prefix}` : `Code: ${cat.prefix}`}
             </p>
           </div>
 
-          {/* Circular Red Arrow Button */}
-          <button
-            type="button"
+          {/* Circular Red Arrow Indicator */}
+          <span
+            aria-hidden="true"
             className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-transform flex-shrink-0 shadow-sm ${
               isExpanded 
                 ? 'bg-stone-900 rotate-90' 
                 : 'bg-brand-red group-hover:scale-110'
             }`}
-            aria-label={`Toggle ${catTitle}`}
           >
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </span>
         </div>
       </div>
     );
@@ -489,7 +522,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-xs font-mono font-bold bg-brand-red/10 text-brand-red px-2 py-0.5 rounded">
-                Prefix: {cat.prefix}
+                {language === 'am' ? `ኮድ፦ ${cat.prefix}` : `Prefix: ${cat.prefix}`}
               </span>
               <h3 className="text-xl sm:text-2xl font-black text-stone-900">
                 {catTitle} ({catProducts.length} {language === 'am' ? 'እቃዎች' : 'Models'})
@@ -524,7 +557,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
       {/* ============================================================== */}
       {/* 1. WOOD WORKS SECTION (Warm Ivory / Off-White #FBF8F3)          */}
       {/* ============================================================== */}
-      <section className="bg-[#FBF8F3] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-stone-200/70 text-left">
+      <section id="wood-works-section" className="bg-[#FBF8F3] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-stone-200/70 text-left scroll-mt-24">
         <div className="max-w-7xl mx-auto space-y-10">
           
           {/* Section Header */}
@@ -587,7 +620,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
       {/* ============================================================== */}
       {/* 2. METAL WORKS SECTION (Subtle Light Blue-Gray #EDF2F7)         */}
       {/* ============================================================== */}
-      <section className="bg-[#EDF2F7] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-slate-200 text-left">
+      <section id="metal-works-section" className="bg-[#EDF2F7] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-slate-200 text-left scroll-mt-24">
         <div className="max-w-7xl mx-auto space-y-10">
           
           {/* Section Header */}
@@ -650,7 +683,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
       {/* ============================================================== */}
       {/* 3. HYBRID WORKS SECTION (Warm Ivory / Off-White #FBF8F3)        */}
       {/* ============================================================== */}
-      <section className="bg-[#FBF8F3] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-stone-200/70 text-left">
+      <section id="hybrid-works-section" className="bg-[#FBF8F3] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-stone-200/70 text-left scroll-mt-24">
         <div className="max-w-7xl mx-auto space-y-10">
           
           {/* Section Header */}

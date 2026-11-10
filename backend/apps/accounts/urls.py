@@ -24,6 +24,9 @@ router.register(r'customers', CustomersViewSet, basename='admin-customers')
 customer_router = SecureAdminRouter()
 customer_router.register(r'', CustomersViewSet, basename='customers-direct')
 
+user_router = SecureAdminRouter()
+user_router.register(r'', UserAdminViewSet, basename='users-direct')
+
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='auth-register'),
     path('login/', CustomTokenObtainPairView.as_view(), name='auth-login'),

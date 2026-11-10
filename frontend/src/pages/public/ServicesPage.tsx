@@ -23,6 +23,7 @@ const SERVICE_ENHANCEMENTS: Record<string, {
   badgeAm: string;
   icon: any;
   capabilities: string[];
+  capabilitiesAm: string[];
 }> = {
   'Metal Works': {
     image: '/images/services/service-metal-works.jpg',
@@ -35,6 +36,13 @@ const SERVICE_ENHANCEMENTS: Record<string, {
       'Automated CNC laser cutting & decorative perforated steel',
       'Weather-resistant electrostatic anti-corrosion powder coating',
       'Villas, commercial facilities, compound security & structural trusses'
+    ],
+    capabilitiesAm: [
+      'ጠንካራ የብረት መዋቅሮች እና ከባድ ፕሌት ማምረቻ',
+      'በከፍተኛ ትክክለኛነት የተበየዱ MIG፣ TIG እና አርክ ብየዳዎች',
+      'የCNC ሌዘር መቁረጫ እና ውብ የጌጣጌጥ ብረት ቅርጾች',
+      'ዝገትን የሚከላከል የኤሌክትሮስታቲክ ፓውደር ኮት ቀለም',
+      'ለቪላዎች፣ የንግድ ተቋማት እና የግቢ ደህንነት መዋቅሮች'
     ]
   },
   'Wood Works': {
@@ -48,6 +56,13 @@ const SERVICE_ENHANCEMENTS: Record<string, {
       'Handcrafted executive office desks, boardroom tables & display shelving',
       'Precision mortise-and-tenon structural wood joinery',
       'Multi-coat satin, matte, or high-gloss moisture-resistant lacquer finishes'
+    ],
+    capabilitiesAm: [
+      'ከጥቁር እንጨት፣ ዋንዛ፣ ቲክ እና ዎልነት የተሰሩ የቤትና የቢሮ እቃዎች',
+      'ብጁ ሞዱላር የኪችን ካቢኔቶች እና የልብስ ቁም ሳጥኖች',
+      'የስራ መሪ ቢሮ ጠረጴዛዎች፣ የስብሰባ ጠረጴዛዎች እና መደርደሪያዎች',
+      'በጥንቃቄ የተሰሩ ጠንካራ የእንጨት መገጣጠሚያዎች',
+      'እርጥበትን የሚቋቋም ሳቲን፣ ማት እና አንጸባራቂ የቫርኒሽ አጨራረስ'
     ]
   },
   'Hybrid Metal + Wood Construction': {
@@ -61,6 +76,13 @@ const SERVICE_ENHANCEMENTS: Record<string, {
       'Turnkey cafe, restaurant & modern retail commercial fitouts',
       'Steel-supported hardwood ceilings, wall paneling & mezzanine platforms',
       'Millimeter-precision on-site structural anchoring & lifetime warranty'
+    ],
+    capabilitiesAm: [
+      'የብረት መዋቅር እና ጠንካራ የእንጨት ደረጃ ያላቸው ዘመናዊ ደረጃዎች',
+      'በብረት የተገነቡ ፐርጎላዎች እና የውጭ መዝናኛ ዳሶች',
+      'ለካፌዎች፣ ሬስቶራንቶች እና ሱቆች ሙሉ የውስጥ ማስዋቢያ ስራዎች',
+      'በብረት የተደገፉ የእንጨት ጣሪያዎች፣ ግድግዳዎች እና መደርደሪያዎች',
+      'በቦታው ላይ ትክክለኛ ገጠማ እና ዘላቂ የጥራት ዋስትና'
     ]
   }
 };
@@ -103,7 +125,7 @@ export const ServicesPage: React.FC = () => {
 
   useEffect(() => {
     // Load products count per category
-    productsApi.getAll({ page_size: 100 })
+    productsApi.getAll({ page_size: 200 })
       .then(res => {
         const prods = extractResults<Product>(res.data);
         const counts: Record<string, number> = {
@@ -220,7 +242,7 @@ export const ServicesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 select-none">
+    <div className="min-h-screen bg-[#FDFBF7] text-stone-900">
       
       {/* 1. Header Banner */}
       <div className="bg-[#FAF7F2] border-b border-stone-200 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center">
@@ -291,7 +313,8 @@ export const ServicesPage: React.FC = () => {
                 badge: service.category_name || 'Fabrication',
                 badgeAm: 'ማምረቻ',
                 icon: Wrench,
-                capabilities: []
+                capabilities: [],
+                capabilitiesAm: []
               };
               const IconComponent = enhancement.icon;
 
@@ -378,7 +401,7 @@ export const ServicesPage: React.FC = () => {
                           {t('services.offeringsBadge')}:
                         </span>
                         <ul className="space-y-1.5 text-xs text-stone-600">
-                          {enhancement.capabilities.slice(0, 3).map((cap, i) => (
+                          {(language === 'am' ? enhancement.capabilitiesAm : enhancement.capabilities).slice(0, 3).map((cap, i) => (
                             <li key={i} className="flex items-start space-x-2">
                               <CheckCircle2 className="w-3.5 h-3.5 text-brand-red flex-shrink-0 mt-0.5" />
                               <span className="line-clamp-1">{cap}</span>

@@ -2,13 +2,12 @@ import html
 import logging
 import secrets
 from datetime import timedelta
-from decimal import Decimal
 import json
 import urllib.request
 from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
-from .models import Quote, QuoteStatus, TelegramOrderLink
+from .models import Quote, TelegramOrderLink
 from .tasks import _send_telegram_http, _sanitize_for_logging
 
 logger = logging.getLogger(__name__)

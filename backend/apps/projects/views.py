@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.core.files.uploadedfile import UploadedFile
 from django.utils.text import slugify
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Project, ProjectImage
@@ -26,8 +27,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
             qs = qs.filter(is_published=True)
         return qs
 
+    def _extract_scalar_data(self, raw_data):
+        """Build a plain dict without copying UploadedFile/TemporaryUploadedFile objects."""
+        cleaned = {}
+        for k, v in raw_data.items():
+            if isinstance(v, UploadedFile):
+                continue
+            if isinstance(v, (list, tuple)) and any(isinstance(item, UploadedFile) for item in v):
+                continue
+            cleaned[k] = v
+        return cleaned
+
     def create(self, request, *args, **kwargs):
-        data = request.data.copy()
+        data = self._extract_scalar_data(request.data)
         if 'slug' not in data or not data['slug']:
             base_slug = slugify(data.get('title', 'workshop-project')) or 'project'
             slug = base_slug
@@ -73,7 +85,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        data = self._extract_scalar_data(request.data)
+        serializer = self.get_serializer(instance, data=data, partial=partial)
         serializer.is_valid(raise_exception=True)
         project = serializer.save()
 

@@ -7,7 +7,7 @@ export const PublicFooter: React.FC = () => {
   const { t, language } = useLanguageStore();
 
   return (
-    <footer className="bg-[#161616] text-stone-300 pt-16 pb-8 border-t border-stone-850 select-none">
+    <footer className="bg-[#161616] text-stone-300 pt-16 pb-8 border-t border-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
           {/* Brand & Workshop Info */}
@@ -43,7 +43,7 @@ export const PublicFooter: React.FC = () => {
               </div>
               <div className="flex items-center space-x-3 text-stone-300">
                 <Clock className="w-4 h-4 text-brand-red flex-shrink-0" />
-                <span>{language === 'am' ? 'ሰኞ - ቅዳሜ፡ 8:00 AM - 6:00 PM' : 'Mon - Sat: 8:00 AM - 6:00 PM'}</span>
+                <span>{language === 'am' ? 'ሰኞ - ቅዳሜ፡ ከጠዋቱ 2:00 - ከሰዓት 12:00' : 'Mon - Sat: 8:00 AM - 6:00 PM'}</span>
               </div>
             </div>
           </div>
@@ -108,8 +108,12 @@ export const PublicFooter: React.FC = () => {
                   <ChevronRight className="w-3.5 h-3.5 mr-1 text-stone-600" /> {language === 'am' ? 'ቅይጥ ስራዎች (5 ክፍሎች)' : 'Hybrid Construction (5 Categories)'}
                 </Link>
               </li>
-              <li className="text-stone-500 pt-2 text-[11px]">Bespoke Architectural Engineering</li>
-              <li className="text-stone-500 text-[11px]">Precision Laser Profiling & Joinery</li>
+              <li className="text-stone-500 pt-2 text-[11px]">
+                {language === 'am' ? 'ብጁ የአርክቴክቸር ምህንድስና' : 'Bespoke Architectural Engineering'}
+              </li>
+              <li className="text-stone-500 text-[11px]">
+                {language === 'am' ? 'ትክክለኛ የሌዘር መቁረጫ እና የእንጨት ስራ' : 'Precision Laser Profiling & Joinery'}
+              </li>
             </ul>
           </div>
 
@@ -140,28 +144,39 @@ export const PublicFooter: React.FC = () => {
                 className="inline-flex items-center space-x-2 bg-[#25D366] hover:bg-[#20ba59] text-white px-3 py-2 rounded-lg text-xs font-bold transition-all w-full justify-center shadow-sm"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
-                <span>WhatsApp: +251 926 629 999</span>
+                <span>{language === 'am' ? 'ዋትስአፕ፦ +251 926 629 999' : 'WhatsApp: +251 926 629 999'}</span>
               </a>
             </div>
             <div className="bg-stone-900 border border-stone-800 p-2.5 rounded-lg text-xs space-y-1">
               <div className="flex items-center space-x-1.5 text-emerald-400 font-semibold text-[11px]">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>TIN Registered & Licensed</span>
+                <span>
+                  {language === 'am' ? 'ቲን (TIN) የተመዘገበ እና ህጋዊ ፈቃድ ያለው' : 'TIN Registered & Licensed'}
+                </span>
               </div>
-              <p className="text-[10px] text-stone-400">Official Invoicing with 15% VAT documentation.</p>
+              <p className="text-[10px] text-stone-400">
+                {language === 'am'
+                  ? 'ህጋዊ ደረሰኝ ከ15% ቫት (VAT) ሰነድ ጋር ይቀርባል።'
+                  : 'Official Invoicing with 15% VAT documentation.'}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-stone-800 flex flex-col md:flex-row items-center justify-between text-xs text-stone-500 gap-4">
-          <p>© {new Date().getFullYear()} HARA WORKSHOP. All rights reserved. Addis Ababa, Ethiopia.</p>
+          <p>
+            © {new Date().getFullYear()} HARA WORKSHOP.{' '}
+            {language === 'am'
+              ? 'መብቱ በህግ የተጠበቀ ነው። አዲስ አበባ፣ ኢትዮጵያ።'
+              : 'All rights reserved. Addis Ababa, Ethiopia.'}
+          </p>
           <div className="flex items-center space-x-4 text-stone-400 text-xs">
-            <span>Metal Works</span>
+            <span>{language === 'am' ? 'የብረት ስራዎች' : 'Metal Works'}</span>
             <span>•</span>
-            <span>Wood Works</span>
+            <span>{language === 'am' ? 'የእንጨት ስራዎች' : 'Wood Works'}</span>
             <span>•</span>
-            <span>Hybrid Metal + Wood</span>
+            <span>{language === 'am' ? 'ቅይጥ ብረት + እንጨት' : 'Hybrid Metal + Wood'}</span>
           </div>
         </div>
       </div>

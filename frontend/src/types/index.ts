@@ -190,7 +190,15 @@ export type QuoteStatus =
 export interface Quote {
   id: string;
   quote_number: string;
-  customer: User;
+  customer?: User | null;
+  customer_name?: string;
+  customer_phone?: string;
+  customer_email?: string;
+  product?: string | null;
+  product_code?: string;
+  product_name?: string;
+  product_category?: string;
+  product_image_url?: string;
   project_title: string;
   service_type: string;
   description: string;
@@ -203,6 +211,7 @@ export interface Quote {
   installation_required: boolean;
   delivery_required: boolean;
   delivery_address?: string;
+  site_location?: string;
   status: QuoteStatus;
   materials_cost: number;
   labor_cost: number;
@@ -222,6 +231,11 @@ export interface Quote {
 }
 
 export type OrderStatus =
+  | 'QUOTE_REQUESTED'
+  | 'QUOTATION_SENT'
+  | 'QUOTATION_ACCEPTED'
+  | 'QUOTATION_REJECTED'
+  | 'ORDER_CONFIRMED'
   | 'PENDING'
   | 'CONFIRMED'
   | 'IN_PRODUCTION'
@@ -235,10 +249,14 @@ export type OrderStatus =
 export interface Order {
   id: string;
   order_number: string;
-  quote?: string;
-  customer: User;
+  quote?: string | { id?: string; quote_number?: string; service_type?: string } | null;
+  customer?: User | null;
+  customer_name?: string;
+  customer_phone?: string;
+  customer_email?: string;
   status: OrderStatus;
   total_amount: number;
+  paid_amount?: number;
   delivery_address?: string;
   delivery_city?: string;
   expected_delivery_date?: string;

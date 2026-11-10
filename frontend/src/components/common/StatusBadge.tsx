@@ -4,14 +4,19 @@ import { useLanguageStore } from '../../store/languageStore';
 
 interface StatusBadgeProps {
   status: string;
+  tone?: 'light' | 'dark';
 }
 
 const STATUS_AMHARIC: Record<string, string> = {
   'CONFIRMED': 'የተረጋገጠ',
+  'ORDER_CONFIRMED': 'ትዕዛዝ የተረጋገጠ',
+  'CONVERTED_TO_ORDER': 'ወደ ትዕዛዝ የተቀየረ',
   'SUCCESS': 'የተሳካ',
   'COMPLETED': 'የተጠናቀቀ',
   'CUSTOMER_ACCEPTED': 'በደንበኛ የጸደቀ',
   'IN_STOCK': 'ያለ',
+  'QUALITY_CHECK': 'የጥራት ፍተሻ',
+  'QUALITY_INSPECTION': 'የጥራት ፍተሻ',
   'IN_PRODUCTION': 'በማምረት ላይ',
   'FABRICATION': 'በመገጣጠም ላይ',
   'ASSEMBLY': 'በማገጣጠም ላይ',
@@ -33,7 +38,7 @@ const STATUS_AMHARIC: Record<string, string> = {
   'OUT_OF_STOCK': 'ያለቀ',
 };
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, tone = 'light' }) => {
   const { language } = useLanguageStore();
   const normalized = (status || '').toUpperCase().trim();
   const label = language === 'am' && STATUS_AMHARIC[normalized]
@@ -42,12 +47,16 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
 
   switch (normalized) {
     case 'CONFIRMED':
+    case 'ORDER_CONFIRMED':
+    case 'CONVERTED_TO_ORDER':
     case 'SUCCESS':
     case 'COMPLETED':
     case 'CUSTOMER_ACCEPTED':
     case 'IN_STOCK':
-      return <Badge variant='green'>{label}</Badge>;
+      return <Badge variant='green' tone={tone}>{label}</Badge>;
 
+    case 'QUALITY_CHECK':
+    case 'QUALITY_INSPECTION':
     case 'IN_PRODUCTION':
     case 'FABRICATION':
     case 'ASSEMBLY':
@@ -60,20 +69,20 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
     case 'UNDER_REVIEW':
     case 'PRICE_PROPOSED':
     case 'MADE_TO_ORDER':
-      return <Badge variant='blue'>{label}</Badge>;
+      return <Badge variant='blue' tone={tone}>{label}</Badge>;
 
     case 'PENDING':
     case 'SUBMITTED':
-      return <Badge variant='yellow'>{label}</Badge>;
+      return <Badge variant='yellow' tone={tone}>{label}</Badge>;
 
     case 'CANCELLED':
     case 'CUSTOMER_REJECTED':
     case 'FAILED':
     case 'EXPIRED':
     case 'OUT_OF_STOCK':
-      return <Badge variant='red'>{label}</Badge>;
+      return <Badge variant='red' tone={tone}>{label}</Badge>;
 
     default:
-      return <Badge variant='gray'>{label}</Badge>;
+      return <Badge variant='gray' tone={tone}>{label}</Badge>;
   }
 };

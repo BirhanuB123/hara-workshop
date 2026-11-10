@@ -3,7 +3,6 @@ import shutil
 from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.utils.text import slugify
 from apps.products.models import Category, Product, ProductImage, ServiceCategoryChoice
 from apps.services.models import Service
 
@@ -101,7 +100,7 @@ APPROVED_CATEGORIES = [
         "description_am": "የእንጨት ግድግዳ ማሸፈኛዎች፣ ተንሳፋፊ መደርደሪያዎች፣ ክፍል ከፋዮች እና ሌሎች የእንጨት ውጤቶች።",
     },
 
-    # METAL WORKS (2)
+    # METAL WORKS (3)
     {
         "name": "Metal Gates",
         "name_am": "የብረት ግቢ በሮች",
@@ -176,6 +175,98 @@ APPROVED_CATEGORIES = [
         "description_am": "ጠንካራ የብረት መዋቅር እና ውብ የእንጨት ፊት ለፊት ያላቸው ቁም ሳጥኖች፣ ካቢኔቶች እና ሳይድቦርዶች።",
     },
 ]
+
+MATERIAL_AMHARIC_MAP = {
+    "Acoustic Hardwood Slat Panels": "የድምፅ መከላከያ ጠንካራ የእንጨት ሰሌዳ ፓነሎች",
+    "American Black Walnut & Hardwood": "አሜሪካን ጥቁር ዋልነት እና ጠንካራ እንጨት",
+    "American Black Walnut & Hardwood Core": "አሜሪካን ጥቁር ዋልነት እና ጠንካራ የእንጨት መሠረት",
+    "American Black Walnut & Timber Joinery": "አሜሪካን ጥቁር ዋልነት እና ጠንካራ የእንጨት መገጣጠሚያ",
+    "Angle Iron Uprights & Solid Pine Shelves": "የአንግል አይረን አቋሚዎች እና ጠንካራ የጥድ እንጨት መደርደሪያዎች",
+    "Architectural Hardwood & Aluminum Guide Tracks": "አርክቴክቸራል ጠንካራ እንጨት እና የአሉሚኒየም መንሸራተቻ መስመሮች",
+    "Architectural Wood Veneer & Solid Timber Trim": "አርክቴክቸራል የእንጨት ቬኒር እና ጠንካራ የእንጨት ጠርዝ",
+    "Black Iron Flanged Pipes & Solid Timber Planks": "ጥቁር የብረት ቱቦዎች እና ጠንካራ የእንጨት ጣውላዎች",
+    "Box Section Steel & Walnut Headboard Planks": "ካሬ ቱቦ ብረት እና የዋልነት ራስጌ የእንጨት ጣውላዎች",
+    "CNC Laser-Cut 4mm Steel Plates & Box Frame": "በCNC ሌዘር የተቆረጡ 4 ሚ.ሜ የብረት ፕሌቶች እና ካሬ ፍሬም",
+    "Cantilevered Steel Subframe & Live-Edge Timber": "ተንሳፋፊ የብረት መዋቅር እና የተፈጥሮ ጠርዝ ጠንካራ እንጨት",
+    "Cast Iron Base & Solid Turned Hardwood": "ጠንካራ ካስት አይረን እግር እና የተቀረጸ ጠንካራ እንጨት",
+    "Continuous Seamless Steel Pipe": "ያልተቆራረጠ ወጥ የብረት ቱቦ",
+    "Engineered Timber Core with Natural Wood Veneer": "የተፈጥሮ እንጨት ቬኒር ያለው ጠንካራ የእንጨት ውስጣዊ አካል",
+    "Floor-to-Ceiling Steel Columns & Oak Drawer Banks": "እስከ ጣሪያ የሚደርሱ የብረት ምሰሶዎች እና የኦክ መሳቢያዎች",
+    "Hand-Carved Solid African Mahogany": "በእጅ የተቀረጸ ጠንካራ የአፍሪካ ማሆጋኒ",
+    "Hand-Forged Solid Wrought Iron": "በእጅ የተቀጠቀጠ ጠንካራ ሮት አይረን ብረት",
+    "Hand-Sculpted Seasoned Hardwood": "በእጅ የተቀረጸ የደረቀ ጠንካራ እንጨት",
+    "Hardwood Frame & Tempered Glass Doors": "ጠንካራ የእንጨት ፍሬም እና ጠንካራ የመስታወት በሮች",
+    "Hardwood Frame with Premium Fabric Upholstery": "ጠንካራ የእንጨት ፍሬም ከጥራት ያለው የጨርቅ ልባስ ጋር",
+    "Hardwood Veneer & Heavy Steel I-Beam Frame": "የእንጨት ቬኒር እና ከባድ የብረት I-Beam መዋቅር",
+    "Hardwood Veneer & Moisture-Proof Marine Plywood": "የእንጨት ቬኒር እና እርጥበት የማይገባው ማሪን ፕላይውድ",
+    "Heavy Box Steel Chassis & Solid Walnut Drawers": "ከባድ ካሬ ቱቦ ብረት መዋቅር እና ጠንካራ የዋልነት መሳቢያዎች",
+    "Heavy Gauge Tubular Steel & Security Bars": "ወፍራም የብረት ቱቦ እና የጥበቃ ብረቶች",
+    "Heavy Structural Tubular Steel & Primer Coat": "ከባድ መዋቅራዊ የብረት ቱቦ እና የፀረ-ዝገት ፕራይመር",
+    "Hot-Dip Galvanized & Powder-Coated Steel": "ጋልቫናይዝድ እና በዱቄት ቀለም የተቀባ ብረት",
+    "Hot-Rolled Architectural Steel & Heavy Pivots": "ሆት-ሮልድ አርክቴክቸራል ብረት እና ከባድ ፒቮት ማጠፊያዎች",
+    "Kiln-Dried Hardwood & Premium Joinery": "በእቶን የደረቀ ጠንካራ እንጨት እና የላቀ መገጣጠሚያ",
+    "Kiln-Dried Hardwood Core & Natural Finish": "በእቶን የደረቀ ጠንካራ እንጨት እና የተፈጥሮ አጨራረስ",
+    "Kiln-Dried Hardwood Slab": "በእቶን የደረቀ ወጥ ጠንካራ የእንጨት ጣውላ",
+    "Kiln-Dried Hardwood Timber": "በእቶን የደረቀ ጠንካራ የእንጨት ጣውላ",
+    "Kiln-Dried Hardwood Top & Solid Timber Legs": "በእቶን የደረቀ ጠንካራ የእንጨት ገጽ እና ጠንካራ የእንጨት እግሮች",
+    "Kiln-Dried Solid Hardwood & Timber Veneer": "በእቶን የደረቀ ጠንካራ እንጨት እና የእንጨት ቬኒር",
+    "Kiln-Dried Solid Hardwood Timber": "በእቶን የደረቀ ጠንካራ እንጨት",
+    "Laser-Cut Steel Plate & Tube": "በሌዘር የተቆረጠ የብረት ፕሌት እና ቱቦ",
+    "Matte Black Steel & Solid White Oak": "ጥቁር ማት ብረት እና ጠንካራ ነጭ የኦክ እንጨት",
+    "Matte Black Steel, Fluted Glass & Hardwood Shelves": "ጥቁር ማት ብረት፣ መስመር መስታወት እና ጠንካራ የእንጨት መደርደሪያዎች",
+    "Powder-Coated Steel Geometry & Hardwood Inserts": "በዱቄት ቀለም የተቀባ የብረት ቅርጽ እና ጠንካራ የእንጨት ክፍሎች",
+    "Powder-Coated Tubular Steel & Solid Walnut": "በዱቄት ቀለም የተቀባ የብረት ቱቦ እና ጠንካራ የዋልነት እንጨት",
+    "Precision Heavy-Gauge Tubular Steel": "በከፍተኛ ትክክለኛነት የተሰራ ወፍራም የብረት ቱቦ",
+    "Reinforced Steel Angles & Solid Mahogany Panels": "ጠንካራ የብረት አንግሎች እና ጠንካራ የማሆጋኒ እንጨት ፓነሎች",
+    "Reinforced Steel Tubes & Solid Wood Steps": "ጠንካራ የብረት ቱቦዎች እና ጠንካራ የእንጨት ደረጃዎች",
+    "Round Solid Oak Top & Slender Steel Tripod": "ክብ ጠንካራ የኦክ ገጽ እና ቀጭን የብረት ሶስት እግር",
+    "Sculpted Steel Angle & Solid Teak Slats": "የተቀረጸ የብረት አንግል እና ጠንካራ የቲክ እንጨት ሰሌዳዎች",
+    "Select Solid White Oak & Hardwood Interior": "ምርጥ ጠንካራ ነጭ የኦክ እና የውስጥ ጠንካራ እንጨት",
+    "Solid Ash & Beech Wood": "ጠንካራ አሽ እና ቢች እንጨት",
+    "Solid Ash Wood & Hardwood Core": "ጠንካራ አሽ እንጨት እና ጠንካራ የእንጨት መሠረት",
+    "Solid European Oak": "ጠንካራ የአውሮፓ ኦክ እንጨት",
+    "Solid European Oak & Architectural Veneer": "ጠንካራ የአውሮፓ ኦክ እና አርክቴክቸራል የእንጨት ቬኒር",
+    "Solid European Oak & Hardwood Joinery": "ጠንካራ የአውሮፓ ኦክ እና ጠንካራ የእንጨት መገጣጠሚያ",
+    "Solid European Oak with Acoustic Slats": "ጠንካራ የአውሮፓ ኦክ ከድምፅ መከላከያ ሰሌዳዎች ጋር",
+    "Solid European Oak with Matte Seal": "ጠንካራ የአውሮፓ ኦክ በማት መከላከያ ሽፋን",
+    "Solid Hardwood Folding Frame & Lattice": "ጠንካራ የእንጨት ተጣጣፊ ፍሬም እና የሽብልቅ መረብ",
+    "Solid Hardwood Frame & Timber Drawers": "ጠንካራ የእንጨት ፍሬም እና የእንጨት መሳቢያዎች",
+    "Solid Hardwood Frame & Timber Shelves": "ጠንካራ የእንጨት ፍሬም እና የእንጨት መደርደሪያዎች",
+    "Solid Hardwood Frame with Natural Finish": "ጠንካራ የእንጨት ፍሬም ከተፈጥሮ አጨራረስ ጋር",
+    "Solid Hardwood Planks & Channel Steel Trestle": "ጠንካራ የእንጨት ጣውላዎች እና የU-ቻናል ብረት እግሮች",
+    "Solid Hardwood Slab & Trapezoidal Steel Legs": "ወጥ ጠንካራ የእንጨት ገጽ እና ትራፔዞይዳል የብረት እግሮች",
+    "Solid Hardwood Slab with German Pivot Hinge": "ወጥ ጠንካራ የእንጨት ጣውላ ከጀርመን ፒቮት ማጠፊያ ጋር",
+    "Solid Hardwood Stiles & Rails with Timber Center": "ጠንካራ የእንጨት ፍሬም እና ጠንካራ የእንጨት መሃል ፓነል",
+    "Solid Hardwood Timber": "ጠንካራ የእንጨት ጣውላ",
+    "Solid Hardwood Timber & Oak Veneer": "ጠንካራ የእንጨት ጣውላ እና የኦክ ቬኒር",
+    "Solid Hardwood with Carved Pegs": "ጠንካራ እንጨት ከተቀረጹ የእንጨት ማንጠልጠያዎች ጋር",
+    "Solid Hardwood with Clear Matte Lacquer": "ጠንካራ እንጨት ከንፁህ ማት ላከር ሽፋን ጋር",
+    "Solid Hardwood with Natural Wax Finish": "ጠንካራ እንጨት ከተፈጥሮ ሰም አጨራረስ ጋር",
+    "Solid Mahogany & Hardwood": "ጠንካራ ማሆጋኒ እና ጠንካራ እንጨት",
+    "Solid Mahogany & Heavy Timber": "ጠንካራ ማሆጋኒ እና ወፍራም ጠንካራ እንጨት",
+    "Solid Mahogany & Precision Joinery": "ጠንካራ ማሆጋኒ እና ትክክለኛ የእንጨት መገጣጠሚያ",
+    "Solid Oak Frames & Moisture-Resistant Timber": "ጠንካራ የኦክ ፍሬሞች እና እርጥበት የሚቋቋም እንጨት",
+    "Solid Oak with Dovetail Timber Drawers": "ጠንካራ ኦክ ከዶቭቴይል የእንጨት መሳቢያዎች ጋር",
+    "Solid Steel Square Bars & Angle Iron Perimeter": "ጠንካራ ካሬ ብረቶች እና የአንግል አይረን ፍሬም",
+    "Solid Timber & Hardwood Veneer": "ጠንካራ እንጨት እና የእንጨት ቬኒር",
+    "Solid Timber Framing & Architectural Wood Veneer": "ጠንካራ የእንጨት መዋቅር እና አርክቴክቸራል የእንጨት ቬኒር",
+    "Solid Walnut & Hardwood": "ጠንካራ ዋልነት እና ጠንካራ እንጨት",
+    "Solid Walnut & Heavy Internal Steel Rods": "ጠንካራ ዋልነት እና ከባድ የውስጥ ብረት ዘንጎች",
+    "Solid White Oak & Hardwood Timber": "ጠንካራ ነጭ ኦክ እና ጠንካራ እንጨት",
+    "Solid White Oak Timber": "ጠንካራ ነጭ የኦክ እንጨት",
+    "Solid Wrought Iron & Forged Steel Finials": "ጠንካራ ሮት አይረን እና የተቀጠቀጡ የብረት ጌጦች",
+    "Steel Grid Rails & Modular Oak Boxes": "የብረት ግሪድ መስመሮች እና ሞዱላር የኦክ ሳጥኖች",
+    "Structural Angle Iron & 2-Inch Hardwood Timber": "መዋቅራዊ አንግል አይረን እና 2-ኢንች ጠንካራ እንጨት",
+    "Structural Steel RHS Framing & Solid Infill": "መዋቅራዊ ካሬ ብረት (RHS) ፍሬም እና ጠንካራ ሽፋን",
+    "Structural Steel Track, Rollers & Heavy Tubing": "መዋቅራዊ የብረት መንሸራተቻ መስመር፣ ጎማዎች እና ከባድ ቱቦ",
+    "T-Section Steel Profiles & Zinc Chromate Primer": "የT-ቅርጽ የብረት ፕሮፋይሎች እና የዚንክ ክሮሜት ፕራይመር",
+    "Thick Solid Pine Slab & X-Frame Steel Base": "ወፍራም ጠንካራ የጥድ እንጨት እና የX-ቅርጽ የብረት እግር",
+    "Tubular Steel Perimeter & Solid Walnut Slats": "የብረት ቱቦ ፍሬም እና ጠንካራ የዋልነት እንጨት ሰሌዳዎች",
+    "Welded Cold-Rolled Steel Profiles": "በብየዳ የተገጣጠሙ ኮልድ-ሮልድ የብረት ፕሮፋይሎች",
+    "Welded Steel Box Section & Varnished Hardwood": "የተበየደ ካሬ ብረት እና በቫርኒሽ የተወለወለ ጠንካራ እንጨት",
+    "Welded Steel Frame & Solid Hardwood Accents": "የተበየደ የብረት ፍሬም እና ጠንካራ የእንጨት ውበቶች",
+    "Welded Steel Frame, Wire Mesh & Solid Cedar": "የተበየደ የብረት ፍሬም፣ የብረት መረብ እና ጠንካራ የዝግባ እንጨት",
+}
 
 # EXACT 90 PRODUCTS (50 Wood Works across 10 categories + 15 Metal Works across 3 categories + 25 Hybrid Works across 5 categories)
 CATALOG_DATA = [
@@ -1535,7 +1626,7 @@ class Command(BaseCommand):
             if os.path.exists(src_cover) and not os.path.exists(dst_cover):
                 shutil.copy2(src_cover, dst_cover)
 
-        # 2. Seed / Update the 12 Approved Categories
+        # 2. Seed / Update the 18 Approved Categories
         category_objects = {}
         approved_slugs = [cat["slug"] for cat in APPROVED_CATEGORIES]
 
@@ -1568,7 +1659,7 @@ class Command(BaseCommand):
         metal_service = Service.objects.filter(slug__in=["metal-works", "metalworks"]).first()
         hybrid_service = Service.objects.filter(slug__in=["hybrid-metal-wood", "hybrid-metal-and-wood", "hybrid"]).first()
 
-        # 4. Deactivate legacy products outside the 60 official SKUs
+        # 4. Deactivate legacy products outside the 90 official SKUs
         official_skus = [item["sku"] for item in CATALOG_DATA]
         legacy_products = Product.objects.exclude(sku__in=official_skus)
         legacy_count = legacy_products.count()
@@ -1576,7 +1667,7 @@ class Command(BaseCommand):
             self.stdout.write(f"Deactivating {legacy_count} legacy products...")
             legacy_products.update(is_active=False)
 
-        # 5. Create or update each of the 60 official products
+        # 5. Create or update each of the 90 official products
         created_count = 0
         updated_count = 0
 
@@ -1619,7 +1710,7 @@ class Command(BaseCommand):
                     "description_am": item["description_am"],
                     "detailed_description": item["description"],
                     "material": item["material"],
-                    "material_am": item["material"],
+                    "material_am": MATERIAL_AMHARIC_MAP.get(item["material"], item["material"]),
                     "dimensions_length": Decimal(str(dims[0])),
                     "dimensions_width": Decimal(str(dims[1])),
                     "dimensions_height": Decimal(str(dims[2])),

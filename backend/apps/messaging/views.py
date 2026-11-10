@@ -2,7 +2,6 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Q
-from django.utils import timezone
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from apps.accounts.models import User
@@ -55,7 +54,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
                     Q(customer__first_name__icontains=search) |
                     Q(customer__last_name__icontains=search) |
                     Q(customer__email__icontains=search) |
-                    Q(customer__company_name__icontains=search)
+                    Q(customer__customer_profile__company_name__icontains=search)
                 )
             return qs
 
