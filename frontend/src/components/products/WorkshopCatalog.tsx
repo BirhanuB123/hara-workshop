@@ -361,11 +361,11 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
     return (
       <div 
         key={product.sku || product.id}
-        className="bg-white rounded-xl border border-stone-200/90 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden group text-left"
+        className="bg-white rounded-sm border border-lime-300 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden group text-left"
       >
         <div className="relative">
           {/* Product Image */}
-          <div className="h-48 sm:h-52 w-full bg-stone-100 overflow-hidden relative">
+          <div className="h-48 sm:h-52 w-full bg-lime overflow-hidden relative">
             <img 
               src={imageUrl} 
               alt={title}
@@ -382,26 +382,26 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
               {product.sku}
             </div>
             {/* Stock status indicator */}
-            <div className="absolute top-2.5 right-2.5 bg-emerald-600/90 text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm">
+            <div className="absolute top-2.5 right-2.5 bg-timber/90 text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm">
               {language === 'am' ? 'በትዕዛዝ' : 'Custom'}
             </div>
           </div>
 
           {/* Details Content */}
           <div className="p-4 space-y-2">
-            <h4 className="text-sm font-bold text-stone-900 line-clamp-1 group-hover:text-brand-red transition-colors">
+            <h4 className="text-sm font-bold text-forge line-clamp-1 group-hover:text-brand-red transition-colors">
               {title}
             </h4>
             {material && (
-              <p className="text-xs text-stone-500 line-clamp-1">
+              <p className="text-xs text-forge-500 line-clamp-1">
                 {material}
               </p>
             )}
             <div className="pt-1 flex items-baseline justify-between">
-              <span className="text-[11px] text-stone-400 font-medium">
+              <span className="text-[11px] text-forge-500 font-medium">
                 {language === 'am' ? 'መነሻ ዋጋ' : 'Starting from'}
               </span>
-              <span className="text-sm font-bold text-stone-900">
+              <span className="text-sm font-bold text-forge">
                 {product.starting_price ? `${Number(product.starting_price).toLocaleString()} ${language === 'am' ? 'ብር' : 'ETB'}` : (language === 'am' ? 'በዋጋ ግምት' : 'By Quote')}
               </span>
             </div>
@@ -409,10 +409,10 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
         </div>
 
         {/* Action Buttons */}
-        <div className="p-4 pt-0 grid grid-cols-2 gap-2 border-t border-stone-100 mt-2">
+        <div className="p-4 pt-0 grid grid-cols-2 gap-2 border-t border-lime-300 mt-2">
           <Link
             to={`/products/${product.sku || product.id}`}
-            className="inline-flex items-center justify-center space-x-1 py-2 px-2.5 rounded-lg border border-stone-300 text-stone-700 hover:bg-stone-50 hover:text-stone-900 text-xs font-semibold transition-colors"
+            className="inline-flex items-center justify-center space-x-1 py-2 px-2.5 rounded-sm border border-lime-300 text-forge-700 hover:bg-lime-50 hover:text-forge text-xs font-semibold transition-colors"
           >
             <Eye className="w-3.5 h-3.5" />
             <span>{language === 'am' ? 'ዝርዝር' : 'Details'}</span>
@@ -421,7 +421,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
             to={orderUrl}
             state={{ product }}
             onClick={() => useProductOrderStore.getState().setSelectedProduct(product)}
-            className="inline-flex items-center justify-center space-x-1 py-2 px-2.5 rounded-lg bg-brand-red hover:bg-red-700 text-white text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95"
+            className="inline-flex items-center justify-center space-x-1 py-2 px-2.5 rounded-sm bg-brand-red hover:bg-brand-red-dark text-white text-xs font-bold transition-all shadow-xs hover:shadow active:scale-95"
           >
             <PlusCircle className="w-3.5 h-3.5" />
             <span>{language === 'am' ? 'እዘዝ' : 'Order'}</span>
@@ -456,14 +456,14 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
             onToggle(cat.id);
           }
         }}
-        className={`bg-white rounded-2xl overflow-hidden border cursor-pointer transition-all duration-300 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red ${
+        className={`bg-white rounded-sm overflow-hidden border cursor-pointer transition-all duration-300 flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red ${
           isExpanded 
-            ? 'border-brand-red ring-2 ring-brand-red/20 shadow-md scale-[1.02]' 
-            : 'border-stone-200/90 shadow-xs hover:shadow-md hover:border-stone-300'
+            ? 'border-brand-red ring-2 ring-brand-red/20 shadow-md ' 
+            : 'border-lime-300 shadow-xs hover:shadow-md hover:border-lime-300'
         }`}
       >
         {/* Cover Photo */}
-        <div className="h-36 sm:h-40 w-full bg-stone-100 overflow-hidden relative">
+        <div className="h-36 sm:h-40 w-full bg-lime overflow-hidden relative">
           <img
             src={`/images/categories/${cat.cover}`}
             alt={catTitle}
@@ -482,10 +482,10 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
         {/* Card Body */}
         <div className="p-3.5 flex items-center justify-between text-left">
           <div className="pr-2">
-            <h3 className="text-sm font-bold text-stone-900 group-hover:text-brand-red transition-colors">
+            <h3 className="text-sm font-bold text-forge group-hover:text-brand-red transition-colors">
               {catTitle}
             </h3>
-            <p className="text-[11px] text-stone-400 font-mono mt-0.5">
+            <p className="text-[11px] text-forge-500 mt-0.5">
               {language === 'am' ? `ኮድ፦ ${cat.prefix}` : `Code: ${cat.prefix}`}
             </p>
           </div>
@@ -493,9 +493,9 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
           {/* Circular Red Arrow Indicator */}
           <span
             aria-hidden="true"
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-transform flex-shrink-0 shadow-sm ${
+            className={`w-8 h-8 rounded-sm flex items-center justify-center text-white transition-transform flex-shrink-0 shadow-sm ${
               isExpanded 
-                ? 'bg-stone-900 rotate-90' 
+                ? 'bg-forge rotate-90' 
                 : 'bg-brand-red group-hover:scale-110'
             }`}
           >
@@ -516,19 +516,19 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
     const catDesc = language === 'am' ? cat.descriptionAm : cat.description;
 
     return (
-      <div className="mt-6 p-6 sm:p-8 bg-stone-50 rounded-2xl border border-stone-200/90 shadow-inner animate-fadeIn text-left">
+      <div className="mt-6 p-6 sm:p-8 bg-lime-50 rounded-sm border border-lime-300  animate-fadeIn text-left">
         {/* Accordion Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-lime-300">
           <div>
             <div className="flex items-center space-x-2">
               <span className="text-xs font-mono font-bold bg-brand-red/10 text-brand-red px-2 py-0.5 rounded">
                 {language === 'am' ? `ኮድ፦ ${cat.prefix}` : `Prefix: ${cat.prefix}`}
               </span>
-              <h3 className="text-xl sm:text-2xl font-black text-stone-900">
+              <h3 className="text-xl sm:text-2xl font-medium text-forge">
                 {catTitle} ({catProducts.length} {language === 'am' ? 'እቃዎች' : 'Models'})
               </h3>
             </div>
-            <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-3xl">
+            <p className="text-xs sm:text-sm text-forge-700 mt-1 max-w-3xl">
               {catDesc}
             </p>
           </div>
@@ -536,7 +536,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center space-x-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 bg-white border border-stone-300 hover:border-stone-400 px-3.5 py-2 rounded-lg transition-colors self-start sm:self-center shadow-xs"
+            className="inline-flex items-center space-x-1.5 text-xs font-semibold text-forge-700 hover:text-forge bg-white border border-lime-300 hover:border-stone-400 px-3.5 py-2 rounded-sm transition-colors self-start sm:self-center shadow-xs"
           >
             <X className="w-4 h-4" />
             <span>{language === 'am' ? 'ዝጋ' : 'Close Category View'}</span>
@@ -557,21 +557,21 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
       {/* ============================================================== */}
       {/* 1. WOOD WORKS SECTION (Warm Ivory / Off-White #FBF8F3)          */}
       {/* ============================================================== */}
-      <section id="wood-works-section" className="bg-[#FBF8F3] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-stone-200/70 text-left scroll-mt-24">
+      <section id="wood-works-section" className="border-t-4 border-t-timber bg-lime-50 py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-lime-300 text-left scroll-mt-24">
         <div className="max-w-7xl mx-auto space-y-10">
           
           {/* Section Header */}
           <div className="space-y-3">
-            <div className="inline-flex items-center space-x-2 bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center space-x-2 text-timber text-sm font-semibold  ">
               <Hammer className="w-3.5 h-3.5 text-brand-red" />
               <span>{language === 'am' ? 'የእንጨት ስራዎች' : 'WOOD WORKS'}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-stone-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-forge tracking-tight">
               {language === 'am' 
                 ? 'በጥራት የተሰሩ ጠንካራ የእንጨት ውጤቶች እና አርክቴክቸር' 
                 : 'Mastercrafted Solid Wood & Timber Architecture'}
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-forge-700 max-w-3xl leading-relaxed">
               {language === 'am'
                 ? 'በጥንቃቄ የተሰሩ የእንጨት መገጣጠሚያዎች፣ የደረቀ ጠንካራ እንጨት እና ለትውልድ የሚቆዩ ውብ የእጅ ጥበብ ውጤቶች። 10 ይፋዊ ክፍሎች።'
                 : 'Precision mortise-and-tenon craftsmanship, kiln-dried hardwoods, and bespoke joinery built to endure for generations across 10 official categories.'}
@@ -594,13 +594,13 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
           })()}
 
           {/* Curated Row: Featured Wood Works Products */}
-          <div className="pt-8 border-t border-stone-200/80 space-y-6">
+          <div className="pt-8 border-t border-lime-300 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-stone-900">
+                <h3 className="text-lg sm:text-xl font-bold text-forge">
                   {language === 'am' ? 'ተመራጭ የእንጨት ስራዎች' : 'Featured Wood Works Products'}
                 </h3>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-forge-500">
                   {language === 'am' ? 'በእጅ የተሰሩ ምርጥ የእንጨት ሞዴሎች' : 'Handpicked mastercrafted models'}
                 </p>
               </div>
@@ -620,21 +620,21 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
       {/* ============================================================== */}
       {/* 2. METAL WORKS SECTION (Subtle Light Blue-Gray #EDF2F7)         */}
       {/* ============================================================== */}
-      <section id="metal-works-section" className="bg-[#EDF2F7] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-slate-200 text-left scroll-mt-24">
+      <section id="metal-works-section" className="border-t-4 border-t-forge bg-lime py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-lime-300 text-left scroll-mt-24">
         <div className="max-w-7xl mx-auto space-y-10">
           
           {/* Section Header */}
           <div className="space-y-3">
-            <div className="inline-flex items-center space-x-2 bg-slate-200 text-slate-800 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center space-x-2 text-forge-700 text-sm font-semibold  ">
               <Wrench className="w-3.5 h-3.5 text-brand-red" />
               <span>{language === 'am' ? 'የብረት ስራዎች' : 'METAL WORKS'}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-forge tracking-tight">
               {language === 'am' 
                 ? 'ጠንካራ የመዋቅር እና የአርክቴክቸራል ብረት ውጤቶች' 
                 : 'Heavy-Gauge Structural & Architectural Metal Solutions'}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-forge-700 max-w-3xl leading-relaxed">
               {language === 'am'
                 ? 'አስተማማኝ ብየዳ፣ ከዝገት መከላከያ ቀለም እና ለደህንነት እና ለጥንካሬ የተሰሩ ዘመናዊ የሌዘር ቅርጾች። 3 ይፋዊ ክፍሎች።'
                 : 'MIG/TIG welded steel, rust-inhibiting finishes, and precision laser profiles engineered for security and endurance across 3 approved categories.'}
@@ -657,13 +657,13 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
           })()}
 
           {/* Curated Row: Featured Metal Works Products */}
-          <div className="pt-8 border-t border-slate-300/80 space-y-6">
+          <div className="pt-8 border-t border-lime-300 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-slate-900">
+                <h3 className="text-lg sm:text-xl font-bold text-forge">
                   {language === 'am' ? 'ተመራጭ የብረት ስራዎች' : 'Featured Metal Works Products'}
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-forge-500">
                   {language === 'am' ? 'አስተማማኝ የብረት ሞዴሎች' : 'High-security architectural models'}
                 </p>
               </div>
@@ -683,21 +683,21 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
       {/* ============================================================== */}
       {/* 3. HYBRID WORKS SECTION (Warm Ivory / Off-White #FBF8F3)        */}
       {/* ============================================================== */}
-      <section id="hybrid-works-section" className="bg-[#FBF8F3] py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-stone-200/70 text-left scroll-mt-24">
+      <section id="hybrid-works-section" className="border-t-4 border-t-brand-red bg-lime-50 py-14 sm:py-20 px-4 sm:px-6 lg:px-8 border-y border-lime-300 text-left scroll-mt-24">
         <div className="max-w-7xl mx-auto space-y-10">
           
           {/* Section Header */}
           <div className="space-y-3">
-            <div className="inline-flex items-center space-x-2 bg-amber-100 text-amber-900 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+            <div className="inline-flex items-center space-x-2 text-timber text-sm font-semibold  ">
               <Layers className="w-3.5 h-3.5 text-brand-red" />
               <span>{language === 'am' ? 'የእንጨት እና ብረት ቅይጥ ስራዎች' : 'HYBRID METAL + WOOD'}</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-stone-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-medium text-forge tracking-tight">
               {language === 'am' 
                 ? 'የጠንካራ ብረት እና የተፈጥሮ እንጨት ድንቅ ውህደት' 
                 : 'Harmonious Union of Structural Steel & Warm Timber'}
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-forge-700 max-w-3xl leading-relaxed">
               {language === 'am'
                 ? 'የኢንዱስትሪ ጥንካሬ ያለው የብረት መዋቅር ከተፈጥሮ ቅርጽ እና ጠንካራ የእንጨት ገጽታ ጋር ተጣምሮ የተሰራ። 5 ይፋዊ ክፍሎች።'
                 : 'Industrial strength welded steel frames merged with live-edge and contoured solid timber surfaces across 5 approved categories.'}
@@ -720,13 +720,13 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
           })()}
 
           {/* Curated Row: Featured Hybrid Works Products */}
-          <div className="pt-8 border-t border-stone-200/80 space-y-6">
+          <div className="pt-8 border-t border-lime-300 space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg sm:text-xl font-bold text-stone-900">
+                <h3 className="text-lg sm:text-xl font-bold text-forge">
                   {language === 'am' ? 'ተመራጭ የቅይጥ ስራዎች' : 'Featured Hybrid Works Products'}
                 </h3>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-forge-500">
                   {language === 'am' ? 'የብረትና እንጨት ውህደት ውጤቶች' : 'Integrated structural timber models'}
                 </p>
               </div>
@@ -747,17 +747,17 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
       {/* 4. CUSTOM PROJECT ORDER BANNER                                   */}
       {/* ============================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-left">
-        <div className="bg-stone-900 text-white rounded-2xl p-8 sm:p-12 border border-stone-800 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="bg-forge text-white rounded-sm p-8 sm:p-12 border border-forge-700 shadow-xl flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-3 max-w-2xl">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-widest">
+            <span className="text-xs font-bold text-brand-red  ">
               {language === 'am' ? 'ልዩ ትዕዛዝ' : 'Custom Project'}
             </span>
-            <h3 className="text-2xl sm:text-3xl font-black tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-medium tracking-tight">
               {language === 'am'
                 ? 'የራስዎን ዲዛይን ወይም ልዩ ልኬት ማዘዝ ይፈልጋሉ?'
                 : 'Need a custom size, architectural drawing, or unique design?'}
             </h3>
-            <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-forge-200 leading-relaxed">
               {language === 'am'
                 ? 'ያለዎትን ፕላን፣ ስኬች ወይም ልኬት ያስገቡ። ወርክሾፓችን በቀጥታ በቴሌግራም ወይም በስልክ ምላሽ ይሰጥዎታል።'
                 : 'Submit your architectural blueprints, sketch, or measurements directly. No account required — our workshop manager will calculate the material quote.'}
@@ -766,7 +766,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <Link
               to="/request-quote"
-              className="inline-flex items-center justify-center space-x-2 bg-brand-red hover:bg-red-700 text-white font-bold py-3.5 px-6 rounded-full text-xs uppercase tracking-wider transition-all shadow-md hover:scale-105"
+              className="inline-flex items-center justify-center space-x-2 bg-brand-red hover:bg-brand-red-dark text-white font-bold py-3.5 px-6 rounded-sm text-xs   transition-all shadow-md hover:scale-105"
             >
               <PlusCircle className="w-4 h-4" />
               <span>{language === 'am' ? 'ትዕዛዝ ይጠይቁ' : 'Request a Project'}</span>
@@ -775,7 +775,7 @@ export const WorkshopCatalog: React.FC<WorkshopCatalogProps> = ({ products: prop
               href="https://t.me/Manager_Samuel_A"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center space-x-2 bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white font-semibold py-3.5 px-6 rounded-full text-xs border border-stone-700 transition-colors"
+              className="inline-flex items-center justify-center space-x-2 bg-forge-800 hover:bg-forge-700 text-forge-200 hover:text-white font-semibold py-3.5 px-6 rounded-sm text-xs border border-stone-700 transition-colors"
             >
               <span>{language === 'am' ? 'ቴሌግራም፦ @Manager_Samuel_A' : 'Telegram: @Manager_Samuel_A'}</span>
             </a>

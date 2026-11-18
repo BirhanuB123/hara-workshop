@@ -110,17 +110,14 @@ export const ContactPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-900 text-left">
+    <div className="min-h-screen bg-lime text-forge text-left">
       {/* Top Banner Header */}
-      <div className="bg-[#FAF7F2] border-b border-stone-200 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center">
-        <div className="max-w-3xl mx-auto space-y-3">
-          <span className="inline-flex items-center space-x-2 bg-brand-red/10 border border-brand-red/20 px-3.5 py-1.5 rounded-full text-xs font-bold text-brand-red uppercase tracking-wider">
-            {t('contact.badge')}
-          </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-stone-900 uppercase tracking-tight">
+      <div className="bg-brushed-steel text-white border-b-4 border-brand-red py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-3">
+          <h1 className="text-4xl sm:text-5xl font-medium text-white">
             {t('contact.title')}
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-stone-600 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-forge-200 leading-relaxed max-w-2xl">
             {t('contact.subtitle')}
           </p>
         </div>
@@ -131,34 +128,34 @@ export const ContactPage: React.FC = () => {
           
           {/* Contact Details & Hours Card (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white border border-stone-200/90 rounded-2xl p-6 sm:p-8 space-y-6 text-left shadow-xs">
-              <h3 className="text-sm font-bold text-stone-900 uppercase tracking-wider border-b border-stone-200 pb-3">
+            <div className="bg-white border border-lime-300 rounded-sm p-6 sm:p-8 space-y-6 text-left shadow-xs">
+              <h3 className="text-sm font-bold text-forge   border-b border-lime-300 pb-3">
                 {t('contact.detailsTitle')}
               </h3>
 
-              <div className="space-y-5 text-xs sm:text-sm text-stone-700">
+              <div className="space-y-5 text-xs sm:text-sm text-forge-700">
                 {/* Physical Location */}
                 <div className="flex items-start space-x-3.5">
-                  <div className="p-2 rounded-lg bg-red-50 text-brand-red flex-shrink-0 mt-0.5">
+                  <div className="p-2 rounded-sm bg-red-50 text-brand-red flex-shrink-0 mt-0.5">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-stone-900">{t('contact.addressLabel')}</p>
-                    <p className="text-stone-600 mt-0.5">{t('contact.addressBole')}</p>
+                    <p className="font-bold text-forge">{t('contact.addressLabel')}</p>
+                    <p className="text-forge-700 mt-0.5">{t('contact.addressBole')}</p>
                     {language === 'en' && (
-                      <p className="text-stone-500 text-xs mt-0.5">ቦሌ አረብሳ፣ የውሃ ታንከር አጠገብ</p>
+                      <p className="text-forge-500 text-xs mt-0.5">ቦሌ አረብሳ፣ የውሃ ታንከር አጠገብ</p>
                     )}
-                    <p className="text-stone-500 text-xs mt-0.5">{t('contact.addressCity')}</p>
+                    <p className="text-forge-500 text-xs mt-0.5">{t('contact.addressCity')}</p>
                   </div>
                 </div>
 
                 {/* Telephone */}
                 <div className="flex items-start space-x-3.5">
-                  <div className="p-2 rounded-lg bg-red-50 text-brand-red flex-shrink-0 mt-0.5">
+                  <div className="p-2 rounded-sm bg-red-50 text-brand-red flex-shrink-0 mt-0.5">
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-stone-900">{t('contact.phoneLabel')}</p>
+                    <p className="font-bold text-forge">{t('contact.phoneLabel')}</p>
                     <a 
                       href="tel:+251926629999" 
                       className="text-brand-red hover:underline font-bold block text-sm mt-0.5"
@@ -170,19 +167,19 @@ export const ContactPage: React.FC = () => {
 
                 {/* Telegram */}
                 <div className="flex items-start space-x-3.5">
-                  <div className="p-2 rounded-lg bg-sky-50 text-[#229ED9] flex-shrink-0 mt-0.5">
+                  <div className="p-2 rounded-sm bg-sky-50 text-[#229ED9] flex-shrink-0 mt-0.5">
                     <Send className="w-4 h-4" />
                   </div>
                   <div className="w-full">
-                    <p className="font-bold text-stone-900">{t('contact.telegramLabel')}</p>
-                    <p className="text-xs text-stone-500 mt-0.5 mb-1.5">
+                    <p className="font-bold text-forge">{t('contact.telegramLabel')}</p>
+                    <p className="text-xs text-forge-500 mt-0.5 mb-1.5">
                       {language === 'am' ? 'የስራ አስኪያጅ ሳሙኤል ቀጥተኛ ቴሌግራም' : 'Direct Workshop Manager Contact'}
                     </p>
                     <a 
                       href="https://t.me/Manager_Samuel_A" 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#229ED9]/10 hover:bg-[#229ED9]/20 text-[#229ED9] rounded-lg border border-[#229ED9]/30 text-xs font-bold transition"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#229ED9]/10 hover:bg-[#229ED9]/20 text-[#229ED9] rounded-sm border border-[#229ED9]/30 text-xs font-bold transition"
                     >
                       <Send className="w-3.5 h-3.5" />
                       <span>@Manager_Samuel_A</span>
@@ -192,14 +189,14 @@ export const ContactPage: React.FC = () => {
 
                 {/* Email */}
                 <div className="flex items-start space-x-3.5">
-                  <div className="p-2 rounded-lg bg-red-50 text-brand-red flex-shrink-0 mt-0.5">
+                  <div className="p-2 rounded-sm bg-red-50 text-brand-red flex-shrink-0 mt-0.5">
                     <Mail className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-stone-900">{t('contact.emailLabel')}</p>
+                    <p className="font-bold text-forge">{t('contact.emailLabel')}</p>
                     <a 
                       href="mailto:info@haraworkshop.com" 
-                      className="text-stone-700 hover:text-brand-red font-medium transition-colors mt-0.5 block"
+                      className="text-forge-700 hover:text-brand-red font-medium transition-colors mt-0.5 block"
                     >
                       info@haraworkshop.com
                     </a>
@@ -208,13 +205,13 @@ export const ContactPage: React.FC = () => {
 
                 {/* Working Hours */}
                 <div className="flex items-start space-x-3.5">
-                  <div className="p-2 rounded-lg bg-amber-50 text-amber-700 flex-shrink-0 mt-0.5">
+                  <div className="p-2 rounded-sm bg-lime text-timber flex-shrink-0 mt-0.5">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="font-bold text-stone-900">{t('contact.hoursLabel')}</p>
-                    <p className="text-stone-600 mt-0.5">{t('contact.hoursVal')}</p>
-                    <p className="text-stone-400 text-xs mt-0.5">{t('contact.closedVal')}</p>
+                    <p className="font-bold text-forge">{t('contact.hoursLabel')}</p>
+                    <p className="text-forge-700 mt-0.5">{t('contact.hoursVal')}</p>
+                    <p className="text-forge-500 text-xs mt-0.5">{t('contact.closedVal')}</p>
                   </div>
                 </div>
               </div>
@@ -223,25 +220,25 @@ export const ContactPage: React.FC = () => {
 
           {/* Contact Message Form (7 cols) */}
           <div className="lg:col-span-7">
-            <div className="bg-white border border-stone-200/90 rounded-2xl p-6 sm:p-8 text-left shadow-xs">
-              <h3 className="text-base font-bold text-stone-900 uppercase tracking-wider mb-1">
+            <div className="bg-white border border-lime-300 rounded-sm p-6 sm:p-8 text-left shadow-xs">
+              <h3 className="text-base font-bold text-forge   mb-1">
                 {t('contact.formTitle')}
               </h3>
-              <p className="text-xs sm:text-sm text-stone-500 mb-6">
+              <p className="text-xs sm:text-sm text-forge-500 mb-6">
                 {t('contact.formSubtitle')}
               </p>
 
               {sent ? (
-                <div className="p-8 sm:p-10 bg-emerald-50/80 border border-emerald-200 rounded-2xl text-center space-y-4">
+                <div className="p-8 sm:p-10 bg-emerald-50/80 border border-emerald-200 rounded-sm text-center space-y-4">
                   <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
                   <div className="space-y-1.5">
-                    <h4 className="text-lg font-bold text-stone-900">{t('contact.successTitle')}</h4>
-                    <p className="text-xs sm:text-sm text-stone-600 max-w-md mx-auto">
+                    <h4 className="text-lg font-bold text-forge">{t('contact.successTitle')}</h4>
+                    <p className="text-xs sm:text-sm text-forge-700 max-w-md mx-auto">
                       {t('contact.successDesc')}
                     </p>
                   </div>
                   <div className="pt-2">
-                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#229ED9]/10 text-[#229ED9] rounded-full text-xs font-semibold border border-[#229ED9]/25">
+                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#229ED9]/10 text-[#229ED9] rounded-sm text-xs font-semibold border border-[#229ED9]/25">
                       <Send className="w-3.5 h-3.5" />
                       <span>{t('contact.telegramSuccess')}</span>
                     </span>
@@ -250,7 +247,7 @@ export const ContactPage: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleReset}
-                      className="px-6 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-full text-xs font-bold uppercase tracking-wider transition shadow-sm hover:shadow"
+                      className="px-6 py-2.5 bg-forge hover:bg-forge-800 text-white rounded-sm text-xs font-bold   transition shadow-sm hover:shadow"
                     >
                       {t('contact.sendAnother')}
                     </button>
@@ -259,12 +256,12 @@ export const ContactPage: React.FC = () => {
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {submitError && (
-                    <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start space-x-3 text-red-800 text-xs sm:text-sm">
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-sm flex items-start space-x-3 text-red-800 text-xs sm:text-sm">
                       <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                       <div className="flex-1 space-y-1">
                         <p className="font-bold">{language === 'am' ? 'መልዕክት መላክ አልተሳካም' : 'Message Delivery Notice'}</p>
-                        <p className="text-stone-700 leading-relaxed">{submitError}</p>
-                        <p className="text-stone-500 text-xs">
+                        <p className="text-forge-700 leading-relaxed">{submitError}</p>
+                        <p className="text-forge-500 text-xs">
                           {language === 'am'
                             ? 'የእርስዎ መልዕክት አልተሰረዘም። እባክዎ እንደገና ይሞክሩ ወይም በቀጥታ በስልክ/ቴሌግራም ያግኙን።'
                             : 'Your form input has been preserved. You can retry sending or reach us directly via Telegram or phone.'}
@@ -275,7 +272,7 @@ export const ContactPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-bold text-forge-700   mb-1.5">
                         {t('contact.yourName')} *
                       </label>
                       <input
@@ -286,8 +283,8 @@ export const ContactPage: React.FC = () => {
                         required
                         placeholder={t('contact.namePlaceholder')}
                         className={`w-full bg-white border ${
-                          errors.name ? 'border-red-500 ring-1 ring-red-500' : 'border-stone-300'
-                        } rounded-xl px-4 py-2.5 text-xs sm:text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors`}
+                          errors.name ? 'border-red-500 ring-1 ring-red-500' : 'border-lime-300'
+                        } rounded-sm px-4 py-2.5 text-xs sm:text-sm text-forge placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors`}
                       />
                       {errors.name && (
                         <p className="text-red-600 text-xs mt-1">{errors.name}</p>
@@ -320,7 +317,7 @@ export const ContactPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-forge-700   mb-1.5">
                       {t('contact.yourEmail')}
                     </label>
                     <input
@@ -330,8 +327,8 @@ export const ContactPage: React.FC = () => {
                       onChange={handleChange}
                       placeholder={t('contact.emailPlaceholder')}
                       className={`w-full bg-white border ${
-                        errors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-stone-300'
-                      } rounded-xl px-4 py-2.5 text-xs sm:text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors`}
+                        errors.email ? 'border-red-500 ring-1 ring-red-500' : 'border-lime-300'
+                      } rounded-sm px-4 py-2.5 text-xs sm:text-sm text-forge placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors`}
                     />
                     {errors.email && (
                       <p className="text-red-600 text-xs mt-1">{errors.email}</p>
@@ -339,7 +336,7 @@ export const ContactPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                    <label className="block text-xs font-bold text-forge-700   mb-1.5">
                       {t('contact.message')} *
                     </label>
                     <textarea
@@ -350,8 +347,8 @@ export const ContactPage: React.FC = () => {
                       required
                       placeholder={t('contact.msgPlaceholder')}
                       className={`w-full bg-white border ${
-                        errors.message ? 'border-red-500 ring-1 ring-red-500' : 'border-stone-300'
-                      } rounded-xl px-4 py-2.5 text-xs sm:text-sm text-stone-900 placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors`}
+                        errors.message ? 'border-red-500 ring-1 ring-red-500' : 'border-lime-300'
+                      } rounded-sm px-4 py-2.5 text-xs sm:text-sm text-forge placeholder-stone-400 focus:outline-none focus:border-brand-red focus:ring-1 focus:ring-brand-red shadow-xs transition-colors`}
                     />
                     {errors.message && (
                       <p className="text-red-600 text-xs mt-1">{errors.message}</p>
@@ -362,7 +359,7 @@ export const ContactPage: React.FC = () => {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className={`bg-brand-red hover:bg-red-700 text-white font-bold py-3.5 px-8 rounded-full text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow active:scale-95 inline-flex items-center space-x-2 ${
+                      className={`bg-brand-red hover:bg-brand-red-dark text-white font-bold py-3.5 px-8 rounded-sm text-xs   transition-all shadow-sm hover:shadow active:scale-95 inline-flex items-center space-x-2 ${
                         submitting ? 'opacity-70 cursor-not-allowed' : 'hover:scale-105'
                       }`}
                     >
@@ -379,7 +376,7 @@ export const ContactPage: React.FC = () => {
                       )}
                     </button>
 
-                    <p className="text-stone-400 text-xs">
+                    <p className="text-forge-500 text-xs">
                       {language === 'am'
                         ? 'መልዕክትዎ በቀጥታ ለስራ አስኪያጃችን ቴሌግራም ይደርሳል'
                         : 'Dispatched directly to the workshop admin Telegram'}

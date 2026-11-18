@@ -572,17 +572,17 @@ export const ServiceDetailPage: React.FC = () => {
   if (error || !service) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-stone-900 uppercase">
+        <h2 className="text-2xl font-bold text-forge ">
           {language === 'am' ? 'አገልግሎቱ አልተገኘም' : 'Service Not Found'}
         </h2>
-        <p className="text-sm text-stone-600">
+        <p className="text-sm text-forge-700">
           {language === 'am'
             ? 'የጠየቁት የዎርክሾፕ አገልግሎት አልተገኘም ወይም ወደ ሌላ ቦታ ተዛውሯል።'
             : 'The requested workshop capability does not exist or has been relocated.'}
         </p>
         <Link 
           to="/services" 
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-red-700 transition"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white text-xs font-bold   rounded-sm hover:bg-brand-red-dark transition"
         >
           <ArrowLeft className="w-4 h-4" /> {t('common.backToServices')}
         </Link>
@@ -603,15 +603,15 @@ export const ServiceDetailPage: React.FC = () => {
   const activeCategoryDef = approvedCategories.find(c => c.name.toLowerCase() === (expandedCategory || '').toLowerCase());
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-left text-stone-900 pb-20 space-y-16">
+    <div className="min-h-screen bg-lime text-left text-forge pb-20 space-y-16">
       
       {/* 1. DEDICATED HERO HEADER */}
-      <section className="relative overflow-hidden bg-[#FAF7F2] border-b border-stone-200">
+      <section className="relative overflow-hidden bg-brushed-steel text-white border-b-4 border-brand-red">
         <div className="absolute inset-0 z-0">
           <img
             src={getServiceImageUrl(service || resolvedSlug)}
             alt={meta.title}
-            className="w-full h-full object-cover object-center opacity-15 filter blur-[1px] scale-105"
+            className="w-full h-full object-cover object-center opacity-30"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               const fallback = SERVICE_HERO_ASSETS[resolvedSlug] || getServiceImageUrl(resolvedSlug);
@@ -620,8 +620,8 @@ export const ServiceDetailPage: React.FC = () => {
               }
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#FAF7F2] via-[#FAF7F2]/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-forge via-forge/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-forge via-forge/90 to-transparent" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-18">
@@ -629,39 +629,39 @@ export const ServiceDetailPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 to="/services"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-900 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-forge-200 hover:text-white transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>{t('services.allCapabilities')}</span>
               </Link>
-              <span className="text-stone-300">/</span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-red/10 text-brand-red border border-brand-red/20">
+              <span className="text-forge-200">/</span>
+              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-white">
                 <ServiceIcon className="w-3.5 h-3.5" />
                 {meta.title}
               </span>
-              <span className="text-xs text-stone-600 uppercase font-mono tracking-wider bg-white px-2.5 py-1 rounded border border-stone-200 shadow-xs">
+              <span className="text-sm text-forge-200">
                 {t('home.boleArabsaFacility')}
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-stone-900 uppercase tracking-tight leading-none">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium text-white leading-none">
               {meta.title}
             </h1>
 
-            <p className="text-lg sm:text-xl font-medium text-stone-600 border-l-2 border-brand-red pl-4 max-w-3xl leading-relaxed">
+            <p className="text-lg sm:text-xl font-medium text-forge-200 border-l-2 border-brand-red pl-4 max-w-3xl leading-relaxed">
               {meta.subtitle}
             </p>
 
             <div className="flex flex-wrap items-center gap-4 text-xs font-semibold pt-2">
-              <div className="flex items-center gap-1.5 bg-white border border-stone-200 px-3.5 py-2 rounded-lg text-stone-800 shadow-xs">
+              <div className="flex items-center gap-1.5 border border-forge-400 px-3.5 py-2 rounded-sm text-white">
                 <Box className="w-4 h-4 text-brand-red" />
-                <span>{t('services.productCatalog')}: <strong className="text-brand-red">{isHybrid ? displayedHybridProducts.length : safeProducts.length} {t('common.available')}</strong></span>
+                <span>{t('services.productCatalog')}: <strong className="text-white">{isHybrid ? displayedHybridProducts.length : safeProducts.length} {t('common.available')}</strong></span>
               </div>
-              <div className="flex items-center gap-1.5 bg-white border border-stone-200 px-3.5 py-2 rounded-lg text-stone-800 shadow-xs">
+              <div className="flex items-center gap-1.5 border border-forge-400 px-3.5 py-2 rounded-sm text-white">
                 <Clock className="w-4 h-4 text-brand-red" />
-                <span>{t('common.turnaround')}: <strong className="text-stone-900">{service.turnaround_time || '1–3 Weeks'}</strong></span>
+                <span>{t('common.turnaround')}: <strong className="text-white">{service.turnaround_time || '1–3 Weeks'}</strong></span>
               </div>
-              <div className="flex items-center gap-1.5 bg-white border border-stone-200 px-3.5 py-2 rounded-lg text-emerald-700 shadow-xs">
+              <div className="flex items-center gap-1.5 border border-forge-400 px-3.5 py-2 rounded-sm text-forge-200">
                 <ShieldCheck className="w-4 h-4" />
                 <span>{t('common.inHouse')}</span>
               </div>
@@ -670,7 +670,7 @@ export const ServiceDetailPage: React.FC = () => {
             <div className="flex flex-wrap items-center gap-4 pt-3">
               <button
                 onClick={(e) => handleRequestQuoteClick(e)}
-                className="inline-flex items-center gap-2 px-6 py-3.5 bg-brand-red hover:bg-red-700 text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-red-900/10 hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 px-6 py-3.5 bg-brand-red hover:bg-brand-red-dark text-white text-xs sm:text-sm font-bold   rounded-sm transition-all shadow-md shadow-red-900/10 hover:"
               >
                 <span>{t('home.heroCtaQuote')}</span>
                 <ChevronRight className="w-4 h-4" />
@@ -678,7 +678,7 @@ export const ServiceDetailPage: React.FC = () => {
               
               <a
                 href="tel:+251926629999"
-                className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-stone-50 text-stone-800 text-xs sm:text-sm font-semibold rounded-xl border border-stone-300 shadow-xs transition"
+                className="inline-flex items-center gap-2 px-5 py-3.5 bg-white hover:bg-lime-50 text-forge text-xs sm:text-sm font-semibold rounded-sm border border-lime-300 shadow-xs transition"
               >
                 <Phone className="w-4 h-4 text-brand-red" />
                 <span>{t('common.callEngineer')}</span>
@@ -692,19 +692,19 @@ export const ServiceDetailPage: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Section Header with Title & Search Bar */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-stone-200 pb-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-lime-300 pb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.showroomCollection')}</span>
-              <span className="text-stone-300">•</span>
-              <span className="text-xs font-mono font-bold text-stone-700 bg-white px-2 py-0.5 rounded border border-stone-200 shadow-xs">
+              <span className="text-xs font-bold text-brand-red  ">{t('services.showroomCollection')}</span>
+              <span className="text-forge-200">•</span>
+              <span className="text-xs font-semibold text-forge-700">
                 {`${approvedCategories.length} ${language === 'am' ? 'ምድቦች' : 'Categories'} • ${isHybrid ? hybridProducts.length : safeProducts.length} ${t('common.available')}`}
               </span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide">
+            <h2 className="text-2xl sm:text-3xl font-medium text-forge ">
               {meta.title} {t('services.productCatalog')}
             </h2>
-            <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-2xl">
+            <p className="text-xs sm:text-sm text-forge-700 mt-1 max-w-2xl">
               {isHybrid
                 ? (language === 'am' 
                     ? 'በምድብ ለመለየት ከታች ያሉትን ካርዶች ይጫኑ ወይም ሁሉንም 25 የቅይጥ ምርቶች በቀጥታ ይመልከቱ።' 
@@ -717,18 +717,18 @@ export const ServiceDetailPage: React.FC = () => {
 
           {/* Search Bar */}
           <div className="relative w-full md:w-80">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-forge-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder={language === 'am' ? 'በስም ወይም በኮድ ፈልግ...' : 'Search by name, SKU (e.g. CHR-001)...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-stone-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-brand-red shadow-xs transition-colors"
+              className="w-full bg-white border border-lime-300 rounded-sm pl-10 pr-4 py-2.5 text-xs text-forge placeholder-stone-400 focus:outline-none focus:border-brand-red shadow-xs transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-forge-500 hover:text-forge-700"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -738,15 +738,15 @@ export const ServiceDetailPage: React.FC = () => {
 
         {/* Material Quality Assurance Banner */}
         {meta.materialPurityRule && (
-          <div className="p-4 rounded-xl bg-[#FAF7F2] border border-stone-200 flex items-start gap-3 shadow-xs">
-            <div className="p-2 rounded-lg bg-white text-brand-red border border-stone-200 shrink-0 mt-0.5 shadow-xs">
+          <div className="p-4 rounded-sm bg-lime-50 border border-lime-300 flex items-start gap-3 shadow-xs">
+            <div className="p-2 rounded-sm bg-white text-brand-red border border-lime-300 shrink-0 mt-0.5 shadow-xs">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-900 block">
+              <span className="text-[11px] font-bold   text-forge block">
                 {meta.materialStandard}
               </span>
-              <p className="text-xs text-stone-600 mt-0.5 leading-relaxed">
+              <p className="text-xs text-forge-700 mt-0.5 leading-relaxed">
                 {meta.materialPurityRule}
               </p>
             </div>
@@ -756,12 +756,12 @@ export const ServiceDetailPage: React.FC = () => {
         {/* CATEGORY COVER CARDS GRID (10 cards for Wood Works, 3 cards for Metal Works, 5 cards for Hybrid) */}
         {approvedCategories.length > 0 && (
           <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs font-bold uppercase text-stone-600 px-1">
-            <span className="flex items-center gap-1.5 text-stone-900">
+          <div className="flex items-center justify-between text-xs font-bold  text-forge-700 px-1">
+            <span className="flex items-center gap-1.5 text-forge">
               <FolderOpen className="w-4 h-4 text-brand-red" />
               {language === 'am' ? 'የተፈቀዱ የምርት ምድቦች' : 'Select a Category to Reveal Products:'}
             </span>
-            <span className="text-[11px] font-mono text-stone-500">
+            <span className="text-[11px] font-mono text-forge-500">
               {expandedCategory
                 ? (language === 'am' ? `የተመረጠ: ${activeCategoryDef?.nameAm || expandedCategory}` : `Open: ${expandedCategory}`)
                 : isHybrid
@@ -794,14 +794,14 @@ export const ServiceDetailPage: React.FC = () => {
                       handleCategoryCardClick(cat.name);
                     }
                   }}
-                  className={`group cursor-pointer rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 border shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red ${
+                  className={`group cursor-pointer rounded-sm overflow-hidden flex flex-col justify-between transition-all duration-300 border shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red ${
                     isSelected
                       ? 'bg-red-50/40 border-2 border-brand-red ring-2 ring-brand-red/20 shadow-md -translate-y-1'
-                      : 'bg-white border-stone-200/90 hover:border-brand-red/50 hover:shadow-md hover:-translate-y-1'
+                      : 'bg-white border-lime-300 hover:border-brand-red/50 hover:shadow-md hover:-translate-y-1'
                   }`}
                 >
                   {/* Category Cover Image with Overlay Badges */}
-                  <div className="relative h-44 sm:h-48 overflow-hidden bg-stone-100">
+                  <div className="relative h-44 sm:h-48 overflow-hidden bg-lime">
                     <img
                       src={cat.coverImage}
                       alt={catTitle}
@@ -810,16 +810,16 @@ export const ServiceDetailPage: React.FC = () => {
                         (e.target as HTMLImageElement).src = SERVICE_HERO_ASSETS[resolvedSlug] || '/hara-official-logo.png';
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent opacity-75" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-forge/60 via-transparent to-transparent opacity-75" />
 
                     {/* Top Badges */}
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white/95 backdrop-blur text-stone-800 border border-stone-200 shadow-xs">
+                      <span className="px-2.5 py-1 rounded-sm text-[10px] font-bold   bg-white/95 backdrop-blur text-forge border border-lime-300 shadow-xs">
                         {getCategoryProducts(cat).length} {language === 'am' ? 'ምርቶች' : 'Products'}
                       </span>
 
                       {isSelected && (
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-brand-red text-white flex items-center gap-1 shadow-sm ring-1 ring-white/30 animate-pulse">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold   bg-brand-red text-white flex items-center gap-1 shadow-sm ring-1 ring-white/30 animate-pulse">
                           <CheckCircle2 className="w-3 h-3" />
                           <span>{language === 'am' ? 'የተከፈተ' : 'Revealed'}</span>
                         </span>
@@ -831,19 +831,19 @@ export const ServiceDetailPage: React.FC = () => {
                   <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <h3 className={`text-base font-black tracking-wide uppercase transition-colors line-clamp-1 ${
-                          isSelected ? 'text-brand-red' : 'text-stone-900 group-hover:text-brand-red'
+                        <h3 className={`text-base font-medium  transition-colors line-clamp-1 ${
+                          isSelected ? 'text-brand-red' : 'text-forge group-hover:text-brand-red'
                         }`}>
                           {catTitle}
                         </h3>
                         {language !== 'am' && (
-                          <span className="text-[10px] text-stone-500 font-normal">
+                          <span className="text-[10px] text-forge-500 font-normal">
                             {cat.nameAm}
                           </span>
                         )}
                       </div>
 
-                      <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-forge-700 line-clamp-2 leading-relaxed">
                         {catDesc}
                       </p>
                     </div>
@@ -851,12 +851,12 @@ export const ServiceDetailPage: React.FC = () => {
                     {/* Card Action Button */}
                     <div className="pt-2">
                       {isSelected ? (
-                        <div className="w-full py-2 px-3 rounded-xl bg-brand-red text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-xs">
+                        <div className="w-full py-2 px-3 rounded-sm bg-brand-red text-white text-xs font-bold   flex items-center justify-center gap-1.5 shadow-xs">
                           <span>{language === 'am' ? 'ምድብ ዝጋ' : 'Collapse Category'}</span>
                           <ChevronUp className="w-4 h-4" />
                         </div>
                       ) : (
-                        <div className="w-full py-2 px-3 rounded-xl bg-stone-100 text-stone-700 border border-stone-200 group-hover:bg-brand-red group-hover:text-white group-hover:border-brand-red text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all">
+                        <div className="w-full py-2 px-3 rounded-sm bg-lime text-forge-700 border border-lime-300 group-hover:bg-brand-red group-hover:text-white group-hover:border-brand-red text-xs font-bold   flex items-center justify-center gap-1.5 transition-all">
                           <span>{language === 'am' ? 'ምርቶችን እይ' : 'Explore Category'}</span>
                           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -878,13 +878,13 @@ export const ServiceDetailPage: React.FC = () => {
               const activeSearchList = isHybrid ? displayedHybridProducts : searchResults;
               return (
                 <div className="space-y-6 animate-fadeIn">
-                  <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+                  <div className="flex items-center justify-between border-b border-lime-300 pb-3">
                     <div className="flex items-center gap-2">
                       <Search className="w-4 h-4 text-brand-red" />
-                      <h3 className="text-lg font-bold text-stone-900 uppercase">
+                      <h3 className="text-lg font-bold text-forge ">
                         {language === 'am' ? 'የፍለጋ ውጤቶች' : 'Search Results'} ({activeSearchList.length})
                       </h3>
-                      <span className="text-xs text-stone-500">
+                      <span className="text-xs text-forge-500">
                         {language === 'am' ? `ለ "${searchQuery}"` : `for "${searchQuery}"`}
                       </span>
                     </div>
@@ -903,16 +903,16 @@ export const ServiceDetailPage: React.FC = () => {
                       {activeSearchList.map((prod) => renderProductCard(prod))}
                     </div>
                   ) : (
-                    <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
-                      <Box className="w-12 h-12 mx-auto text-stone-400" />
-                      <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
-                      <p className="text-xs text-stone-600 max-w-md mx-auto">
+                    <div className="bg-lime-50 border border-lime-300 rounded-sm p-12 text-center space-y-3">
+                      <Box className="w-12 h-12 mx-auto text-forge-500" />
+                      <h4 className="text-base font-bold text-forge ">{t('common.noProductsFound')}</h4>
+                      <p className="text-xs text-forge-700 max-w-md mx-auto">
                         {t('common.noProductsMatch')}
                       </p>
                       <button
                         type="button"
                         onClick={() => setSearchQuery('')}
-                        className="px-4 py-2 bg-brand-red text-white text-xs font-bold uppercase rounded-lg hover:bg-red-700 transition shadow-xs"
+                        className="px-4 py-2 bg-brand-red text-white text-xs font-bold  rounded-sm hover:bg-brand-red-dark transition shadow-xs"
                       >
                         {t('common.resetFilters')}
                       </button>
@@ -926,25 +926,25 @@ export const ServiceDetailPage: React.FC = () => {
             <div className="space-y-6 animate-fadeIn">
               
               {/* Category Reveal Header Banner */}
-              <div className="rounded-2xl border border-stone-200 bg-[#FAF7F2] p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="rounded-sm border border-lime-300 bg-lime-50 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-brand-red text-white">
+                    <span className="px-2.5 py-0.5 rounded text-[10px] font-bold   bg-brand-red text-white">
                       {language === 'am' ? 'የተዘረጋ ምድብ' : 'Revealed Category'}
                     </span>
-                    <span className="text-xs font-mono font-bold text-stone-700 bg-white px-2 py-0.5 rounded border border-stone-200">
+                    <span className="text-xs font-semibold text-forge-700">
                       {categoryProducts.length} {language === 'am' ? 'ምርቶች' : 'Products Available'}
                     </span>
                   </div>
 
-                  <h3 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide flex items-center gap-2">
+                  <h3 className="text-2xl sm:text-3xl font-medium text-forge  flex items-center gap-2">
                     <span>{language === 'am' ? activeCategoryDef.nameAm : activeCategoryDef.name}</span>
                     <span className="text-brand-red text-lg font-normal">
                       ({language === 'am' ? activeCategoryDef.name : activeCategoryDef.nameAm})
                     </span>
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-stone-600 max-w-2xl">
+                  <p className="text-xs sm:text-sm text-forge-700 max-w-2xl">
                     {language === 'am' ? activeCategoryDef.descriptionAm : activeCategoryDef.description}
                   </p>
                 </div>
@@ -952,7 +952,7 @@ export const ServiceDetailPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setExpandedCategory(null)}
-                  className="self-start sm:self-center px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 text-stone-700 hover:text-stone-900 border border-stone-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition shadow-xs"
+                  className="self-start sm:self-center px-4 py-2.5 rounded-sm bg-white hover:bg-lime-50 text-forge-700 hover:text-forge border border-lime-300 text-xs font-bold   flex items-center gap-1.5 transition shadow-xs"
                 >
                   <X className="w-3.5 h-3.5 text-brand-red" />
                   <span>
@@ -973,10 +973,10 @@ export const ServiceDetailPage: React.FC = () => {
                   {categoryProducts.map((prod) => renderProductCard(prod))}
                 </div>
               ) : (
-                <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
-                  <Box className="w-12 h-12 mx-auto text-stone-400" />
-                  <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
-                  <p className="text-xs text-stone-600">{t('common.loading')}</p>
+                <div className="bg-lime-50 border border-lime-300 rounded-sm p-12 text-center space-y-3">
+                  <Box className="w-12 h-12 mx-auto text-forge-500" />
+                  <h4 className="text-base font-bold text-forge ">{t('common.noProductsFound')}</h4>
+                  <p className="text-xs text-forge-700">{t('common.loading')}</p>
                 </div>
               )}
             </div>
@@ -988,10 +988,10 @@ export const ServiceDetailPage: React.FC = () => {
                   {displayedHybridProducts.map((prod) => renderProductCard(prod))}
                 </div>
               ) : (
-                <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-12 text-center space-y-3">
-                  <Box className="w-12 h-12 mx-auto text-stone-400" />
-                  <h4 className="text-base font-bold text-stone-900 uppercase">{t('common.noProductsFound')}</h4>
-                  <p className="text-xs text-stone-600 max-w-md mx-auto">
+                <div className="bg-lime-50 border border-lime-300 rounded-sm p-12 text-center space-y-3">
+                  <Box className="w-12 h-12 mx-auto text-forge-500" />
+                  <h4 className="text-base font-bold text-forge ">{t('common.noProductsFound')}</h4>
+                  <p className="text-xs text-forge-700 max-w-md mx-auto">
                     {t('common.noProductsMatch')}
                   </p>
                 </div>
@@ -999,12 +999,12 @@ export const ServiceDetailPage: React.FC = () => {
             </div>
           ) : (
             /* No Category Open Prompt */
-            <div className="rounded-2xl border border-stone-200 bg-[#FAF7F2] p-8 text-center space-y-2">
+            <div className="rounded-sm border border-lime-300 bg-lime-50 p-8 text-center space-y-2">
               <Sparkles className="w-8 h-8 text-brand-red mx-auto" />
-              <h4 className="text-base font-bold text-stone-900 uppercase">
+              <h4 className="text-base font-bold text-forge ">
                 {language === 'am' ? 'የሚፈልጉትን ምድብ ይምረጡ' : 'Select Any Category Above to Reveal Products'}
               </h4>
-              <p className="text-xs text-stone-600 max-w-md mx-auto">
+              <p className="text-xs text-forge-700 max-w-md mx-auto">
                 {language === 'am'
                   ? 'ከላይ ከሚገኙት የምድብ ካርዶች አንዱን በመጫን ዝርዝር ምርቶችን በቀጥታ እዚህ ይመልከቱ።'
                   : 'Click any of the category cover cards above to instantly reveal all 5 handcrafted products.'}
@@ -1018,14 +1018,13 @@ export const ServiceDetailPage: React.FC = () => {
       {/* 3. SERVICE IMAGE GALLERY WITH LIGHTBOX */}
       {gallery.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-stone-200 pb-4">
-            <div>
-              <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.visualPortfolio')}</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide mt-1">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-lime-300 pb-4">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-medium text-forge  mt-1">
                 {meta.title} {t('services.galleryCraft')}
               </h2>
             </div>
-            <span className="text-xs text-stone-500">
+            <span className="text-xs text-forge-500">
               {t('services.portfolioDesc')}
             </span>
           </div>
@@ -1044,7 +1043,7 @@ export const ServiceDetailPage: React.FC = () => {
                     setActiveImageIndex(index);
                   }
                 }}
-                className="relative h-64 bg-stone-100 rounded-xl overflow-hidden border border-stone-200 cursor-pointer group shadow-xs hover:border-brand-red/60 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
+                className="relative h-64 bg-lime rounded-sm overflow-hidden border border-lime-300 cursor-pointer group shadow-xs hover:border-brand-red/60 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
               >
                 <img
                   src={item.image}
@@ -1056,12 +1055,12 @@ export const ServiceDetailPage: React.FC = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-75 group-hover:opacity-90 transition-opacity" />
                 
-                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md p-1.5 rounded-lg text-stone-900 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md p-1.5 rounded-sm text-forge opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
                   <ZoomIn className="w-4 h-4 text-brand-red" />
                 </div>
 
                 <div className="absolute bottom-3 left-3 right-3">
-                  <span className="text-[10px] font-mono font-bold text-brand-red uppercase block">0{index + 1}</span>
+                  <span className="text-[10px] font-mono font-bold text-brand-red  block">0{index + 1}</span>
                   <p className="text-xs font-bold text-white line-clamp-1">
                     {item.caption || `${meta.title} Precision Build`}
                   </p>
@@ -1083,10 +1082,10 @@ export const ServiceDetailPage: React.FC = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-6xl flex items-center justify-between text-xs text-stone-300 py-2 border-b border-stone-800"
+            className="w-full max-w-6xl flex items-center justify-between text-xs text-forge-200 py-2 border-b border-forge-700"
           >
             <div className="flex items-center gap-2">
-              <span className="font-bold text-white uppercase">{meta.title}</span>
+              <span className="font-bold text-white ">{meta.title}</span>
               <span>•</span>
               <span className="font-mono">{t('common.preview')} {activeImageIndex + 1} {t('common.of')} {gallery.length}</span>
             </div>
@@ -1094,7 +1093,7 @@ export const ServiceDetailPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveImageIndex(null)}
-              className="p-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg border border-stone-700 transition"
+              className="p-2 bg-forge hover:bg-forge-800 text-white rounded-sm border border-stone-700 transition"
               title={t('common.close')}
               aria-label={t('common.close')}
             >
@@ -1107,7 +1106,7 @@ export const ServiceDetailPage: React.FC = () => {
               onClick={(e) => e.stopPropagation()}
               src={gallery[activeImageIndex].image}
               alt={gallery[activeImageIndex].caption || meta.title}
-              className="max-h-[75vh] max-w-full object-contain rounded-lg shadow-2xl transition-all"
+              className="max-h-[75vh] max-w-full object-contain rounded-sm shadow-2xl transition-all"
             />
 
             {gallery.length > 1 && (
@@ -1118,7 +1117,7 @@ export const ServiceDetailPage: React.FC = () => {
                     e.stopPropagation();
                     setActiveImageIndex((prev) => (prev! - 1 + gallery.length) % gallery.length);
                   }}
-                  className="absolute left-2 sm:left-4 p-3 bg-stone-900/80 hover:bg-stone-900 text-white rounded-full backdrop-blur-md border border-stone-700 transition"
+                  className="absolute left-2 sm:left-4 p-3 bg-stone-900/80 hover:bg-forge text-white rounded-sm backdrop-blur-md border border-stone-700 transition"
                   title={t('common.previous')}
                   aria-label={t('common.previous')}
                 >
@@ -1131,7 +1130,7 @@ export const ServiceDetailPage: React.FC = () => {
                     e.stopPropagation();
                     setActiveImageIndex((prev) => (prev! + 1) % gallery.length);
                   }}
-                  className="absolute right-2 sm:right-4 p-3 bg-stone-900/80 hover:bg-stone-900 text-white rounded-full backdrop-blur-md border border-stone-700 transition"
+                  className="absolute right-2 sm:right-4 p-3 bg-stone-900/80 hover:bg-forge text-white rounded-sm backdrop-blur-md border border-stone-700 transition"
                   title={t('common.next')}
                   aria-label={t('common.next')}
                 >
@@ -1145,7 +1144,7 @@ export const ServiceDetailPage: React.FC = () => {
             <p className="text-sm font-semibold text-white">
               {gallery[activeImageIndex].caption || meta.title}
             </p>
-            <p className="text-[11px] text-stone-400 mt-0.5">
+            <p className="text-[11px] text-forge-500 mt-0.5">
               {t('services.lightboxHint')}
             </p>
           </div>
@@ -1154,13 +1153,12 @@ export const ServiceDetailPage: React.FC = () => {
 
       {/* 4. WORKSHOP PHILOSOPHY & RIGOR */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-8 sm:p-12 relative overflow-hidden shadow-xs">
-          <div className="max-w-3xl space-y-4">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.philosophyBadge')}</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide">
+        <div className="bg-lime-50 border border-lime-300 rounded-sm p-8 sm:p-12 relative overflow-hidden shadow-xs">
+          <div className="max-w-3xl space-y-4">
+            <h2 className="text-2xl sm:text-3xl font-medium text-forge ">
               {t('services.aboutPractice')} - {meta.title}
             </h2>
-            <p className="text-sm sm:text-base text-stone-600 leading-relaxed whitespace-pre-line">
+            <p className="text-sm sm:text-base text-forge-700 leading-relaxed whitespace-pre-line">
               {localize(service, 'full_description') || service.full_description}
             </p>
           </div>
@@ -1170,9 +1168,8 @@ export const ServiceDetailPage: React.FC = () => {
       {/* 5. CORE CAPABILITIES (WHAT WE OFFER) */}
       {service.offerings && service.offerings.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="border-b border-stone-200 pb-4">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.offeringsBadge')}</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide mt-1">
+          <div className="border-b border-lime-300 pb-4">
+            <h2 className="text-2xl sm:text-3xl font-medium text-forge  mt-1">
               {t('services.offeringsTitle')} {meta.title}
             </h2>
           </div>
@@ -1181,14 +1178,14 @@ export const ServiceDetailPage: React.FC = () => {
             {service.offerings.map((item, idx) => (
               <div 
                 key={idx}
-                className="bg-white border border-stone-200 rounded-xl p-4 flex items-start gap-3 hover:border-stone-300 shadow-xs transition"
+                className="bg-white border border-lime-300 rounded-sm p-4 flex items-start gap-3 hover:border-lime-300 shadow-xs transition"
               >
-                <div className="p-1.5 rounded-lg bg-brand-red/10 border border-brand-red/20 text-brand-red mt-0.5">
+                <div className="p-1.5 rounded-sm bg-brand-red/10 border border-brand-red/20 text-brand-red mt-0.5">
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-stone-900 block">{item}</span>
-                  <span className="text-[11px] text-stone-500">{t('common.inHouse')}</span>
+                  <span className="text-xs font-bold text-forge block">{item}</span>
+                  <span className="text-[11px] text-forge-500">{t('common.inHouse')}</span>
                 </div>
               </div>
             ))}
@@ -1199,9 +1196,8 @@ export const ServiceDetailPage: React.FC = () => {
       {/* 6. APPLICATIONS & USE CASES */}
       {service.applications && service.applications.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="border-b border-stone-200 pb-4">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.applicationsBadge')}</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide mt-1">
+          <div className="border-b border-lime-300 pb-4">
+            <h2 className="text-2xl sm:text-3xl font-medium text-forge  mt-1">
               {t('services.applicationsTitle')}
             </h2>
           </div>
@@ -1210,14 +1206,14 @@ export const ServiceDetailPage: React.FC = () => {
             {service.applications.map((app, idx) => (
               <div 
                 key={idx}
-                className="bg-white border border-stone-200 rounded-xl p-5 space-y-2 hover:border-stone-300 shadow-xs transition flex flex-col justify-between"
+                className="bg-white border border-lime-300 rounded-sm p-5 space-y-2 hover:border-lime-300 shadow-xs transition flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-8 h-8 rounded-lg bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-3">
+                  <div className="w-8 h-8 rounded-sm bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-3">
                     <Building className="w-4 h-4" />
                   </div>
-                  <h3 className="text-sm font-bold text-stone-900 uppercase tracking-wide">{app.title}</h3>
-                  <p className="text-xs text-stone-600 mt-1 leading-relaxed">{app.desc}</p>
+                  <h3 className="text-sm font-bold text-forge ">{app.title}</h3>
+                  <p className="text-xs text-forge-700 mt-1 leading-relaxed">{app.desc}</p>
                 </div>
               </div>
             ))}
@@ -1228,9 +1224,8 @@ export const ServiceDetailPage: React.FC = () => {
       {/* 7. ENGINEERED MATERIALS & SPECIFICATIONS */}
       {service.materials && service.materials.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="border-b border-stone-200 pb-4">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.materialsBadge')}</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide mt-1">
+          <div className="border-b border-lime-300 pb-4">
+            <h2 className="text-2xl sm:text-3xl font-medium text-forge  mt-1">
               {t('services.materialsTitle')}
             </h2>
           </div>
@@ -1239,12 +1234,12 @@ export const ServiceDetailPage: React.FC = () => {
             {service.materials.map((mat, idx) => (
               <div 
                 key={idx}
-                className="bg-white border border-stone-200 rounded-xl p-5 space-y-1.5 hover:border-stone-300 shadow-xs transition"
+                className="bg-white border border-lime-300 rounded-sm p-5 space-y-1.5 hover:border-lime-300 shadow-xs transition"
               >
-                <span className="text-xs font-bold text-brand-red uppercase tracking-wider block">
+                <span className="text-xs font-bold text-brand-red   block">
                   {mat.name}
                 </span>
-                <p className="text-xs text-stone-600 leading-relaxed">
+                <p className="text-xs text-forge-700 leading-relaxed">
                   {mat.desc}
                 </p>
               </div>
@@ -1256,9 +1251,8 @@ export const ServiceDetailPage: React.FC = () => {
       {/* 8. 8-STEP WORKSHOP PROCESS */}
       {service.process_steps && service.process_steps.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="border-b border-stone-200 pb-4">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('services.processBadge')}</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide mt-1">
+          <div className="border-b border-lime-300 pb-4">
+            <h2 className="text-2xl sm:text-3xl font-medium text-forge  mt-1">
               {t('services.processTitle')}
             </h2>
           </div>
@@ -1267,16 +1261,16 @@ export const ServiceDetailPage: React.FC = () => {
             {service.process_steps.map((p, idx) => (
               <div 
                 key={idx}
-                className="bg-white border border-stone-200 rounded-xl p-5 space-y-2 relative overflow-hidden group hover:border-brand-red/40 shadow-xs transition"
+                className="bg-white border border-lime-300 rounded-sm p-5 space-y-2 relative overflow-hidden group hover:border-brand-red/40 shadow-xs transition"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xl font-black text-brand-red font-mono">
+                  <span className="text-xl font-medium text-brand-red">
                     {p.step}
                   </span>
-                  <span className="text-[10px] uppercase font-bold text-stone-400">{language === 'am' ? `ደረጃ ${idx + 1}` : `Stage ${idx + 1}`}</span>
+                  <span className="text-[10px]  font-bold text-forge-500">{language === 'am' ? `ደረጃ ${idx + 1}` : `Stage ${idx + 1}`}</span>
                 </div>
-                <h4 className="text-xs font-bold text-stone-900 uppercase tracking-wider">{p.title}</h4>
-                <p className="text-[11px] text-stone-600 leading-relaxed">{p.description}</p>
+                <h4 className="text-xs font-bold text-forge  ">{p.title}</h4>
+                <p className="text-[11px] text-forge-700 leading-relaxed">{p.description}</p>
               </div>
             ))}
           </div>
@@ -1286,9 +1280,8 @@ export const ServiceDetailPage: React.FC = () => {
       {/* 9. BUILT-IN ADVANTAGES */}
       {service.benefits && service.benefits.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="border-b border-stone-200 pb-4">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-widest">{t('home.workflowBadge')}</span>
-            <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide mt-1">
+          <div className="border-b border-lime-300 pb-4">
+            <h2 className="text-2xl sm:text-3xl font-medium text-forge  mt-1">
               {t('home.workflowTitle')}
             </h2>
           </div>
@@ -1297,12 +1290,12 @@ export const ServiceDetailPage: React.FC = () => {
             {service.benefits.map((b, idx) => (
               <div 
                 key={idx}
-                className="bg-white border border-stone-200 rounded-xl p-5 flex items-center gap-3 hover:border-stone-300 shadow-xs transition"
+                className="bg-white border border-lime-300 rounded-sm p-5 flex items-center gap-3 hover:border-lime-300 shadow-xs transition"
               >
-                <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700">
+                <div className="p-2 rounded-sm bg-lime border border-lime-300 text-timber">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-bold text-stone-900">{b}</span>
+                <span className="text-xs font-bold text-forge">{b}</span>
               </div>
             ))}
           </div>
@@ -1311,30 +1304,27 @@ export const ServiceDetailPage: React.FC = () => {
 
       {/* 10. PRIMARY CTA BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-[#FAF7F2] border border-stone-200 rounded-2xl p-8 sm:p-12 shadow-xs relative overflow-hidden">
+        <div className="bg-brushed-steel rounded-sm p-8 sm:p-12 relative overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div className="space-y-4">
-              <span className="text-xs font-bold text-brand-red uppercase tracking-widest">
-                {t('home.capabilitiesBadge')}
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-stone-900 uppercase tracking-wide">
+            <div className="space-y-4">
+              <h2 className="text-2xl sm:text-3xl font-medium text-white ">
                 {t('services.consultationBannerTitle')}
               </h2>
-              <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+              <p className="text-sm text-forge-200 leading-relaxed">
                 {t('services.consultationBannerDesc')}
               </p>
 
-              <div className="pt-2 flex items-center gap-3 text-xs text-stone-600">
+              <div className="pt-2 flex items-center gap-3 text-xs text-forge-200">
                 <Clock className="w-4 h-4 text-brand-red" />
-                <span>{t('common.turnaround')}: <strong className="text-stone-900">{service.turnaround_time}</strong></span>
+                <span>{t('common.turnaround')}: <strong className="text-white">{service.turnaround_time}</strong></span>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl border border-stone-200 text-center space-y-4 shadow-xs">
+            <div className="bg-white p-6 rounded-sm border border-lime-300 text-center space-y-4 shadow-xs">
               <div>
-                <span className="text-xs text-stone-500 uppercase tracking-wider block">{t('common.needQuote')}</span>
-                <h3 className="text-xl font-bold text-stone-900 mt-1">{t('quote.submitButton')}</h3>
-                <p className="text-xs text-stone-600 mt-1 max-w-sm mx-auto">
+                <span className="text-xs text-forge-500   block">{t('common.needQuote')}</span>
+                <h3 className="text-xl font-bold text-forge mt-1">{t('quote.submitButton')}</h3>
+                <p className="text-xs text-forge-700 mt-1 max-w-sm mx-auto">
                   {t('services.consultationBannerDesc')}
                 </p>
               </div>
@@ -1342,13 +1332,13 @@ export const ServiceDetailPage: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <button
                   onClick={(e) => handleRequestQuoteClick(e)}
-                  className="px-6 py-3 bg-brand-red hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-sm"
+                  className="px-6 py-3 bg-brand-red hover:bg-brand-red-dark text-white text-xs font-bold   rounded-sm transition shadow-sm"
                 >
                   {t('common.requestQuote')}
                 </button>
                 <a
                   href="tel:+251926629999"
-                  className="px-6 py-3 bg-white hover:bg-stone-50 text-stone-800 text-xs font-semibold rounded-xl border border-stone-300 shadow-xs transition"
+                  className="px-6 py-3 bg-white hover:bg-lime-50 text-forge text-xs font-semibold rounded-sm border border-lime-300 shadow-xs transition"
                 >
                   {t('common.callWorkshop')}
                 </a>
@@ -1383,10 +1373,10 @@ export const ServiceDetailPage: React.FC = () => {
             navigate(productDetailUrl);
           }
         }}
-        className="bg-white border border-stone-200/90 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-brand-red/60 hover:shadow-lg transition-all duration-300 group cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
+        className="bg-white border border-lime-300 rounded-sm overflow-hidden flex flex-col justify-between hover:border-brand-red/60 hover:shadow-lg transition-all duration-300 group cursor-pointer shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-red"
       >
         {/* Product Card Image Container */}
-        <div className="relative h-56 bg-stone-100 overflow-hidden">
+        <div className="relative h-56 bg-lime overflow-hidden">
           <img
             src={prodImage}
             alt={prodName}
@@ -1399,13 +1389,13 @@ export const ServiceDetailPage: React.FC = () => {
 
           {/* Dynamic Product Code / SKU Overlay Badge */}
           {prod.sku && (
-            <span className="absolute top-3 right-3 z-10 bg-brand-red text-white text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm tracking-wider border border-white/20">
+            <span className="absolute top-3 right-3 z-10 bg-brand-red text-white text-[11px] font-mono font-bold px-2 py-0.5 rounded shadow-sm  border border-white/20">
               {prod.sku}
             </span>
           )}
 
           {/* Material Badge */}
-          <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200 shadow-xs">
+          <span className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-sm text-[10px] font-bold   bg-white/95 backdrop-blur-md text-forge border border-lime-300 shadow-xs">
             {prodMaterial || (isHybrid
               ? (language === 'am' ? 'የብረት + እንጨት ውህደት' : 'Steel + Wood Fusion')
               : resolvedSlug === 'metal-works'
@@ -1415,14 +1405,14 @@ export const ServiceDetailPage: React.FC = () => {
 
           {/* Production Time Badge */}
           {prod.estimated_production_time && (
-            <span className="absolute bottom-3 left-3 z-10 px-2 py-1 rounded-lg text-[10px] font-semibold bg-white/95 backdrop-blur-md text-stone-800 border border-stone-200 flex items-center gap-1 shadow-xs">
+            <span className="absolute bottom-3 left-3 z-10 px-2 py-1 rounded-sm text-[10px] font-semibold bg-white/95 backdrop-blur-md text-forge border border-lime-300 flex items-center gap-1 shadow-xs">
               <Clock className="w-3 h-3 text-brand-red" />
               <span>{prod.estimated_production_time}</span>
             </span>
           )}
 
           {/* Quick View Details Icon on Hover */}
-          <div className="absolute bottom-3 right-3 bg-brand-red text-white p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-md">
+          <div className="absolute bottom-3 right-3 bg-brand-red text-white p-2 rounded-sm opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 shadow-md">
             <ArrowUpRight className="w-4 h-4" />
           </div>
         </div>
@@ -1430,48 +1420,48 @@ export const ServiceDetailPage: React.FC = () => {
         {/* Product Content */}
         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
           <div className="space-y-2">
-            <div className="flex items-center justify-between text-[11px] text-stone-500">
-              <span className="font-mono text-stone-600 font-bold">{prod.sku}</span>
+            <div className="flex items-center justify-between text-[11px] text-forge-500">
+              <span className="font-mono text-forge-700 font-bold">{prod.sku}</span>
               {prodSub && (
                 <span className="text-[10px] font-semibold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded border border-brand-red/20">
                   {prodSub}
                 </span>
               )}
               {prod.starting_price > 0 && (
-                <span className="font-bold text-stone-900 font-mono">
+                <span className="font-bold text-forge font-mono">
                   {t('common.from')} {Number(prod.starting_price).toLocaleString()} {t('common.etb')}
                 </span>
               )}
             </div>
 
-            <h3 className="text-base font-bold text-stone-900 group-hover:text-brand-red transition-colors line-clamp-1">
+            <h3 className="text-base font-bold text-forge group-hover:text-brand-red transition-colors line-clamp-1">
               {prodName}
             </h3>
 
-            <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed">
+            <p className="text-xs text-forge-700 line-clamp-2 leading-relaxed">
               {prodDesc || (language === 'am' ? 'በጥራት የተሰራ የዎርክሾፕ ውጤት።' : 'Precision engineered workshop item.')}
             </p>
 
-            <div className="text-[11px] text-stone-500 flex items-center gap-1.5 pt-0.5">
+            <div className="text-[11px] text-forge-500 flex items-center gap-1.5 pt-0.5">
               <span>{t('quote.materialPreference')}:</span>
-              <span className="text-stone-800 font-medium truncate">{prodMaterial}</span>
+              <span className="text-forge font-medium truncate">{prodMaterial}</span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="pt-3 border-t border-stone-200 grid grid-cols-2 gap-2">
+          <div className="pt-3 border-t border-lime-300 grid grid-cols-2 gap-2">
             <Link
               to={productDetailUrl}
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-semibold transition border border-stone-200"
+              className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-lime hover:bg-stone-200 text-forge rounded-sm text-xs font-semibold transition border border-lime-300"
             >
-              <Eye className="w-3.5 h-3.5 text-stone-500" />
+              <Eye className="w-3.5 h-3.5 text-forge-500" />
               <span>{t('common.viewDetails')}</span>
             </Link>
 
             <button
               onClick={(e) => handleRequestQuoteClick(e, prod)}
-              className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-brand-red hover:bg-red-700 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-xs"
+              className="inline-flex items-center justify-center gap-1 px-3 py-2 bg-brand-red hover:bg-brand-red-dark text-white rounded-sm text-xs font-bold   transition shadow-xs"
             >
               <PlusCircle className="w-3.5 h-3.5" />
               <span>{t('common.requestQuote')}</span>

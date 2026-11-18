@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ArrowRight, 
-  Sparkles, 
-  Phone, 
-  MapPin, 
-  ShieldCheck
-} from 'lucide-react';
+import { Phone, MapPin } from 'lucide-react';
 import { productsApi, extractResults } from '../../services/api';
 import { Product } from '../../types';
 import { WorkshopCatalog } from '../../components/products/WorkshopCatalog';
@@ -18,186 +12,115 @@ export const HomePage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(CATALOG_PRODUCTS);
 
   useEffect(() => {
-    fetchProducts();
+    (async () => {
+      try {
+        const res = await productsApi.getAll({ page_size: 200 });
+        const items = extractResults<Product>(res.data);
+        if (items.length > 0) setProducts(items);
+      } catch (err) {
+        console.warn('Failed to load products from API, keeping catalog data:', err);
+      }
+    })();
   }, []);
 
-  const fetchProducts = async () => {
-    try {
-      const res = await productsApi.getAll({ page_size: 200 });
-      const items = extractResults<Product>(res.data);
-      if (items.length > 0) {
-        setProducts(items);
-      }
-    } catch (err) {
-      console.warn('Failed to load products from API on home page, retaining catalog data:', err);
-    }
-  };
-
-  const handleScrollToCatalog = (e: React.MouseEvent) => {
-    e.preventDefault();
-    const el = document.getElementById('products-catalog');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const steps = [1, 2, 3, 4].map((n) => ({
+    title: t(`home.step${n}Title`),
+    desc: t(`home.step${n}Desc`),
+  }));
 
   return (
-    <div className="min-h-screen bg-white text-stone-900">
-      
-      {/* ============================================================== */}
-      {/* 1. HERO BANNER - WIDE CARPENTRY WORKSHOP PHOTOGRAPHY            */}
-      {/* ============================================================== */}
-      <section className="relative min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] flex items-center justify-center overflow-hidden bg-stone-950">
-        {/* Background Image with warm workshop overlay */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="/images/backgrounds/bg-wood-craft.jpg"
-            alt="HARA WORKSHOP Carpentry & Metal Atelier"
-            className="w-full h-full object-cover object-center filter brightness-[0.45] contrast-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950/90 via-stone-950/40 to-stone-950/60" />
+    <div>
+      {/* Hero: steel meets timber along a single red seam */}
+      <section className="relative grid lg:grid-cols-2 min-h-[600px] lg:min-h-[680px]">
+        <div className="bg-brushed-steel text-white flex items-center px-6 sm:px-12 lg:pl-[max(2rem,calc((100vw-80rem)/2+2rem))] lg:pr-16 py-16 order-2 lg:order-1">
+          <div className="max-w-xl">
+            <p className="text-sm text-forge-200">{t('home.heroTagline')}</p>
+            <h1 className="mt-5 text-4xl sm:text-5xl lg:text-[3.6rem] font-medium leading-[1.08]">
+              {t('home.heroHeadline')}
+            </h1>
+            <p className="mt-6 text-base leading-relaxed text-forge-200 max-w-md">{t('home.heroSubtext')}</p>
+            <div className="mt-9 flex flex-wrap gap-4">
+              <Link to="/request-quote" className="bg-brand-red hover:bg-brand-red-light text-white font-semibold px-7 py-3.5 rounded-sm transition-colors">
+                {t('home.heroCtaQuote')}
+              </Link>
+              <Link to="/products" className="border border-forge-400 hover:border-white text-white font-semibold px-7 py-3.5 rounded-sm transition-colors">
+                {t('home.heroCtaExplore')}
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Hero Content Box */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center space-y-6">
-          {/* Subtle Tagline Pill */}
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs font-semibold text-amber-300 uppercase tracking-widest shadow-lg">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>HARA WORKSHOP • METAL & WOOD SOLUTION</span>
-          </div>
+        <div className="relative order-1 lg:order-2 min-h-[280px]">
+          <img src="/images/backgrounds/bg-wood-craft.jpg" alt="Hara Workshop carpentry and metal atelier"
+            className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-timber/30" />
+        </div>
+        {/* The seam: one orchestrated load moment */}
+        <span aria-hidden className="hidden lg:block absolute top-0 bottom-0 left-1/2 -ml-[2px] w-1 bg-brand-red origin-top animate-seam" />
+      </section>
 
-          {/* Headline Matching Visual Reference */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.15] drop-shadow-md">
-            {language === 'am' ? (
-              <>
-                እንጨትን መቅረጽ። <span className="text-brand-red">ብረትን ማበጀት።</span> <br className="hidden sm:inline" />
-                ራዕይዎን መገንባት።
-              </>
-            ) : (
-              <>
-                Crafting Wood. <span className="text-brand-red">Shaping Metal.</span> <br className="hidden sm:inline" />
-                Building Your Vision.
-              </>
-            )}
-          </h1>
+      {/* Trust facts, stated plainly */}
+      <section className="bg-forge text-forge-200 border-t border-forge-700">
+        <ul className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 grid sm:grid-cols-3 gap-3 text-sm">
+          <li>{t('home.trustProjects')}</li>
+          <li>{t('home.trustQuality')}</li>
+          <li>{t('home.trustControl')}</li>
+        </ul>
+      </section>
 
-          {/* Subtext */}
-          <p className="text-sm sm:text-base lg:text-lg text-stone-200 max-w-3xl mx-auto leading-relaxed drop-shadow">
-            {language === 'am'
-              ? 'በቦሌ አራብሳ የሚገኝ ዘመናዊ አቴሊየር። ጠንካራ የብረት አርክቴክቸር፣ በእጅ የተሰሩ ምርጥ የእንጨት ውጤቶች እና ውብ የቅይጥ ግንባታዎች በአንድ ጥላ ስር።'
-              : 'Architectural structural steel fabrication, mastercrafted solid hardwood joinery, and luxury hybrid furniture crafted with pride at our Bole Arabsa atelier in Addis Ababa.'}
-          </p>
-
-          {/* Pill Action Buttons */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              onClick={handleScrollToCatalog}
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-brand-red hover:bg-red-700 text-white font-bold py-3.5 px-8 rounded-full text-xs sm:text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-brand-red/40 hover:scale-105 active:scale-95"
-            >
-              <span>{language === 'am' ? 'ምርቶችን ያስሱ' : 'EXPLORE PRODUCTS'}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <Link
-              to="/request-quote"
-              className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-white/15 hover:bg-white/25 text-white font-bold py-3.5 px-8 rounded-full text-xs sm:text-sm uppercase tracking-wider backdrop-blur-md border border-white/30 transition-all hover:scale-105 active:scale-95"
-            >
-              <span>{language === 'am' ? 'ትዕዛዝ ይጠይቁ' : 'REQUEST A PROJECT'}</span>
+      {/* Two materials */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="max-w-2xl">
+          <h2 className="text-3xl sm:text-4xl font-medium">{t('home.capabilitiesTitle')}</h2>
+          <p className="mt-4 text-forge-700 leading-relaxed">{t('home.capabilitiesSubtitle')}</p>
+        </div>
+        <div className="mt-12 grid md:grid-cols-2 gap-6">
+          {[
+            { img: '/images/categories/cover-metal-gates.jpg', to: '/services', label: language === 'am' ? 'ብረት' : 'Metal', tone: 'bg-forge' },
+            { img: '/images/categories/cover-wooden-doors.jpg', to: '/products', label: language === 'am' ? 'እንጨት' : 'Wood', tone: 'bg-timber' },
+          ].map((m) => (
+            <Link key={m.label} to={m.to} className="group relative block aspect-[4/3] overflow-hidden rounded-sm">
+              <img src={m.img} alt={m.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+              <div className={`absolute inset-x-0 bottom-0 ${m.tone} px-6 py-5`}>
+                <span className="font-display text-3xl text-white">{m.label}</span>
+              </div>
             </Link>
-          </div>
-
-          {/* Quick Metrics Bar */}
-          <div className="pt-8 max-w-2xl mx-auto grid grid-cols-3 gap-4 border-t border-white/15 text-center text-stone-300">
-            <div>
-              <div className="text-xl sm:text-2xl font-black text-white">90</div>
-              <div className="text-[11px] text-stone-300 uppercase tracking-wider font-medium">
-                {language === 'am' ? 'ሞዴሎች' : 'Catalog Models'}
-              </div>
-            </div>
-            <div>
-              <div className="text-xl sm:text-2xl font-black text-brand-red">18</div>
-              <div className="text-[11px] text-stone-300 uppercase tracking-wider font-medium">
-                {language === 'am' ? 'ምድቦች' : 'Categories'}
-              </div>
-            </div>
-            <div>
-              <div className="text-xl sm:text-2xl font-black text-amber-300">100%</div>
-              <div className="text-[11px] text-stone-300 uppercase tracking-wider font-medium">
-                {language === 'am' ? 'ጥራት ዋስትና' : 'Custom Built'}
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* ============================================================== */}
-      {/* 2. MAIN PRODUCT CATALOG (WOOD, METAL, HYBRID)                  */}
-      {/* ============================================================== */}
+      {/* Workflow: a genuine sequence, so numbered */}
+      <section className="bg-lime-50 border-y border-lime-300">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <h2 className="text-3xl sm:text-4xl font-medium max-w-2xl">{t('home.workflowTitle')}</h2>
+          <p className="mt-4 text-forge-700 max-w-xl">{t('home.workflowSubtitle')}</p>
+          <ol className="mt-12 grid md:grid-cols-4 gap-x-8 gap-y-10 border-t-2 border-forge pt-8">
+            {steps.map((s, i) => (
+              <li key={i}>
+                <span className="font-display text-4xl text-brand-red">{i + 1}</span>
+                <h3 className="mt-3 text-xl font-medium">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-forge-700">{s.desc}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
       <WorkshopCatalog products={products} />
 
-      {/* ============================================================== */}
-      {/* 3. WORKSHOP FACILITY & LOCATION HIGHLIGHT                       */}
-      {/* ============================================================== */}
-      <section className="bg-stone-100 py-12 px-4 sm:px-6 lg:px-8 border-t border-stone-200 text-left">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs flex items-start space-x-4">
-            <div className="p-3 bg-red-50 text-brand-red rounded-xl">
-              <MapPin className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide">
-                {language === 'am' ? 'የወርክሾፑ አድራሻ' : 'Atelier Location'}
-              </h4>
-              <p className="text-xs text-stone-600 mt-1">
-                {t('navigation.boleLocation')}
-              </p>
-              <p className="text-[11px] text-stone-400 mt-0.5">
-                {language === 'am' ? 'የውሃ ታንከር አካባቢ' : 'Near Water Tanker, Bole Arabsa'}
-              </p>
-            </div>
+      {/* Visit */}
+      <section className="bg-timber text-timber-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div>
+            <h2 className="font-display text-3xl text-white">{t('home.boleArabsaFacility')}</h2>
+            <p className="mt-2 flex items-center gap-2 text-sm"><MapPin className="w-4 h-4" /> {t('navigation.boleLocation')}</p>
+            <a href="tel:+251926629999" className="mt-1 flex items-center gap-2 text-sm hover:text-white"><Phone className="w-4 h-4" /> {t('navigation.phone')}</a>
           </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs flex items-start space-x-4">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
-              <Phone className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide">
-                {language === 'am' ? 'ስልክ እና ግንኙነት' : 'Direct Contacts'}
-              </h4>
-              <a href="tel:+251926629999" className="text-xs text-stone-800 font-semibold block mt-1 hover:text-brand-red">
-                +251 926 629 999
-              </a>
-              <a 
-                href="https://t.me/Manager_Samuel_A" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-[11px] text-[#229ED9] hover:underline font-semibold block mt-0.5"
-              >
-                {language === 'am' ? 'ቴሌግራም፦ @Manager_Samuel_A' : 'Telegram: @Manager_Samuel_A'}
-              </a>
-            </div>
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-xs flex items-start space-x-4">
-            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wide">
-                {language === 'am' ? 'ህጋዊ ፈቃድ እና ቫት' : 'TIN & 15% VAT'}
-              </h4>
-              <p className="text-xs text-stone-600 mt-1">
-                {language === 'am' ? 'ህጋዊ ደረሰኝ እና የ15% ቫት አገልግሎት' : 'Official Registered Workshop Invoicing'}
-              </p>
-              <p className="text-[11px] text-stone-400 mt-0.5">
-                {language === 'am' ? 'ለግለሰብ እና ለድርጅቶች' : 'Commercial & Residential Contracts'}
-              </p>
-            </div>
-          </div>
+          <Link to="/request-quote" className="self-start md:self-auto bg-brand-red hover:bg-brand-red-light text-white font-semibold px-7 py-3.5 rounded-sm transition-colors">
+            {t('home.heroCtaQuote')}
+          </Link>
         </div>
       </section>
-
     </div>
   );
 };

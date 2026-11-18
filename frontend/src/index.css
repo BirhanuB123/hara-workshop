@@ -14,9 +14,9 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #FDFBF7;
-  color: #1C1917;
+  font-family: 'Hanken Grotesk', 'Noto Sans Ethiopic', system-ui, sans-serif;
+  background-color: #EDEBE6;
+  color: #1A1C1E;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -122,3 +122,15 @@ html[lang="am"] .font-mono {
   width: 6px;
   height: 6px;
 }
+
+
+/* Redesign: headings use the serif display face; Amharic falls back to Noto Serif Ethiopic */
+h1, h2, h3 { font-family: 'Newsreader', 'Noto Serif Ethiopic', Georgia, serif; letter-spacing: -0.01em; }
+html[lang="am"] h1, html[lang="am"] h2, html[lang="am"] h3 { letter-spacing: 0; line-height: 1.3; }
+.bg-brushed-steel {
+  background-color: #1A1C1E;
+  background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.028) 0 1px, transparent 1px 3px),
+    linear-gradient(160deg, #24272A 0%, #1A1C1E 60%);
+}
+:focus-visible { outline: 2px solid #C5161D; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

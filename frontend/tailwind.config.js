@@ -53,6 +53,9 @@ export default {
           walnut: '#3D2817',
           bronze: '#8C6239',
         },
+        forge: { DEFAULT: '#1A1C1E', 500: '#5C6168', 800: '#24272A', 700: '#33373B', 400: '#8B9096', 200: '#C9CCCF' },
+        timber: { DEFAULT: '#4A2F1D', 600: '#6B4429', 300: '#B58B62', 100: '#E6D6C3' },
+        lime: { DEFAULT: '#EDEBE6', 50: '#F7F6F3', 300: '#D9D6CE' },
         hara: {
           red: '#C5161D',
           'red-dark': '#9E1218',
@@ -82,15 +85,19 @@ export default {
         '108': '1.08',
       },
       keyframes: {
+        seam: { '0%': { transform: 'scaleY(0)' }, '100%': { transform: 'scaleY(1)' } },
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(4px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
       animation: {
+        seam: 'seam 1.1s cubic-bezier(.7,0,.2,1) both',
         fadeIn: 'fadeIn 0.2s ease-out both',
       },
       fontFamily: {
+        display: ['Newsreader', 'Noto Serif Ethiopic', 'Georgia', 'serif'],
+        body: ['Hanken Grotesk', 'Noto Sans Ethiopic', 'system-ui', 'sans-serif'],
         sans: ['Inter', 'Noto Sans Ethiopic', 'system-ui', '-apple-system', 'sans-serif'],
         amharic: ['Noto Sans Ethiopic', 'sans-serif'],
       }

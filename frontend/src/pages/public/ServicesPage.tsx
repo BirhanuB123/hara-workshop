@@ -242,19 +242,15 @@ export const ServicesPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-900">
+    <div className="min-h-screen bg-lime text-forge">
       
       {/* 1. Header Banner */}
-      <div className="bg-[#FAF7F2] border-b border-stone-200 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center">
-        <div className="max-w-3xl mx-auto space-y-3">
-          <div className="inline-flex items-center space-x-2 bg-brand-red/10 border border-brand-red/20 px-3.5 py-1.5 rounded-full text-xs font-bold text-brand-red uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{t('home.capabilitiesBadge')}</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-stone-900 uppercase tracking-tight">
+      <div className="bg-brushed-steel text-white border-b-4 border-brand-red py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-3">
+          <h1 className="text-4xl sm:text-5xl font-medium text-white">
             {t('home.capabilitiesTitle')}
           </h1>
-          <p className="text-xs sm:text-sm md:text-base text-stone-600 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-forge-200 leading-relaxed max-w-2xl">
             {t('home.capabilitiesSubtitle')}
           </p>
         </div>
@@ -263,7 +259,7 @@ export const ServicesPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-14">
 
         {/* 2. Active Workshop Atmosphere Hero Card (Clean & Bright Image Presentation) */}
-        <div className="relative rounded-3xl overflow-hidden border border-stone-200/90 shadow-sm bg-stone-100 group">
+        <div className="relative rounded-sm overflow-hidden border border-lime-300 shadow-sm bg-lime group">
           <div className="relative h-72 sm:h-96 w-full overflow-hidden">
             <img 
               src="/images/services/service-hero-workshop.jpg" 
@@ -271,30 +267,30 @@ export const ServicesPage: React.FC = () => {
               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
             />
             {/* Reduced, subtle gradient for clear photograph visibility with good contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-forge/85 via-forge/20 to-transparent" />
             
             <div className="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div className="space-y-1.5 max-w-2xl text-left">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-brand-red text-white shadow-sm">
+                <span className="inline-flex items-center px-3 py-1 rounded-sm text-[11px] font-bold   bg-brand-red text-white shadow-sm">
                   {t('home.boleArabsaFacility')}
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-wide drop-shadow-sm">
+                <h2 className="text-2xl sm:text-3xl font-medium text-white  tracking-wide drop-shadow-sm">
                   {language === 'am' ? 'ብረት ከእንጨት ጋር የሚገናኝበት' : 'Where Steel Meets Woodcraft'}
                 </h2>
-                <p className="text-xs sm:text-sm text-stone-200 drop-shadow-sm leading-relaxed">
+                <p className="text-xs sm:text-sm text-forge-200 drop-shadow-sm leading-relaxed">
                   {language === 'am'
                     ? 'ሙሉ በሙሉ በወርክሾፓችን ውስጥ የሚከናወን ምርት፡ ከጥሬ ብረቶች እና ከደረቁ እንጨቶች ጀምሮ እስከ መጨረሻው ገጠማ ድረስ።'
                     : 'Full-cycle in-house fabrication: From raw structural beams and seasoned timber boards to finished architectural installations.'}
                 </p>
               </div>
 
-              <div className="hidden md:flex items-center space-x-3 text-xs text-stone-800 bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-xl border border-white/60 shadow-md">
-                <div className="flex items-center space-x-1.5 text-emerald-700 font-bold">
+              <div className="hidden md:flex items-center space-x-3 text-xs text-forge bg-white/90 backdrop-blur-md px-4 py-2.5 rounded-sm border border-white/60 shadow-md">
+                <div className="flex items-center space-x-1.5 text-timber font-bold">
                   <ShieldCheck className="w-4 h-4" />
                   <span>{t('home.trustControl')}</span>
                 </div>
-                <span className="text-stone-300">•</span>
-                <span className="font-medium text-stone-600">{t('common.openMonSat')}</span>
+                <span className="text-forge-200">•</span>
+                <span className="font-medium text-forge-700">{t('common.openMonSat')}</span>
               </div>
             </div>
           </div>
@@ -334,11 +330,11 @@ export const ServicesPage: React.FC = () => {
                 <Link 
                   key={service.id || service.title}
                   to={detailUrl}
-                  className="bg-white border border-stone-200/90 rounded-2xl overflow-hidden flex flex-col justify-between transition-all duration-300 shadow-xs hover:shadow-lg hover:border-brand-red/40 group cursor-pointer text-left transform hover:-translate-y-1"
+                  className="bg-white border border-lime-300 rounded-sm overflow-hidden flex flex-col justify-between transition-all duration-300 shadow-xs hover:shadow-lg hover:border-brand-red/40 group cursor-pointer text-left transform hover:-translate-y-1"
                 >
                   <div>
                     {/* Visual Photo Header */}
-                    <div className="relative h-60 w-full overflow-hidden bg-stone-100">
+                    <div className="relative h-60 w-full overflow-hidden bg-lime">
                       <img 
                         src={getServiceImageUrl(service)} 
                         alt={displayTitle} 
@@ -355,19 +351,19 @@ export const ServicesPage: React.FC = () => {
                       
                       {/* Category Badge & Number */}
                       <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                        <span className="text-[11px] font-bold uppercase tracking-wider bg-white/90 backdrop-blur-md text-stone-900 px-3 py-1 rounded-md shadow-xs border border-stone-200">
+                        <span className="text-[11px] font-bold   bg-white/90 backdrop-blur-md text-forge px-3 py-1 rounded-md shadow-xs border border-lime-300">
                           {language === 'am' ? enhancement.badgeAm : enhancement.badge}
                         </span>
-                        <span className="text-xs font-black text-white bg-brand-red px-2 py-0.5 rounded shadow-sm">
+                        <span className="text-xs font-medium text-white bg-brand-red px-2 py-0.5 rounded shadow-sm">
                           0{index + 1}
                         </span>
                       </div>
 
                       <div className="absolute bottom-4 left-4 flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-brand-red text-white flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform">
+                        <div className="w-8 h-8 rounded-sm bg-brand-red text-white flex items-center justify-center shadow-md  transition-transform">
                           <IconComponent className="w-4 h-4" />
                         </div>
-                        <span className="text-xs font-bold text-white uppercase tracking-wider drop-shadow-sm">
+                        <span className="text-xs font-bold text-white   drop-shadow-sm">
                           {displayTitle}
                         </span>
                       </div>
@@ -376,31 +372,31 @@ export const ServicesPage: React.FC = () => {
                     {/* Card Content */}
                     <div className="p-6 space-y-4">
                       <div>
-                        <h3 className="text-xl font-black text-stone-900 uppercase tracking-tight group-hover:text-brand-red transition-colors flex items-center justify-between">
+                        <h3 className="text-xl font-medium text-forge  tracking-tight group-hover:text-brand-red transition-colors flex items-center justify-between">
                           <span>{displayTitle}</span>
-                          <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-brand-red group-hover:translate-x-1 transition-all" />
+                          <ArrowRight className="w-4 h-4 text-forge-500 group-hover:text-brand-red group-hover:translate-x-1 transition-all" />
                         </h3>
-                        <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mt-2">
+                        <p className="text-xs sm:text-sm text-forge-700 leading-relaxed mt-2">
                           {displayDesc}
                         </p>
                       </div>
 
                       {/* Available Products Count Badge */}
                       <div className="pt-1">
-                        <div className="inline-flex items-center space-x-2 bg-stone-100 border border-stone-200/80 px-3 py-1.5 rounded-full">
-                          <span className="w-2 h-2 rounded-full bg-brand-red animate-pulse" />
-                          <span className="text-xs font-bold text-stone-800 uppercase tracking-wider">
+                        <div className="inline-flex items-center space-x-2 bg-lime border border-lime-300 px-3 py-1.5 rounded-sm">
+                          <span className="w-2 h-2 rounded-sm bg-brand-red animate-pulse" />
+                          <span className="text-xs font-bold text-forge  ">
                             {countStr}
                           </span>
                         </div>
                       </div>
 
                       {/* Capabilities Checklist Preview */}
-                      <div className="space-y-2 pt-3 border-t border-stone-100">
-                        <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">
+                      <div className="space-y-2 pt-3 border-t border-lime-300">
+                        <span className="text-[10px] font-bold text-forge-500   block">
                           {t('services.offeringsBadge')}:
                         </span>
-                        <ul className="space-y-1.5 text-xs text-stone-600">
+                        <ul className="space-y-1.5 text-xs text-forge-700">
                           {(language === 'am' ? enhancement.capabilitiesAm : enhancement.capabilities).slice(0, 3).map((cap, i) => (
                             <li key={i} className="flex items-start space-x-2">
                               <CheckCircle2 className="w-3.5 h-3.5 text-brand-red flex-shrink-0 mt-0.5" />
@@ -414,7 +410,7 @@ export const ServicesPage: React.FC = () => {
 
                   {/* Card Footer CTA Button */}
                   <div className="p-6 pt-0">
-                    <div className="w-full py-2.5 px-4 rounded-xl bg-stone-900 group-hover:bg-brand-red text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-between shadow-xs">
+                    <div className="w-full py-2.5 px-4 rounded-sm bg-forge group-hover:bg-brand-red text-white text-xs font-bold   transition-all duration-300 flex items-center justify-between shadow-xs">
                       <span>{t('common.exploreArrow')}</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
@@ -426,15 +422,12 @@ export const ServicesPage: React.FC = () => {
         )}
 
         {/* 4. Bottom Consultation & Quote Banner (Warm Ivory / Beige) */}
-        <div className="p-8 sm:p-10 rounded-3xl relative overflow-hidden bg-[#FAF7F2] border border-stone-200/90 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs text-left">
+        <div className="p-8 sm:p-10 rounded-sm relative overflow-hidden bg-brushed-steel flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs text-left">
           <div className="space-y-2 max-w-xl">
-            <span className="text-xs font-bold text-brand-red uppercase tracking-wider">
-              {t('home.capabilitiesBadge')}
-            </span>
-            <h3 className="text-xl sm:text-2xl font-black text-stone-900 uppercase">
+            <h3 className="text-xl sm:text-2xl font-medium text-white ">
               {t('services.consultationBannerTitle')}
             </h3>
-            <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
+            <p className="text-sm text-forge-200 leading-relaxed">
               {t('services.consultationBannerDesc')}
             </p>
           </div>
@@ -442,7 +435,7 @@ export const ServicesPage: React.FC = () => {
           <div className="flex-shrink-0 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <Link
               to="/request-quote"
-              className="inline-flex items-center justify-center space-x-2 bg-brand-red hover:bg-red-700 text-white font-bold py-3.5 px-6 rounded-full text-xs uppercase tracking-wider transition-all shadow-sm hover:shadow hover:scale-105 active:scale-95 w-full sm:w-auto"
+              className="inline-flex items-center justify-center space-x-2 bg-brand-red hover:bg-brand-red-dark text-white font-bold py-3.5 px-6 rounded-sm text-xs   transition-all shadow-sm hover:shadow hover:scale-105 active:scale-95 w-full sm:w-auto"
             >
               <span>{t('common.requestQuote')}</span>
               <ArrowRight className="w-4 h-4" />
@@ -450,7 +443,7 @@ export const ServicesPage: React.FC = () => {
 
             <a
               href="tel:+251926629999"
-              className="inline-flex items-center justify-center space-x-2 bg-white hover:bg-stone-50 text-stone-800 font-semibold py-3.5 px-6 rounded-full text-xs border border-stone-300 shadow-xs transition-colors w-full sm:w-auto"
+              className="inline-flex items-center justify-center space-x-2 bg-white hover:bg-lime-50 text-forge font-semibold py-3.5 px-6 rounded-sm text-xs border border-lime-300 shadow-xs transition-colors w-full sm:w-auto"
             >
               <Phone className="w-3.5 h-3.5 text-brand-red" />
               <span>+251 926 629 999</span>

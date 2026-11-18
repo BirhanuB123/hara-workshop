@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from datetime import timedelta
 from urllib.parse import urlsplit
@@ -100,18 +101,34 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database Configuration with Neon PostgreSQL & Safe Fallback Prevention
 database_url = os.environ.get('DATABASE_URL', '').strip()
+RUNNING_TESTS = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 if database_url:
-    # Accept both postgresql:// and postgres:// formats commonly returned by Neon and cloud PaaS
-    if database_url.startswith('postgres://') or database_url.startswith('postgresql://'):
-        import dj_database_url
+    if (
+        RUNNING_TESTS
+        and ('neon.tech' in database_url or '-pooler' in database_url)
+        and os.environ.get('USE_REMOTE_TEST_DB', '').lower() not in ('true', '1', 'yes')
+    ):
         DATABASES = {
-            'default': dj_database_url.config(
-                default=database_url,
-                conn_max_age=600,
-                ssl_require=True
-            )
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
         }
+    # Accept both postgresql:// and postgres:// formats commonly returned by Neon and cloud PaaS
+    elif database_url.startswith('postgres://') or database_url.startswith('postgresql://'):
+        import dj_database_url
+        db_config = dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
+        )
+        # Neon "-pooler" endpoints run PgBouncer in transaction pooling mode,
+        # which requires disabling server-side named cursors.
+        if '-pooler' in (db_config.get('HOST') or ''):
+            db_config['DISABLE_SERVER_SIDE_CURSORS'] = True
+        DATABASES = {'default': db_config}
     elif database_url.startswith('sqlite://'):
         if not DEBUG:
             raise ImproperlyConfigured(

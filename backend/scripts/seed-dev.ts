@@ -1,0 +1,13 @@
+import { prisma } from '../src/db.js';
+const cat = await prisma.category.create({ data: { name: 'Gates', slug: 'gates', name_am: 'በሮች' } });
+const sc = await prisma.serviceCategory.create({ data: { name: 'Fabrication', slug: 'fabrication' } });
+const svc = await prisma.service.create({ data: { category: { connect: { id: sc.id } }, title: 'Metal Works', slug: 'metal-works', short_description: 'Welding', full_description: 'Full', starting_price: 1000, price_unit: 'per m2', turnaround_time: '2 weeks', image: 'services/metal.jpg' } });
+await prisma.service.create({ data: { category: { connect: { id: sc.id } }, title: 'Wood Works', slug: 'wood-works', short_description: 'Carpentry', full_description: 'Full', starting_price: 500, price_unit: 'per piece', turnaround_time: '1 week' } });
+await prisma.serviceImage.create({ data: { service: { connect: { id: svc.id } }, image: 'services/gallery/a.jpg', is_primary: true } });
+await prisma.project.create({ data: { title: 'Gate project', slug: 'gate-project', category: 'METAL', is_published: true, description: 'd', materials_used: 'Steel' } });
+const mk = (name: string, sku: string, sub: string, price: number, cat_: string, active = true) => prisma.product.create({ data: { name, sku, slug: sku.toLowerCase(), subcategory: sub, service_category: cat_, category: { connect: { id: cat.id } }, service: { connect: { id: svc.id } }, starting_price: price, is_active: active, short_description: 'x', description: 'x', material: 'Steel', images: { create: [{ image: `products/${sku}.jpg`, is_primary: true }] } } });
+await mk('Steel Gate', 'MG-001', 'Metal Gates', 12000, 'METAL_WORKS');
+await mk('Oak Chair', 'WC-001', 'Chairs', 3000, 'WOOD_WORKS');
+await mk('Hidden Item', 'HID-001', 'Chairs', 100, 'WOOD_WORKS', false);
+await prisma.workshopSettings.create({ data: {} });
+console.log('seeded'); await prisma.$disconnect();
